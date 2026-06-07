@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text, StatusBar } from '@tarojs/components';
+import React, { useState, useEffect } from 'react';
+import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 
-interface NavBarProps {
+export interface NavBarProps {
   title: string;
   showBack?: boolean;
   backText?: string;
@@ -22,6 +22,16 @@ const NavBar: React.FC<NavBarProps> = ({
   onBack,
   rightContent
 }) => {
+  const [statusBarHeight, setStatusBarHeight] = useState(20);
+  const navBarHeight = 44;
+
+  useEffect(() => {
+    const systemInfo = Taro.getSystemInfoSync();
+    if (systemInfo.statusBarHeight) {
+      setStatusBarHeight(systemInfo.statusBarHeight);
+    }
+  }, []);
+
   const handleBack = () => {
     if (onBack) {
       onBack();
@@ -38,8 +48,6 @@ const NavBar: React.FC<NavBarProps> = ({
     }
   };
 
-  const statusBarHeight = Taro.getSystemInfoSync().statusBarHeight || 20;
-  const navBarHeight = 44;
   const totalHeight = statusBarHeight + navBarHeight;
 
   return (
@@ -51,7 +59,6 @@ const NavBar: React.FC<NavBarProps> = ({
         height: `${totalHeight}px`
       }}
     >
-      <StatusBar />
       <View
         className={styles.navBarContent}
         style={{ height: `${navBarHeight}px` }}
@@ -62,9 +69,11 @@ const NavBar: React.FC<NavBarProps> = ({
               className={styles.backBtn}
               onClick={handleBack}
             >
-              <Text className={styles.backIcon}>‹</Text>
+              <Text className={styles.backIcon} style={{ color: titleColor }}>
+                ‹
+              </Text>
               {backText && (
-                <Text className={styles.backText}>
+                <Text className={styles.backText} style={{ color: titleColor }}>
                   {backText}
                 </Text>
               )}

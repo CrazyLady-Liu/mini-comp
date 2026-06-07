@@ -1,4 +1,4 @@
-git commit -m "feat: 修改进入项目报错的问题"import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
