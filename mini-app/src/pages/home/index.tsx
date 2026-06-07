@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+git commit -m "feat: 修改进入项目报错的问题"import React, { useState } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
 import ProductCard from '@/components/ProductCard';
 import { banners } from '@/data/banners';
@@ -32,19 +32,12 @@ const HomePage: React.FC = () => {
     Taro.showToast({ title: '搜索功能开发中', icon: 'none' });
   };
 
-  const handlePullDownRefresh = () => {
+  usePullDownRefresh(() => {
     console.log('[Home] 下拉刷新');
     setTimeout(() => {
       Taro.stopPullDownRefresh();
     }, 1000);
-  };
-
-  React.useEffect(() => {
-    Taro.onPullDownRefresh(handlePullDownRefresh);
-    return () => {
-      Taro.offPullDownRefresh(handlePullDownRefresh);
-    };
-  }, []);
+  });
 
   const displayCategories = categories.slice(1, 11);
 
