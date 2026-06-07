@@ -1,0 +1,77 @@
+@use '@/styles/variables.scss' as *;
+
+.navBar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.navBarContent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-md;
+  box-sizing: border-box;
+}
+
+.navBarLeft {
+  display: flex;
+  align-items: center;
+  min-width: 160rpx;
+  flex-shrink: 0;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm $spacing-sm;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.7;
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.backIcon {
+  font-size: 56rpx;
+  font-weight: 300;
+  line-height: 1;
+  color: $color-text-primary;
+}
+
+.backText {
+  font-size: $font-size-md;
+  margin-left: -$spacing-xs;
+  color: $color-text-primary;
+}
+
+.backTextDark {
+  color: $color-text-primary;
+}
+
+.navBarTitle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  max-width: 60%;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  line-height: 1.4;
+  @include text-ellipsis;
+}
+
+.navBarRight {
+  min-width: 160rpx;
+  text-align: right;
+  flex-shrink: 0;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
+import NavBar from '@/components/NavBar';
 
 const OrderConfirmPage: React.FC = () => {
   const handleSubmit = () => {
@@ -13,6 +14,7 @@ const OrderConfirmPage: React.FC = () => {
 
   return (
     <View className={styles.container}>
+      <NavBar title="确认订单" />
       <View className={styles.placeholder}>
         <Text className={styles.icon}>📝</Text>
         <Text className={styles.title}>确认订单</Text>

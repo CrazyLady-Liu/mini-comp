@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
+import NavBar from '@/components/NavBar';
 import { getProductById } from '@/data/products';
 import { useCart } from '@/store/CartContext';
 import { formatPrice, formatSales, getTagText } from '@/utils/format';
@@ -75,6 +76,9 @@ const ProductDetailPage: React.FC = () => {
 
   return (
     <View className={styles.container}>
+      <NavBar
+        title="商品详情"
+      />
       <ScrollView scrollY>
         <Image
           className={styles.productImage}

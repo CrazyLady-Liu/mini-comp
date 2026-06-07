@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
+import NavBar from '@/components/NavBar';
 import { addresses } from '@/data/user';
 
 const AddressPage: React.FC = () => {
@@ -11,6 +12,7 @@ const AddressPage: React.FC = () => {
 
   return (
     <View className={styles.container}>
+      <NavBar title="收货地址" />
       <ScrollView scrollY className={styles.addressList}>
         {addresses.map(addr => (
           <View key={addr.id} className={styles.addressItem}>

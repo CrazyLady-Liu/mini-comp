@@ -39,7 +39,9 @@ const PickupCodePage: React.FC = () => {
 
   return (
     <View className={styles.container}>
-      <View className={styles.card}>
+      <NavBar title="自提码" />
+      <ScrollView scrollY className={styles.content}>
+        <View className={styles.card}>
         <Text className={styles.status}>待自提</Text>
 
         <View className={styles.qrCodeWrap} onClick={handleCopyCode}>
@@ -88,6 +90,7 @@ const PickupCodePage: React.FC = () => {
           <Text className={styles.pointHours}>📞 联系电话：{order.pickupPoint.phone}</Text>
         </View>
       )}
+      </ScrollView>
     </View>
   );
 };
