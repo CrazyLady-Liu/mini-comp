@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
-import ProductCard from '@/components/ProductCard';
+import { ProductCard } from '@/components';
 import { banners } from '@/data/banners';
 import { categories } from '@/data/categories';
 import { getHotProducts, getPreorderProducts, getDiscountProducts } from '@/data/products';

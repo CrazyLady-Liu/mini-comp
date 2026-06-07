@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Image } from '@tarojs/components';
+import React, { useState } from 'react';
+import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
-import ProductCard from '@/components/ProductCard';
+import { ProductCard } from '@/components';
 import { categories } from '@/data/categories';
 import { products } from '@/data/products';
 import type { Product } from '@/types';

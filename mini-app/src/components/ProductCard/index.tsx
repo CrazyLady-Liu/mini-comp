@@ -6,7 +6,7 @@ import type { Product } from '@/types';
 import { formatPrice, formatSales, getTagText } from '@/utils/format';
 import classnames from 'classnames';
 
-interface ProductCardProps {
+export interface ProductCardProps {
   product: Product;
   layout?: 'vertical' | 'horizontal';
   onClick?: () => void;

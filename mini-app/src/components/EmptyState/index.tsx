@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text } from '@tarojs/components';
 import styles from './index.module.scss';
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
   icon?: string;
   title: string;
   description?: string;

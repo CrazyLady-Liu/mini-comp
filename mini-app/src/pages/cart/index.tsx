@@ -5,8 +5,7 @@ import styles from './index.module.scss';
 import { useCart, selectCartTotal } from '@/store/CartContext';
 import { formatPrice } from '@/utils/format';
 import { getHotProducts } from '@/data/products';
-import ProductCard from '@/components/ProductCard';
-import EmptyState from '@/components/EmptyState';
+import { ProductCard, EmptyState } from '@/components';
 import classnames from 'classnames';
 
 const CartPage: React.FC = () => {

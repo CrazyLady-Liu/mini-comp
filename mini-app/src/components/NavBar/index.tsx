@@ -9,8 +9,11 @@ export interface NavBarProps {
   backText?: string;
   backgroundColor?: string;
   titleColor?: string;
+  backIconColor?: string;
   onBack?: () => void;
   rightContent?: React.ReactNode;
+  fixed?: boolean;
+  borderBottom?: boolean;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -19,16 +22,23 @@ const NavBar: React.FC<NavBarProps> = ({
   backText = '',
   backgroundColor = '#ffffff',
   titleColor = '#1e293b',
+  backIconColor,
   onBack,
-  rightContent
+  rightContent,
+  fixed = false,
+  borderBottom = false
 }) => {
   const [statusBarHeight, setStatusBarHeight] = useState(20);
   const navBarHeight = 44;
 
   useEffect(() => {
-    const systemInfo = Taro.getSystemInfoSync();
-    if (systemInfo.statusBarHeight) {
-      setStatusBarHeight(systemInfo.statusBarHeight);
+    try {
+      const systemInfo = Taro.getSystemInfoSync();
+      if (systemInfo.statusBarHeight) {
+        setStatusBarHeight(systemInfo.statusBarHeight);
+      }
+    } catch (e) {
+      console.warn('[NavBar] 获取系统信息失败，使用默认值', e);
     }
   }, []);
 
@@ -49,6 +59,7 @@ const NavBar: React.FC<NavBarProps> = ({
   };
 
   const totalHeight = statusBarHeight + navBarHeight;
+  const iconColor = backIconColor || titleColor;
 
   return (
     <View
@@ -56,7 +67,13 @@ const NavBar: React.FC<NavBarProps> = ({
       style={{
         backgroundColor,
         paddingTop: `${statusBarHeight}px`,
-        height: `${totalHeight}px`
+        height: `${totalHeight}px`,
+        position: fixed ? 'fixed' : 'sticky',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 999,
+        borderBottom: borderBottom ? '1rpx solid #f1f5f9' : 'none'
       }}
     >
       <View
@@ -69,11 +86,17 @@ const NavBar: React.FC<NavBarProps> = ({
               className={styles.backBtn}
               onClick={handleBack}
             >
-              <Text className={styles.backIcon} style={{ color: titleColor }}>
+              <Text
+                className={styles.backIcon}
+                style={{ color: iconColor }}
+              >
                 ‹
               </Text>
               {backText && (
-                <Text className={styles.backText} style={{ color: titleColor }}>
+                <Text
+                  className={styles.backText}
+                  style={{ color: iconColor }}
+                >
                   {backText}
                 </Text>
               )}
@@ -82,7 +105,11 @@ const NavBar: React.FC<NavBarProps> = ({
         </View>
 
         <View className={styles.navBarTitle}>
-          <Text className={styles.title} style={{ color: titleColor }}>
+          <Text
+            className={styles.title}
+            style={{ color: titleColor }}
+            numberOfLines={1}
+          >
             {title}
           </Text>
         </View>

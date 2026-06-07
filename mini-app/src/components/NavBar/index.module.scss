@@ -1,11 +1,10 @@
 @use '@/styles/variables.scss' as *;
 
 .navBar {
-  position: sticky;
-  top: 0;
-  z-index: 999;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: none;
+  transition: background-color $transition-normal;
 }
 
 .navBarContent {
@@ -28,29 +27,26 @@
   display: flex;
   align-items: center;
   padding: $spacing-sm $spacing-sm;
+  margin-left: -$spacing-sm;
   border-radius: $radius-md;
-  transition: all $transition-fast;
+  transition: opacity $transition-fast;
 
   &:active {
-    opacity: 0.7;
-    background: rgba(0, 0, 0, 0.05);
+    opacity: 0.6;
   }
 }
 
 .backIcon {
-  font-size: 56rpx;
+  font-size: 60rpx;
   font-weight: 300;
   line-height: 1;
   color: $color-text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .backText {
-  font-size: $font-size-md;
+  font-size: $font-size-base;
   margin-left: -$spacing-xs;
-  color: $color-text-primary;
-}
-
-.backTextDark {
   color: $color-text-primary;
 }
 
@@ -60,18 +56,28 @@
   top: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  max-width: 60%;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .title {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
   line-height: 1.4;
-  @include text-ellipsis;
+  color: $color-text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .navBarRight {
   min-width: 160rpx;
   text-align: right;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }

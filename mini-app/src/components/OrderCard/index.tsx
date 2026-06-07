@@ -6,7 +6,7 @@ import type { Order } from '@/types';
 import { formatPrice } from '@/utils/format';
 import classnames from 'classnames';
 
-interface OrderCardProps {
+export interface OrderCardProps {
   order: Order;
   onClick?: () => void;
   onAction?: (action: string) => void;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import NavBar from '@/components/NavBar';
+import { NavBar } from '@/components';
 import { getProductById } from '@/data/products';
 import { useCart } from '@/store/CartContext';
 import { formatPrice, formatSales, getTagText } from '@/utils/format';

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
-import NavBar from '@/components/NavBar';
+import { NavBar } from '@/components';
 import { addresses } from '@/data/user';
 
 const AddressPage: React.FC = () => {
