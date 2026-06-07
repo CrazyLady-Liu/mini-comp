@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商家管理后台 - 鲜来鲜往</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">🥬</span>
+        <span class="logo-text">鲜来鲜往</span>
+      </div>
+      <div class="subtitle">商家管理后台</div>
+      <nav class="menu">
+        <div class="menu-item active" data-page="dashboard">
+          <span class="menu-icon">📊</span>
+          <span>工作台</span>
+        </div>
+        <div class="menu-item" data-page="products">
+          <span class="menu-icon">🥗</span>
+          <span>商品管理</span>
+        </div>
+        <div class="menu-item" data-page="orders">
+          <span class="menu-icon">📋</span>
+          <span>订单管理</span>
+        </div>
+        <div class="menu-item" data-page="purchase">
+          <span class="menu-icon">📦</span>
+          <span>采购管理</span>
+        </div>
+        <div class="menu-item" data-page="pickup">
+          <span class="menu-icon">🏪</span>
+          <span>自提点管理</span>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">👨‍💼</div>
+          <div class="user-detail">
+            <div class="username">张老板</div>
+            <div class="role">商家管理员</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <div class="header-left">
+          <h1 id="pageTitle">工作台</h1>
+        </div>
+        <div class="header-right">
+          <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索商品、订单...">
+          </div>
+          <div class="notification">
+            <span>🔔</span>
+            <span class="badge">3</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <div id="page-dashboard" class="page active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon green">💰</div>
+              <div class="stat-info">
+                <div class="stat-value">¥12,580</div>
+                <div class="stat-label">今日营业额</div>
+                <div class="stat-trend up">↑ 12.5% 较昨日</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue">📋</div>
+              <div class="stat-info">
+                <div class="stat-value">156</div>
+                <div class="stat-label">今日订单数</div>
+                <div class="stat-trend up">↑ 8.3% 较昨日</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">👥</div>
+              <div class="stat-info">
+                <div class="stat-value">328</div>
+                <div class="stat-label">今日用户数</div>
+                <div class="stat-trend up">↑ 15.2% 较昨日</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">📦</div>
+              <div class="stat-info">
+                <div class="stat-value">23</div>
+                <div class="stat-label">待分拣订单</div>
+                <div class="stat-trend down">↓ 5.1% 较昨日</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>今日订单趋势</h3>
+                <select class="select">
+                  <option>今日</option>
+                  <option>本周</option>
+                  <option>本月</option>
+                </select>
+              </div>
+              <div class="chart-placeholder">
+                <div class="bar-chart">
+                  <div class="bar" style="height: 40%"><span>6:00</span></div>
+                  <div class="bar" style="height: 60%"><span>8:00</span></div>
+                  <div class="bar" style="height: 85%"><span>10:00</span></div>
+                  <div class="bar" style="height: 70%"><span>12:00</span></div>
+                  <div class="bar" style="height: 55%"><span>14:00</span></div>
+                  <div class="bar" style="height: 75%"><span>16:00</span></div>
+                  <div class="bar" style="height: 90%"><span>18:00</span></div>
+                  <div class="bar" style="height: 65%"><span>20:00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>热销商品TOP5</h3>
+                <a href="#" class="more">查看更多</a>
+              </div>
+              <div class="product-rank">
+                <div class="rank-item">
+                  <span class="rank-num first">1</span>
+                  <img src="https://picsum.photos/id/292/80/80" class="rank-img">
+                  <div class="rank-info">
+                    <div class="rank-name">有机西红柿</div>
+                    <div class="rank-sales">销量：328斤</div>
+                  </div>
+                  <div class="rank-amount">¥1,856</div>
+                </div>
+                <div class="rank-item">
+                  <span class="rank-num second">2</span>
+                  <img src="https://picsum.photos/id/431/80/80" class="rank-img">
+                  <div class="rank-info">
+                    <div class="rank-name">红富士苹果</div>
+                    <div class="rank-sales">销量：256斤</div>
+                  </div>
+                  <div class="rank-amount">¥1,698</div>
+                </div>
+                <div class="rank-item">
+                  <span class="rank-num third">3</span>
+                  <img src="https://picsum.photos/id/1080/80/80" class="rank-img">
+                  <div class="rank-info">
+                    <div class="rank-name">进口香蕉</div>
+                    <div class="rank-sales">销量：198斤</div>
+                  </div>
+                  <div class="rank-amount">¥986</div>
+                </div>
+                <div class="rank-item">
+                  <span class="rank-num">4</span>
+                  <img src="https://picsum.photos/id/326/80/80" class="rank-img">
+                  <div class="rank-info">
+                    <div class="rank-name">土鸡蛋</div>
+                    <div class="rank-sales">销量：156盒</div>
+                  </div>
+                  <div class="rank-amount">¥3,104</div>
+                </div>
+                <div class="rank-item">
+                  <span class="rank-num">5</span>
+                  <img src="https://picsum.photos/id/570/80/80" class="rank-img">
+                  <div class="rank-info">
+                    <div class="rank-name">精选五花肉</div>
+                    <div class="rank-sales">销量：89斤</div>
+                  </div>
+                  <div class="rank-amount">¥2,572</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>待处理订单</h3>
+              <a href="#" class="more">全部订单</a>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>商品</th>
+                  <th>自提点</th>
+                  <th>金额</th>
+                  <th>状态</th>
+                  <th>下单时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>202406070023</td>
+                  <td>有机西红柿 x2 + 黄瓜 x1</td>
+                  <td>阳光社区店</td>
+                  <td class="price">¥15.97</td>
+                  <td><span class="status-badge pending">待备货</span></td>
+                  <td>2024-06-07 09:30</td>
+                  <td>
+                    <button class="btn btn-primary btn-sm">开始分拣</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>202406070022</td>
+                  <td>土鸡蛋 x1 + 牛奶 x2</td>
+                  <td>绿园小区店</td>
+                  <td class="price">¥45.70</td>
+                  <td><span class="status-badge picking">分拣中</span></td>
+                  <td>2024-06-07 09:15</td>
+                  <td>
+                    <button class="btn btn-success btn-sm">完成分拣</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>202406070021</td>
+                  <td>精选五花肉 x1</td>
+                  <td>阳光社区店</td>
+                  <td class="price">¥28.90</td>
+                  <td><span class="status-badge ready">待自提</span></td>
+                  <td>2024-06-07 08:50</td>
+                  <td>
+                    <button class="btn btn-outline btn-sm">查看详情</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="page-products" class="page">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <select class="select">
+                <option>全部分类</option>
+                <option>时令蔬菜</option>
+                <option>新鲜水果</option>
+                <option>蛋奶豆品</option>
+              </select>
+              <select class="select">
+                <option>全部状态</option>
+                <option>在售</option>
+                <option>下架</option>
+                <option>售罄</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <div class="search-input">
+                <span>🔍</span>
+                <input type="text" placeholder="搜索商品名称">
+              </div>
+              <button class="btn btn-primary">+ 新增商品</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>商品</th>
+                  <th>分类</th>
+                  <th>价格</th>
+                  <th>库存</th>
+                  <th>销量</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="productTableBody">
+              </tbody>
+            </table>
+            <div class="pagination">
+              <span>共 12 条记录</span>
+              <div class="page-nums">
+                <span class="page-num active">1</span>
+                <span class="page-num">2</span>
+                <span class="page-num">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-orders" class="page">
+          <div class="tabs">
+            <div class="tab active">全部订单</div>
+            <div class="tab">待付款</div>
+            <div class="tab">待备货</div>
+            <div class="tab">分拣中</div>
+            <div class="tab">待自提</div>
+            <div class="tab">已完成</div>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="date" class="input-date">
+              <span style="color: #94a3b8; margin: 0 8px;">至</span>
+              <input type="date" class="input-date">
+              <button class="btn btn-outline">筛选</button>
+            </div>
+            <div class="toolbar-right">
+              <div class="search-input">
+                <span>🔍</span>
+                <input type="text" placeholder="搜索订单号">
+              </div>
+              <button class="btn btn-outline">导出</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>订单号</th>
+                  <th>用户</th>
+                  <th>商品</th>
+                  <th>金额</th>
+                  <th>自提点</th>
+                  <th>状态</th>
+                  <th>下单时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>202406070023</td>
+                  <td>张**</td>
+                  <td>有机西红柿 x2 + 黄瓜 x1</td>
+                  <td class="price">¥15.97</td>
+                  <td>阳光社区店</td>
+                  <td><span class="status-badge pending">待备货</span></td>
+                  <td>2024-06-07 09:30</td>
+                  <td>
+                    <button class="btn btn-primary btn-sm">开始分拣</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>202406070022</td>
+                  <td>李**</td>
+                  <td>土鸡蛋 x1 + 牛奶 x2</td>
+                  <td class="price">¥45.70</td>
+                  <td>绿园小区店</td>
+                  <td><span class="status-badge picking">分拣中</span></td>
+                  <td>2024-06-07 09:15</td>
+                  <td>
+                    <button class="btn btn-success btn-sm">完成分拣</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>202406070021</td>
+                  <td>王**</td>
+                  <td>精选五花肉 x1</td>
+                  <td class="price">¥28.90</td>
+                  <td>阳光社区店</td>
+                  <td><span class="status-badge ready">待自提</span></td>
+                  <td>2024-06-07 08:50</td>
+                  <td>
+                    <button class="btn btn-outline btn-sm">查看详情</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>202406070020</td>
+                  <td>赵**</td>
+                  <td>草莓 x2 + 香蕉 x2</td>
+                  <td class="price">¥61.78</td>
+                  <td>幸福家园店</td>
+                  <td><span class="status-badge completed">已完成</span></td>
+                  <td>2024-06-07 08:30</td>
+                  <td>
+                    <button class="btn btn-outline btn-sm">查看详情</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>202406070019</td>
+                  <td>孙**</td>
+                  <td>原味酸奶 x4杯装</td>
+                  <td class="price">¥32.99</td>
+                  <td>阳光社区店</td>
+                  <td><span class="status-badge completed">已完成</span></td>
+                  <td>2024-06-07 08:00</td>
+                  <td>
+                    <button class="btn btn-outline btn-sm">查看详情</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="pagination">
+              <span>共 156 条记录</span>
+              <div class="page-nums">
+                <span class="page-num">‹</span>
+                <span class="page-num active">1</span>
+                <span class="page-num">2</span>
+                <span class="page-num">3</span>
+                <span class="page-num">...</span>
+                <span class="page-num">16</span>
+                <span class="page-num">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-purchase" class="page">
+          <div class="stats-grid">
+            <div class="stat-card small">
+              <div class="stat-icon orange">📋</div>
+              <div class="stat-info">
+                <div class="stat-value">8</div>
+                <div class="stat-label">待采购商品</div>
+              </div>
+            </div>
+            <div class="stat-card small">
+              <div class="stat-icon green">✅</div>
+              <div class="stat-info">
+                <div class="stat-value">3</div>
+                <div class="stat-label">今日采购单</div>
+              </div>
+            </div>
+            <div class="stat-card small">
+              <div class="stat-icon blue">💰</div>
+              <div class="stat-info">
+                <div class="stat-value">¥3,580</div>
+                <div class="stat-label">采购成本</div>
+              </div>
+            </div>
+            <div class="stat-card small">
+              <div class="stat-icon purple">🚚</div>
+              <div class="stat-info">
+                <div class="stat-value">2</div>
+                <div class="stat-label">配送中</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>采购汇总清单</h3>
+                <button class="btn btn-primary btn-sm">生成采购单</button>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>商品</th>
+                    <th>分类</th>
+                    <th>订单需求量</th>
+                    <th>当前库存</th>
+                    <th>建议采购</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>有机西红柿</td>
+                    <td>时令蔬菜</td>
+                    <td>86斤</td>
+                    <td>100斤</td>
+                    <td>50斤</td>
+                    <td>
+                      <button class="btn btn-outline btn-sm">加入采购</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>新鲜黄瓜</td>
+                    <td>时令蔬菜</td>
+                    <td>120斤</td>
+                    <td>200斤</td>
+                    <td>-</td>
+                    <td>
+                      <button class="btn btn-outline btn-sm disabled">库存充足</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>土鸡蛋</td>
+                    <td>蛋奶豆品</td>
+                    <td>45盒</td>
+                    <td>30盒</td>
+                    <td>50盒</td>
+                    <td>
+                      <button class="btn btn-outline btn-sm">加入采购</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>精选五花肉</td>
+                    <td>肉禽蛋品</td>
+                    <td>35斤</td>
+                    <td>20斤</td>
+                    <td>50斤</td>
+                    <td>
+                      <button class="btn btn-outline btn-sm">加入采购</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>供应商管理</h3>
+                <button class="btn btn-primary btn-sm">+ 新增</button>
+              </div>
+              <div class="supplier-list">
+                <div class="supplier-item">
+                  <div class="supplier-info">
+                    <div class="supplier-name">绿源蔬菜基地</div>
+                    <div class="supplier-contact">联系人：王经理 138****1234</div>
+                    <div class="supplier-type">主营：时令蔬菜</div>
+                  </div>
+                  <button class="btn btn-outline btn-sm">查看</button>
+                </div>
+                <div class="supplier-item">
+                  <div class="supplier-info">
+                    <div class="supplier-name">鲜果直供合作社</div>
+                    <div class="supplier-contact">联系人：李老板 139****5678</div>
+                    <div class="supplier-type">主营：新鲜水果</div>
+                  </div>
+                  <button class="btn btn-outline btn-sm">查看</button>
+                </div>
+                <div class="supplier-item">
+                  <div class="supplier-info">
+                    <div class="supplier-name">优质肉联厂</div>
+                    <div class="supplier-contact">联系人：张总 137****9012</div>
+                    <div class="supplier-type">主营：肉禽蛋品</div>
+                  </div>
+                  <button class="btn btn-outline btn-sm">查看</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-pickup" class="page">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="search-input">
+                <span>🔍</span>
+                <input type="text" placeholder="搜索自提点名称">
+              </div>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn btn-primary">+ 新增自提点</button>
+            </div>
+          </div>
+
+          <div class="pickup-grid">
+            <div class="pickup-card">
+              <div class="pickup-header">
+                <span class="pickup-status active">营业中</span>
+                <span class="pickup-actions">
+                  <button class="icon-btn">✏️</button>
+                  <button class="icon-btn">🗑️</button>
+                </span>
+              </div>
+              <h3 class="pickup-name">阳光社区自提点</h3>
+              <p class="pickup-address">📍 阳光小区1号楼1单元101室</p>
+              <div class="pickup-meta">
+                <span>🕐 08:00-20:00</span>
+                <span>📞 138****8001</span>
+              </div>
+              <div class="pickup-stats">
+                <div>
+                  <div class="stat-num">56</div>
+                  <div class="stat-label">今日订单</div>
+                </div>
+                <div>
+                  <div class="stat-num">38</div>
+                  <div class="stat-label">已完成</div>
+                </div>
+                <div>
+                  <div class="stat-num">12</div>
+                  <div class="stat-label">待自提</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pickup-card">
+              <div class="pickup-header">
+                <span class="pickup-status active">营业中</span>
+                <span class="pickup-actions">
+                  <button class="icon-btn">✏️</button>
+                  <button class="icon-btn">🗑️</button>
+                </span>
+              </div>
+              <h3 class="pickup-name">绿园小区自提点</h3>
+              <p class="pickup-address">📍 绿园小区东门便利店</p>
+              <div class="pickup-meta">
+                <span>🕐 07:00-22:00</span>
+                <span>📞 139****9002</span>
+              </div>
+              <div class="pickup-stats">
+                <div>
+                  <div class="stat-num">42</div>
+                  <div class="stat-label">今日订单</div>
+                </div>
+                <div>
+                  <div class="stat-num">30</div>
+                  <div class="stat-label">已完成</div>
+                </div>
+                <div>
+                  <div class="stat-num">8</div>
+                  <div class="stat-label">待自提</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pickup-card">
+              <div class="pickup-header">
+                <span class="pickup-status active">营业中</span>
+                <span class="pickup-actions">
+                  <button class="icon-btn">✏️</button>
+                  <button class="icon-btn">🗑️</button>
+                </span>
+              </div>
+              <h3 class="pickup-name">幸福家园自提点</h3>
+              <p class="pickup-address">📍 幸福家园小区南门旁</p>
+              <div class="pickup-meta">
+                <span>🕐 08:30-21:00</span>
+                <span>📞 137****7003</span>
+              </div>
+              <div class="pickup-stats">
+                <div>
+                  <div class="stat-num">35</div>
+                  <div class="stat-label">今日订单</div>
+                </div>
+                <div>
+                  <div class="stat-num">28</div>
+                  <div class="stat-label">已完成</div>
+                </div>
+                <div>
+                  <div class="stat-num">5</div>
+                  <div class="stat-label">待自提</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

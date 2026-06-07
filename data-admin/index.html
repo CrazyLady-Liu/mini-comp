@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据统计后台 - 鲜来鲜往</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">鲜来鲜往</span>
+      </div>
+      <div class="subtitle">数据统计后台</div>
+      <nav class="menu">
+        <div class="menu-item active" data-page="overview">
+          <span class="menu-icon">📈</span>
+          <span>销售概览</span>
+        </div>
+        <div class="menu-item" data-page="products">
+          <span class="menu-icon">🥗</span>
+          <span>商品分析</span>
+        </div>
+        <div class="menu-item" data-page="users">
+          <span class="menu-icon">👥</span>
+          <span>用户分析</span>
+        </div>
+        <div class="menu-item" data-page="operation">
+          <span class="menu-icon">⚙️</span>
+          <span>运营分析</span>
+        </div>
+        <div class="menu-item" data-page="pickup">
+          <span class="menu-icon">🏪</span>
+          <span>自提点分析</span>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">👨‍💼</div>
+          <div class="user-detail">
+            <div class="username">数据管理员</div>
+            <div class="role">运营总监</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <div class="header-left">
+          <h1 id="pageTitle">销售概览</h1>
+          <div class="date-range">
+            <select class="select">
+              <option>今日</option>
+              <option selected>本周</option>
+              <option>本月</option>
+              <option>本季度</option>
+            </select>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="btn btn-outline">📥 导出报表</button>
+          <div class="notification">
+            <span>🔔</span>
+            <span class="badge">5</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <div id="page-overview" class="page active">
+          <div class="kpi-grid">
+            <div class="kpi-card primary">
+              <div class="kpi-value">¥128,560</div>
+              <div class="kpi-label">总销售额（GMV）</div>
+              <div class="kpi-trend">
+                <span class="up">↑ 18.5%</span>
+                <span class="trend-label">较上周</span>
+              </div>
+              <div class="kpi-chart">
+                <div class="mini-chart">
+                  <span style="height: 40%"></span>
+                  <span style="height: 55%"></span>
+                  <span style="height: 45%"></span>
+                  <span style="height: 70%"></span>
+                  <span style="height: 60%"></span>
+                  <span style="height: 85%"></span>
+                  <span style="height: 75%"></span>
+                </div>
+              </div>
+            </div>
+            <div class="kpi-card success">
+              <div class="kpi-value">1,256</div>
+              <div class="kpi-label">订单总数</div>
+              <div class="kpi-trend">
+                <span class="up">↑ 12.3%</span>
+                <span class="trend-label">较上周</span>
+              </div>
+              <div class="kpi-chart">
+                <div class="mini-chart">
+                  <span style="height: 50%"></span>
+                  <span style="height: 65%"></span>
+                  <span style="height: 55%"></span>
+                  <span style="height: 75%"></span>
+                  <span style="height: 70%"></span>
+                  <span style="height: 90%"></span>
+                  <span style="height: 80%"></span>
+                </div>
+              </div>
+            </div>
+            <div class="kpi-card warning">
+              <div class="kpi-value">3,280</div>
+              <div class="kpi-label">活跃用户数</div>
+              <div class="kpi-trend">
+                <span class="up">↑ 25.6%</span>
+                <span class="trend-label">较上周</span>
+              </div>
+              <div class="kpi-chart">
+                <div class="mini-chart">
+                  <span style="height: 30%"></span>
+                  <span style="height: 45%"></span>
+                  <span style="height: 55%"></span>
+                  <span style="height: 60%"></span>
+                  <span style="height: 70%"></span>
+                  <span style="height: 80%"></span>
+                  <span style="height: 95%"></span>
+                </div>
+              </div>
+            </div>
+            <div class="kpi-card info">
+              <div class="kpi-value">42.8%</div>
+              <div class="kpi-label">用户复购率</div>
+              <div class="kpi-trend">
+                <span class="up">↑ 3.2%</span>
+                <span class="trend-label">较上月</span>
+              </div>
+              <div class="kpi-chart">
+                <div class="mini-chart">
+                  <span style="height: 60%"></span>
+                  <span style="height: 62%"></span>
+                  <span style="height: 65%"></span>
+                  <span style="height: 68%"></span>
+                  <span style="height: 72%"></span>
+                  <span style="height: 75%"></span>
+                  <span style="height: 78%"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel large">
+              <div class="panel-header">
+                <h3>销售趋势</h3>
+                <div class="legend">
+                  <span class="legend-item"><span class="dot green"></span>销售额</span>
+                  <span class="legend-item"><span class="dot blue"></span>订单数</span>
+                </div>
+              </div>
+              <div class="chart-area">
+                <div class="line-chart">
+                  <div class="chart-grid">
+                    <div class="grid-line"><span>¥100k</span></div>
+                    <div class="grid-line"><span>¥75k</span></div>
+                    <div class="grid-line"><span>¥50k</span></div>
+                    <div class="grid-line"><span>¥25k</span></div>
+                    <div class="grid-line"><span>¥0</span></div>
+                  </div>
+                  <div class="chart-bars">
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 45%"></div>
+                      <span>周一</span>
+                    </div>
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 60%"></div>
+                      <span>周二</span>
+                    </div>
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 55%"></div>
+                      <span>周三</span>
+                    </div>
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 75%"></div>
+                      <span>周四</span>
+                    </div>
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 70%"></div>
+                      <span>周五</span>
+                    </div>
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 90%"></div>
+                      <span>周六</span>
+                    </div>
+                    <div class="bar-col">
+                      <div class="bar green" style="height: 80%"></div>
+                      <span>周日</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>订单状态分布</h3>
+              </div>
+              <div class="chart-area">
+                <div class="pie-chart-wrap">
+                  <div class="pie-chart">
+                    <div class="pie-slice slice-1"></div>
+                    <div class="pie-slice slice-2"></div>
+                    <div class="pie-slice slice-3"></div>
+                    <div class="pie-center">
+                      <div class="pie-total">1,256</div>
+                      <div class="pie-label">总订单</div>
+                    </div>
+                  </div>
+                  <div class="pie-legend">
+                    <div class="legend-row">
+                      <span class="dot completed"></span>
+                      <span class="legend-text">已完成</span>
+                      <span class="legend-value">856</span>
+                      <span class="legend-percent">68%</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="dot ready"></span>
+                      <span class="legend-text">待自提</span>
+                      <span class="legend-value">128</span>
+                      <span class="legend-percent">10%</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="dot picking"></span>
+                      <span class="legend-text">分拣中</span>
+                      <span class="legend-value">98</span>
+                      <span class="legend-percent">8%</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="dot pending"></span>
+                      <span class="legend-text">待付款</span>
+                      <span class="legend-value">174</span>
+                      <span class="legend-percent">14%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>分类销售占比</h3>
+              </div>
+              <div class="category-sales">
+                <div class="cat-row">
+                  <div class="cat-info">
+                    <span class="cat-icon">🥬</span>
+                    <span class="cat-name">时令蔬菜</span>
+                  </div>
+                  <div class="cat-bar">
+                    <div class="cat-fill" style="width: 85%"></div>
+                  </div>
+                  <div class="cat-value">¥32,580</div>
+                </div>
+                <div class="cat-row">
+                  <div class="cat-info">
+                    <span class="cat-icon">🍎</span>
+                    <span class="cat-name">新鲜水果</span>
+                  </div>
+                  <div class="cat-bar">
+                    <div class="cat-fill" style="width: 75%"></div>
+                  </div>
+                  <div class="cat-value">¥28,960</div>
+                </div>
+                <div class="cat-row">
+                  <div class="cat-info">
+                    <span class="cat-icon">🥩</span>
+                    <span class="cat-name">肉禽蛋品</span>
+                  </div>
+                  <div class="cat-bar">
+                    <div class="cat-fill" style="width: 65%"></div>
+                  </div>
+                  <div class="cat-value">¥24,320</div>
+                </div>
+                <div class="cat-row">
+                  <div class="cat-info">
+                    <span class="cat-icon">🥛</span>
+                    <span class="cat-name">蛋奶豆品</span>
+                  </div>
+                  <div class="cat-bar">
+                    <div class="cat-fill" style="width: 55%"></div>
+                  </div>
+                  <div class="cat-value">¥18,750</div>
+                </div>
+                <div class="cat-row">
+                  <div class="cat-info">
+                    <span class="cat-icon">🦐</span>
+                    <span class="cat-name">海鲜水产</span>
+                  </div>
+                  <div class="cat-bar">
+                    <div class="cat-fill" style="width: 35%"></div>
+                  </div>
+                  <div class="cat-value">¥12,340</div>
+                </div>
+                <div class="cat-row">
+                  <div class="cat-info">
+                    <span class="cat-icon">🍚</span>
+                    <span class="cat-name">粮油调味</span>
+                  </div>
+                  <div class="cat-bar">
+                    <div class="cat-fill" style="width: 30%"></div>
+                  </div>
+                  <div class="cat-value">¥10,610</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>热销商品TOP10</h3>
+                <a href="#" class="more">查看全部</a>
+              </div>
+              <div class="top-products">
+                <div class="top-product-item">
+                  <span class="rank first">1</span>
+                  <img src="https://picsum.photos/id/292/60/60" class="top-product-img">
+                  <div class="top-product-info">
+                    <div class="top-product-name">有机西红柿</div>
+                    <div class="top-product-meta">时令蔬菜 · 销量 3,256</div>
+                  </div>
+                  <div class="top-product-amount">¥18,560</div>
+                </div>
+                <div class="top-product-item">
+                  <span class="rank second">2</span>
+                  <img src="https://picsum.photos/id/431/60/60" class="top-product-img">
+                  <div class="top-product-info">
+                    <div class="top-product-name">红富士苹果</div>
+                    <div class="top-product-meta">新鲜水果 · 销量 2,568</div>
+                  </div>
+                  <div class="top-product-amount">¥16,980</div>
+                </div>
+                <div class="top-product-item">
+                  <span class="rank third">3</span>
+                  <img src="https://picsum.photos/id/570/60/60" class="top-product-img">
+                  <div class="top-product-info">
+                    <div class="top-product-name">精选五花肉</div>
+                    <div class="top-product-meta">肉禽蛋品 · 销量 890</div>
+                  </div>
+                  <div class="top-product-amount">¥15,720</div>
+                </div>
+                <div class="top-product-item">
+                  <span class="rank">4</span>
+                  <img src="https://picsum.photos/id/326/60/60" class="top-product-img">
+                  <div class="top-product-info">
+                    <div class="top-product-name">土鸡蛋</div>
+                    <div class="top-product-meta">蛋奶豆品 · 销量 1,560</div>
+                  </div>
+                  <div class="top-product-amount">¥12,450</div>
+                </div>
+                <div class="top-product-item">
+                  <span class="rank">5</span>
+                  <img src="https://picsum.photos/id/1080/60/60" class="top-product-img">
+                  <div class="top-product-info">
+                    <div class="top-product-name">进口香蕉</div>
+                    <div class="top-product-meta">新鲜水果 · 销量 1,980</div>
+                  </div>
+                  <div class="top-product-amount">¥9,860</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-products" class="page">
+          <div class="kpi-grid">
+            <div class="kpi-card primary small">
+              <div class="kpi-value">128</div>
+              <div class="kpi-label">商品总数</div>
+            </div>
+            <div class="kpi-card success small">
+              <div class="kpi-value">96</div>
+              <div class="kpi-label">在售商品</div>
+            </div>
+            <div class="kpi-card warning small">
+              <div class="kpi-value">12</div>
+              <div class="kpi-label">库存预警</div>
+            </div>
+            <div class="kpi-card info small">
+              <div class="kpi-value">8</div>
+              <div class="kpi-label">商品分类</div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel large">
+              <div class="panel-header">
+                <h3>商品销量排行</h3>
+                <select class="select">
+                  <option>按销量</option>
+                  <option>按销售额</option>
+                  <option>按利润</option>
+                </select>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>排名</th>
+                    <th>商品</th>
+                    <th>分类</th>
+                    <th>销量</th>
+                    <th>销售额</th>
+                    <th>库存</th>
+                    <th>库存状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="rank first">1</span></td>
+                    <td>有机西红柿</td>
+                    <td>时令蔬菜</td>
+                    <td>3,256斤</td>
+                    <td class="price">¥18,560</td>
+                    <td>100斤</td>
+                    <td><span class="status-badge ready">正常</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank second">2</span></td>
+                    <td>红富士苹果</td>
+                    <td>新鲜水果</td>
+                    <td>2,568斤</td>
+                    <td class="price">¥16,980</td>
+                    <td>0斤</td>
+                    <td><span class="status-badge pending">售罄</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="rank third">3</span></td>
+                    <td>精选五花肉</td>
+                    <td>肉禽蛋品</td>
+                    <td>890斤</td>
+                    <td class="price">¥15,720</td>
+                    <td>20斤</td>
+                    <td><span class="status-badge picking">库存低</span></td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>土鸡蛋</td>
+                    <td>蛋奶豆品</td>
+                    <td>1,560盒</td>
+                    <td class="price">¥12,450</td>
+                    <td>30盒</td>
+                    <td><span class="status-badge picking">库存低</span></td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>进口香蕉</td>
+                    <td>新鲜水果</td>
+                    <td>1,980斤</td>
+                    <td class="price">¥9,860</td>
+                    <td>150斤</td>
+                    <td><span class="status-badge ready">正常</span></td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>新鲜牛奶</td>
+                    <td>蛋奶豆品</td>
+                    <td>789盒</td>
+                    <td class="price">¥8,950</td>
+                    <td>80盒</td>
+                    <td><span class="status-badge ready">正常</span></td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>新鲜草莓</td>
+                    <td>新鲜水果</td>
+                    <td>1,024盒</td>
+                    <td class="price">¥8,650</td>
+                    <td>0盒</td>
+                    <td><span class="status-badge pending">预售中</span></td>
+                  </tr>
+                  <tr>
+                    <td>8</td>
+                    <td>原味酸奶</td>
+                    <td>蛋奶豆品</td>
+                    <td>1,234杯</td>
+                    <td class="price">¥7,890</td>
+                    <td>100杯</td>
+                    <td><span class="status-badge ready">正常</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>库存预警</h3>
+                <span class="warning-count">12个商品</span>
+              </div>
+              <div class="stock-warning">
+                <div class="warning-item">
+                  <div class="warning-info">
+                    <span class="warning-level high">高</span>
+                    <span class="warning-name">红富士苹果</span>
+                  </div>
+                  <div class="warning-stock">剩余 0斤</div>
+                </div>
+                <div class="warning-item">
+                  <div class="warning-info">
+                    <span class="warning-level high">高</span>
+                    <span class="warning-name">新鲜草莓</span>
+                  </div>
+                  <div class="warning-stock">剩余 0盒</div>
+                </div>
+                <div class="warning-item">
+                  <div class="warning-info">
+                    <span class="warning-level mid">中</span>
+                    <span class="warning-name">土鸡蛋</span>
+                  </div>
+                  <div class="warning-stock">剩余 30盒</div>
+                </div>
+                <div class="warning-item">
+                  <div class="warning-info">
+                    <span class="warning-level mid">中</span>
+                    <span class="warning-name">精选五花肉</span>
+                  </div>
+                  <div class="warning-stock">剩余 20斤</div>
+                </div>
+                <div class="warning-item">
+                  <div class="warning-info">
+                    <span class="warning-level low">低</span>
+                    <span class="warning-name">三文鱼</span>
+                  </div>
+                  <div class="warning-stock">剩余 15份</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-users" class="page">
+          <div class="kpi-grid">
+            <div class="kpi-card primary small">
+              <div class="kpi-value">12,580</div>
+              <div class="kpi-label">总用户数</div>
+              <div class="kpi-trend"><span class="up">↑ 8.5%</span></div>
+            </div>
+            <div class="kpi-card success small">
+              <div class="kpi-value">3,280</div>
+              <div class="kpi-label">活跃用户</div>
+              <div class="kpi-trend"><span class="up">↑ 12.3%</span></div>
+            </div>
+            <div class="kpi-card warning small">
+              <div class="kpi-value">42.8%</div>
+              <div class="kpi-label">复购率</div>
+              <div class="kpi-trend"><span class="up">↑ 3.2%</span></div>
+            </div>
+            <div class="kpi-card info small">
+              <div class="kpi-value">5,380</div>
+              <div class="kpi-label">新增用户</div>
+              <div class="kpi-trend"><span class="up">↑ 15.6%</span></div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel large">
+              <div class="panel-header">
+                <h3>用户增长趋势</h3>
+              </div>
+              <div class="chart-area" style="height: 300px;">
+                <div class="growth-chart">
+                  <div class="chart-grid-lines">
+                    <div class="grid-line"><span>5k</span></div>
+                    <div class="grid-line"><span>4k</span></div>
+                    <div class="grid-line"><span>3k</span></div>
+                    <div class="grid-line"><span>2k</span></div>
+                    <div class="grid-line"><span>1k</span></div>
+                    <div class="grid-line"><span>0</span></div>
+                  </div>
+                  <div class="growth-bars">
+                    <div class="growth-bar">
+                      <div class="bar-total" style="height: 60%"></div>
+                      <div class="bar-new" style="height: 25%"></div>
+                      <span>1月</span>
+                    </div>
+                    <div class="growth-bar">
+                      <div class="bar-total" style="height: 65%"></div>
+                      <div class="bar-new" style="height: 28%"></div>
+                      <span>2月</span>
+                    </div>
+                    <div class="growth-bar">
+                      <div class="bar-total" style="height: 70%"></div>
+                      <div class="bar-new" style="height: 30%"></div>
+                      <span>3月</span>
+                    </div>
+                    <div class="growth-bar">
+                      <div class="bar-total" style="height: 75%"></div>
+                      <div class="bar-new" style="height: 32%"></div>
+                      <span>4月</span>
+                    </div>
+                    <div class="growth-bar">
+                      <div class="bar-total" style="height: 82%"></div>
+                      <div class="bar-new" style="height: 38%"></div>
+                      <span>5月</span>
+                    </div>
+                    <div class="growth-bar">
+                      <div class="bar-total" style="height: 90%"></div>
+                      <div class="bar-new" style="height: 42%"></div>
+                      <span>6月</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>用户画像</h3>
+              </div>
+              <div class="user-profile">
+                <div class="profile-section">
+                  <h4>性别分布</h4>
+                  <div class="profile-row">
+                    <span class="profile-label">女性</span>
+                    <div class="profile-bar">
+                      <div class="profile-fill female" style="width: 65%"></div>
+                    </div>
+                    <span class="profile-value">65%</span>
+                  </div>
+                  <div class="profile-row">
+                    <span class="profile-label">男性</span>
+                    <div class="profile-bar">
+                      <div class="profile-fill male" style="width: 35%"></div>
+                    </div>
+                    <span class="profile-value">35%</span>
+                  </div>
+                </div>
+                <div class="profile-section">
+                  <h4>年龄分布</h4>
+                  <div class="profile-row">
+                    <span class="profile-label">25岁以下</span>
+                    <div class="profile-bar">
+                      <div class="profile-fill" style="width: 20%"></div>
+                    </div>
+                    <span class="profile-value">20%</span>
+                  </div>
+                  <div class="profile-row">
+                    <span class="profile-label">25-35岁</span>
+                    <div class="profile-bar">
+                      <div class="profile-fill primary" style="width: 45%"></div>
+                    </div>
+                    <span class="profile-value">45%</span>
+                  </div>
+                  <div class="profile-row">
+                    <span class="profile-label">35-45岁</span>
+                    <div class="profile-bar">
+                      <div class="profile-fill" style="width: 25%"></div>
+                    </div>
+                    <span class="profile-value">25%</span>
+                  </div>
+                  <div class="profile-row">
+                    <span class="profile-label">45岁以上</span>
+                    <div class="profile-bar">
+                      <div class="profile-fill" style="width: 10%"></div>
+                    </div>
+                    <span class="profile-value">10%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-operation" class="page">
+          <div class="kpi-grid">
+            <div class="kpi-card primary small">
+              <div class="kpi-value">8</div>
+              <div class="kpi-label">进行中活动</div>
+            </div>
+            <div class="kpi-card success small">
+              <div class="kpi-value">¥25,680</div>
+              <div class="kpi-label">活动带动销售额</div>
+            </div>
+            <div class="kpi-card warning small">
+              <div class="kpi-value">12.5%</div>
+              <div class="kpi-label">活动转化率</div>
+            </div>
+            <div class="kpi-card info small">
+              <div class="kpi-value">3,580</div>
+              <div class="kpi-label">活动参与人数</div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>活动效果排行</h3>
+              </div>
+              <div class="campaign-list">
+                <div class="campaign-item">
+                  <div class="campaign-info">
+                    <div class="campaign-name">618生鲜狂欢节</div>
+                    <div class="campaign-date">2024-06-01 ~ 2024-06-18</div>
+                  </div>
+                  <div class="campaign-stats">
+                    <div><span class="stat-label">销售额</span><span class="stat-value">¥12,580</span></div>
+                    <div><span class="stat-label">参与人数</span><span class="stat-value">1,256</span></div>
+                  </div>
+                  <span class="status-badge ready">进行中</span>
+                </div>
+                <div class="campaign-item">
+                  <div class="campaign-info">
+                    <div class="campaign-name">新用户专享</div>
+                    <div class="campaign-date">长期活动</div>
+                  </div>
+                  <div class="campaign-stats">
+                    <div><span class="stat-label">销售额</span><span class="stat-value">¥8,960</span></div>
+                    <div><span class="stat-label">参与人数</span><span class="stat-value">1,580</span></div>
+                  </div>
+                  <span class="status-badge ready">进行中</span>
+                </div>
+                <div class="campaign-item">
+                  <div class="campaign-info">
+                    <div class="campaign-name">周末特惠</div>
+                    <div class="campaign-date">每周六日</div>
+                  </div>
+                  <div class="campaign-stats">
+                    <div><span class="stat-label">销售额</span><span class="stat-value">¥5,320</span></div>
+                    <div><span class="stat-label">参与人数</span><span class="stat-value">780</span></div>
+                  </div>
+                  <span class="status-badge ready">进行中</span>
+                </div>
+                <div class="campaign-item">
+                  <div class="campaign-info">
+                    <div class="campaign-name">520为爱放价</div>
+                    <div class="campaign-date">2024-05-18 ~ 2024-05-20</div>
+                  </div>
+                  <div class="campaign-stats">
+                    <div><span class="stat-label">销售额</span><span class="stat-value">¥15,680</span></div>
+                    <div><span class="stat-label">参与人数</span><span class="stat-value">2,340</span></div>
+                  </div>
+                  <span class="status-badge completed">已结束</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>优惠券使用情况</h3>
+              </div>
+              <div class="coupon-stats">
+                <div class="coupon-stat">
+                  <div class="coupon-value">8,560</div>
+                  <div class="coupon-label">已发放</div>
+                </div>
+                <div class="coupon-stat">
+                  <div class="coupon-value">3,280</div>
+                  <div class="coupon-label">已使用</div>
+                </div>
+                <div class="coupon-stat">
+                  <div class="coupon-value">38.3%</div>
+                  <div class="coupon-label">使用率</div>
+                </div>
+                <div class="coupon-stat">
+                  <div class="coupon-value">¥28,560</div>
+                  <div class="coupon-label">优惠金额</div>
+                </div>
+              </div>
+              <div class="coupon-types">
+                <h4>优惠券类型</h4>
+                <div class="type-row">
+                  <span class="type-name">满减券</span>
+                  <div class="type-bar">
+                    <div class="type-fill" style="width: 60%"></div>
+                  </div>
+                  <span class="type-value">60%</span>
+                </div>
+                <div class="type-row">
+                  <span class="type-name">折扣券</span>
+                  <div class="type-bar">
+                    <div class="type-fill" style="width: 25%"></div>
+                  </div>
+                  <span class="type-value">25%</span>
+                </div>
+                <div class="type-row">
+                  <span class="type-name">新人券</span>
+                  <div class="type-bar">
+                    <div class="type-fill" style="width: 15%"></div>
+                  </div>
+                  <span class="type-value">15%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-pickup" class="page">
+          <div class="kpi-grid">
+            <div class="kpi-card primary small">
+              <div class="kpi-value">3</div>
+              <div class="kpi-label">自提点总数</div>
+            </div>
+            <div class="kpi-card success small">
+              <div class="kpi-value">96.5%</div>
+              <div class="kpi-label">准时自提率</div>
+            </div>
+            <div class="kpi-card warning small">
+              <div class="kpi-value">2.3h</div>
+              <div class="kpi-label">平均等待时间</div>
+            </div>
+            <div class="kpi-card info small">
+              <div class="kpi-value">4.8</div>
+              <div class="kpi-label">用户满意度</div>
+            </div>
+          </div>
+
+          <div class="pickup-compare">
+            <div class="pickup-card-data">
+              <div class="pickup-header">
+                <h3>阳光社区自提点</h3>
+                <span class="status-badge ready">营业中</span>
+              </div>
+              <div class="pickup-stats-row">
+                <div class="stat-col">
+                  <div class="stat-num">56</div>
+                  <div class="stat-label">今日订单</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">38</div>
+                  <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">12</div>
+                  <div class="stat-label">待自提</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">¥8,560</div>
+                  <div class="stat-label">今日营收</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pickup-card-data">
+              <div class="pickup-header">
+                <h3>绿园小区自提点</h3>
+                <span class="status-badge ready">营业中</span>
+              </div>
+              <div class="pickup-stats-row">
+                <div class="stat-col">
+                  <div class="stat-num">42</div>
+                  <div class="stat-label">今日订单</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">30</div>
+                  <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">8</div>
+                  <div class="stat-label">待自提</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">¥6,320</div>
+                  <div class="stat-label">今日营收</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pickup-card-data">
+              <div class="pickup-header">
+                <h3>幸福家园自提点</h3>
+                <span class="status-badge ready">营业中</span>
+              </div>
+              <div class="pickup-stats-row">
+                <div class="stat-col">
+                  <div class="stat-num">35</div>
+                  <div class="stat-label">今日订单</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">28</div>
+                  <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">5</div>
+                  <div class="stat-label">待自提</div>
+                </div>
+                <div class="stat-col">
+                  <div class="stat-num">¥5,180</div>
+                  <div class="stat-label">今日营收</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>自提点排名</h3>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>排名</th>
+                  <th>自提点</th>
+                  <th>订单量</th>
+                  <th>销售额</th>
+                  <th>准时率</th>
+                  <th>满意度</th>
+                  <th>运营状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="rank first">1</span></td>
+                  <td>阳光社区自提点</td>
+                  <td>1,256</td>
+                  <td class="price">¥85,680</td>
+                  <td>98.2%</td>
+                  <td>4.9</td>
+                  <td><span class="status-badge ready">优秀</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank second">2</span></td>
+                  <td>绿园小区自提点</td>
+                  <td>980</td>
+                  <td class="price">¥65,320</td>
+                  <td>95.6%</td>
+                  <td>4.7</td>
+                  <td><span class="status-badge ready">良好</span></td>
+                </tr>
+                <tr>
+                  <td><span class="rank third">3</span></td>
+                  <td>幸福家园自提点</td>
+                  <td>756</td>
+                  <td class="price">¥52,560</td>
+                  <td>93.8%</td>
+                  <td>4.6</td>
+                  <td><span class="status-badge ready">良好</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

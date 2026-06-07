@@ -1,0 +1,123 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: $spacing-lg $page-padding;
+}
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+  text-align: center;
+}
+
+.status {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-success;
+  margin-bottom: $spacing-lg;
+}
+
+.qrCodeWrap {
+  width: 360rpx;
+  height: 360rpx;
+  margin: 0 auto;
+  padding: 20rpx;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qrCode {
+  font-size: 200rpx;
+}
+
+.pickupCode {
+  margin-top: $spacing-xl;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  letter-spacing: 8rpx;
+}
+
+.pickupLabel {
+  margin-top: $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.tip {
+  margin-top: $spacing-xl;
+  padding: $spacing-md $spacing-lg;
+  background: rgba(34, 197, 94, 0.08);
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: $color-primary;
+  line-height: 1.6;
+}
+
+.orderInfo {
+  margin-top: $spacing-xl;
+  padding-top: $spacing-xl;
+  border-top: 1rpx dashed $color-border;
+  text-align: left;
+}
+
+.infoItem {
+  display: flex;
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.infoLabel {
+  flex-shrink: 0;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  width: 120rpx;
+}
+
+.infoValue {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.pickupPointCard {
+  margin-top: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.pointName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.pointAddress {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: $spacing-sm;
+}
+
+.pointHours {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.pointIcon {
+  margin-right: $spacing-sm;
+}
