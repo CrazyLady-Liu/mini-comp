@@ -11,7 +11,7 @@ export default defineAppConfig({
     'pages/address/index',
     'pages/pickup-point/index',
     'pages/search-result/index',
-    'pages/coupon-center/index'
+    'pages/coupon/coupon-center/index'
   ],
   window: {
     backgroundTextStyle: 'light',

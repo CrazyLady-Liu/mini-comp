@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { ProductCard, CategoryGrid, SearchPanel } from '@/components';
 import { banners } from '@/data/banners';
 import { categories } from '@/data/categories';
 import { getHotProducts, getPreorderProducts, getDiscountProducts } from '@/data/products';
-import type { Product, Category } from '@/types';
+import { pickupPoints } from '@/data/user';
+import type { Product, Category, PickupPoint } from '@/types';
 
 const HomePage: React.FC = () => {
   const [hotProducts] = useState<Product[]>(getHotProducts());
   const [preorderProducts] = useState<Product[]>(getPreorderProducts());
   const [discountProducts] = useState<Product[]>(getDiscountProducts());
   const [searchVisible, setSearchVisible] = useState<boolean>(false);
+  const [selfPointId, setSelfPointId] = useState<number>(1);
+
+  const currentPickupPoint = useMemo<PickupPoint | undefined>(() => {
+    return pickupPoints.find(p => p.id === selfPointId);
+  }, [selfPointId]);
 
   const handleCategoryClick = (category: Category) => {
     console.log('[Home] 点击分类:', category);
@@ -39,25 +45,33 @@ const HomePage: React.FC = () => {
   };
 
   const handleCouponCenter = () => {
-    console.log('[Home] 点击领券中心入口');
+    console.log('========== 点击领券中心 ==========');
+    console.log('当前自提点ID:', selfPointId);
     try {
+      const url = '/pages/coupon/coupon-center/index?selfPointId=' + selfPointId;
+      console.log('跳转URL:', url);
+      Taro.showToast({
+        title: '跳转中...',
+        icon: 'none',
+        duration: 1000
+      });
       Taro.navigateTo({
-        url: '/pages/coupon-center/index',
-        success: () => {
-          console.log('[Home] 领券中心页面跳转成功');
+        url: url,
+        success: function(res) {
+          console.log('跳转成功:', res);
         },
-        fail: (err) => {
-          console.error('[Home] 领券中心页面跳转失败:', err);
+        fail: function(err) {
+          console.log('跳转失败:', err);
           Taro.showToast({
-            title: '页面跳转失败',
+            title: '跳转失败',
             icon: 'none'
           });
         }
       });
-    } catch (error) {
-      console.error('[Home] 领券中心跳转异常:', error);
+    } catch (e) {
+      console.log('跳转异常:', e);
       Taro.showToast({
-        title: '页面打开失败',
+        title: '发生错误',
         icon: 'none'
       });
     }
@@ -70,12 +84,23 @@ const HomePage: React.FC = () => {
     }, 1000);
   });
 
+  useDidShow(() => {
+    console.log('[Home] 页面显示');
+    const savedPointId = Taro.getStorageSync('selfPointId');
+    if (savedPointId) {
+      setSelfPointId(Number(savedPointId));
+      console.log('[Home] 从缓存读取自提点ID:', savedPointId);
+    }
+  });
+
   return (
     <View className={styles.container}>
       <View className={styles.header}>
         <View className={styles.locationBar} onClick={handleLocationClick}>
           <Text className={styles.locationIcon}>📍</Text>
-          <Text className={styles.locationText}>阳光社区自提点</Text>
+          <Text className={styles.locationText}>
+            {currentPickupPoint?.name || '选择自提点'}
+          </Text>
           <Text className={styles.locationArrow}>▼</Text>
         </View>
         <View className={styles.searchBar} onClick={handleSearch}>
