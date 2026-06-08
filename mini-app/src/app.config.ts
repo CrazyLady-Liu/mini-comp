@@ -9,7 +9,8 @@ export default defineAppConfig({
     'pages/order-confirm/index',
     'pages/pickup-code/index',
     'pages/address/index',
-    'pages/pickup-point/index'
+    'pages/pickup-point/index',
+    'pages/search-result/index'
   ],
   window: {
     backgroundTextStyle: 'light',

@@ -115,6 +115,10 @@
   color: $color-text-tertiary;
 }
 
+.highlight {
+  color: $color-error;
+}
+
 .horizontal {
   display: flex;
   height: 200rpx;

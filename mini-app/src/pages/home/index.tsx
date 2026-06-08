@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { ProductCard, CategoryGrid } from '@/components';
+import { ProductCard, CategoryGrid, SearchPanel } from '@/components';
 import { banners } from '@/data/banners';
 import { categories } from '@/data/categories';
 import { getHotProducts, getPreorderProducts, getDiscountProducts } from '@/data/products';
@@ -12,6 +12,7 @@ const HomePage: React.FC = () => {
   const [hotProducts] = useState<Product[]>(getHotProducts());
   const [preorderProducts] = useState<Product[]>(getPreorderProducts());
   const [discountProducts] = useState<Product[]>(getDiscountProducts());
+  const [searchVisible, setSearchVisible] = useState<boolean>(false);
 
   const handleCategoryClick = (category: Category) => {
     console.log('[Home] 点击分类:', category);
@@ -30,7 +31,11 @@ const HomePage: React.FC = () => {
 
   const handleSearch = () => {
     console.log('[Home] 点击搜索');
-    Taro.showToast({ title: '搜索功能开发中', icon: 'none' });
+    setSearchVisible(true);
+  };
+
+  const handleSearchPanelClose = () => {
+    setSearchVisible(false);
   };
 
   usePullDownRefresh(() => {
@@ -148,6 +153,11 @@ const HomePage: React.FC = () => {
           ))}
         </View>
       </View>
+
+      <SearchPanel
+        visible={searchVisible}
+        onClose={handleSearchPanelClose}
+      />
     </View>
   );
 };

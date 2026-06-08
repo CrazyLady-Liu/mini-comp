@@ -12,3 +12,6 @@ export type { NavBarProps } from './NavBar';
 
 export { default as CategoryGrid } from './CategoryGrid';
 export type { CategoryGridProps } from './CategoryGrid';
+
+export { default as SearchPanel } from './SearchPanel';
+export type { SearchPanelProps } from './SearchPanel';

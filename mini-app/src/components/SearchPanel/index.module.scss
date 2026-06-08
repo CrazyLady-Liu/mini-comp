@@ -1,0 +1,167 @@
+@use '@/styles/variables.scss' as *;
+
+.searchPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $color-bg-page;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: slideInUp 0.3s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.searchHeader {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $page-padding;
+  background: #fff;
+  border-bottom: 1rpx solid #f1f5f9;
+  gap: $spacing-sm;
+}
+
+.searchInputWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  background: #f1f5f9;
+  border-radius: $radius-button;
+  padding: 0 $spacing-lg;
+}
+
+.searchIcon {
+  font-size: $font-size-lg;
+  margin-right: $spacing-sm;
+}
+
+.searchInput {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: transparent;
+}
+
+.searchCancel {
+  font-size: $font-size-md;
+  color: $color-primary;
+  padding: $spacing-sm $spacing-md;
+}
+
+.searchContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-lg $page-padding;
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.clearBtn {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.hotTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.hotTag {
+  padding: $spacing-sm $spacing-lg;
+  background: #f1f5f9;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+
+  &:active {
+    background: #e2e8f0;
+  }
+}
+
+.hotTagHot {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: $color-error;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid #f1f5f9;
+
+  &:active {
+    background: #f8fafc;
+  }
+}
+
+.historyIcon {
+  font-size: $font-size-md;
+  margin-right: $spacing-md;
+  color: $color-text-tertiary;
+}
+
+.historyText {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.suggestionList {
+  background: #fff;
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg $page-padding;
+  border-bottom: 1rpx solid #f1f5f9;
+
+  &:active {
+    background: #f8fafc;
+  }
+}
+
+.suggestionIcon {
+  font-size: $font-size-md;
+  margin-right: $spacing-md;
+  color: $color-text-tertiary;
+}
+
+.suggestionText {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.highlight {
+  color: $color-error;
+}

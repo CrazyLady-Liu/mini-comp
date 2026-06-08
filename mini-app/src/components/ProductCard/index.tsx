@@ -3,16 +3,17 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import type { Product } from '@/types';
-import { formatPrice, formatSales, getTagText } from '@/utils/format';
+import { formatPrice, formatSales, getTagText, getHighlightSegments } from '@/utils/format';
 import classnames from 'classnames';
 
 export interface ProductCardProps {
   product: Product;
   layout?: 'vertical' | 'horizontal';
   onClick?: () => void;
+  highlightKeyword?: string;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical', onClick }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical', onClick, highlightKeyword }) => {
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -24,6 +25,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical',
   };
 
   const tagText = getTagText(product.tag);
+
+  const renderHighlightedText = (text: string) => {
+    if (!highlightKeyword) return text;
+    const segments = getHighlightSegments(text, highlightKeyword);
+    return segments.map((seg, index) => (
+      <Text
+        key={index}
+        className={seg.isHighlight ? styles.highlight : ''}
+      >
+        {seg.text}
+      </Text>
+    ));
+  };
 
   return (
     <View
@@ -43,8 +57,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical',
         )}
       </View>
       <View className={styles.info}>
-        <Text className={styles.name}>{product.name}</Text>
-        <Text className={styles.desc}>{product.description}</Text>
+        <Text className={styles.name}>{renderHighlightedText(product.name)}</Text>
+        <Text className={styles.desc}>{renderHighlightedText(product.description || '')}</Text>
         <View className={styles.bottom}>
           <View className={styles.priceWrap}>
             <Text className={styles.priceSymbol}>¥</Text>
