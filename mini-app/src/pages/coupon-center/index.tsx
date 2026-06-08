@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -13,6 +13,12 @@ const CouponCenterPage: React.FC = () => {
   const [couponList, setCouponList] = useState<Coupon[]>(coupons);
   const [receivedIds, setReceivedIds] = useState<number[]>([]);
   const [recommendProducts] = useState<Product[]>(getDiscountProducts());
+
+  useEffect(() => {
+    console.log('[CouponCenter] 页面初始化');
+    console.log('[CouponCenter] 优惠券数量:', coupons.length);
+    console.log('[CouponCenter] 推荐商品数量:', recommendProducts.length);
+  }, []);
 
   const filteredCoupons = useMemo(() => {
     if (activeCategory === 'all') {

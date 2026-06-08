@@ -39,10 +39,28 @@ const HomePage: React.FC = () => {
   };
 
   const handleCouponCenter = () => {
-    console.log('[Home] 点击领券中心');
-    Taro.navigateTo({
-      url: '/pages/coupon-center/index'
-    });
+    console.log('[Home] 点击领券中心入口');
+    try {
+      Taro.navigateTo({
+        url: '/pages/coupon-center/index',
+        success: () => {
+          console.log('[Home] 领券中心页面跳转成功');
+        },
+        fail: (err) => {
+          console.error('[Home] 领券中心页面跳转失败:', err);
+          Taro.showToast({
+            title: '页面跳转失败',
+            icon: 'none'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('[Home] 领券中心跳转异常:', error);
+      Taro.showToast({
+        title: '页面打开失败',
+        icon: 'none'
+      });
+    }
   };
 
   usePullDownRefresh(() => {

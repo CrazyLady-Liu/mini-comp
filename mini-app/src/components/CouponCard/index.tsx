@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import type { Coupon } from '@/types';
@@ -37,7 +37,7 @@ const CouponCard: React.FC<CouponCardProps> = ({
     }
   };
 
-  const handleReceive = (e) => {
+  const handleReceive = (e: any) => {
     e.stopPropagation();
     if (isDisabled || received) return;
     if (onReceive) {
@@ -122,7 +122,7 @@ const CouponCard: React.FC<CouponCardProps> = ({
             剩余 {coupon.stock} 张 / 已领 {coupon.receivedCount}
           </Text>
           {showAction && (
-            <Button
+            <View
               className={classnames(
                 styles.actionBtn,
                 isDisabled && styles.disabled,
@@ -131,7 +131,7 @@ const CouponCard: React.FC<CouponCardProps> = ({
               onClick={handleReceive}
             >
               {received ? '已领取' : isOutOfStock ? '已抢光' : actionText}
-            </Button>
+            </View>
           )}
         </View>
       </View>
