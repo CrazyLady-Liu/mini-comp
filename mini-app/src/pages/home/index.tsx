@@ -2,20 +2,20 @@ import React, { useState } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { ProductCard } from '@/components';
+import { ProductCard, CategoryGrid } from '@/components';
 import { banners } from '@/data/banners';
 import { categories } from '@/data/categories';
 import { getHotProducts, getPreorderProducts, getDiscountProducts } from '@/data/products';
-import type { Product } from '@/types';
+import type { Product, Category } from '@/types';
 
 const HomePage: React.FC = () => {
   const [hotProducts] = useState<Product[]>(getHotProducts());
   const [preorderProducts] = useState<Product[]>(getPreorderProducts());
   const [discountProducts] = useState<Product[]>(getDiscountProducts());
 
-  const handleCategoryClick = (categoryId: number) => {
-    console.log('[Home] 点击分类:', categoryId);
-    Taro.setStorageSync('activeCategoryId', categoryId);
+  const handleCategoryClick = (category: Category) => {
+    console.log('[Home] 点击分类:', category);
+    Taro.setStorageSync('activeCategoryId', category.id);
     Taro.switchTab({
       url: '/pages/category/index'
     });
@@ -39,10 +39,6 @@ const HomePage: React.FC = () => {
       Taro.stopPullDownRefresh();
     }, 1000);
   });
-
-  const displayCategories = categories.slice(1, 11);
-
-  const categoryIcons = ['🥬', '🍎', '🥛', '🥩', '🦐', '🍚', '🍺', '🍪', '🧀', '🍇'];
 
   return (
     <View className={styles.container}>
@@ -80,22 +76,11 @@ const HomePage: React.FC = () => {
       </View>
 
       <View className={styles.categorySection}>
-        <View className={styles.categoryGrid}>
-          {displayCategories.map((cat, index) => (
-            <View
-              key={cat.id}
-              className={styles.categoryItem}
-              onClick={() => handleCategoryClick(cat.id)}
-            >
-              <View className={styles.categoryIconWrap}>
-                <Text className={styles.categoryIcon}>
-                  {categoryIcons[index % categoryIcons.length]}
-                </Text>
-              </View>
-              <Text className={styles.categoryName}>{cat.name}</Text>
-            </View>
-          ))}
-        </View>
+        <CategoryGrid
+          categories={categories.slice(1)}
+          count={8}
+          onItemClick={handleCategoryClick}
+        />
       </View>
 
       <View className={styles.quickEntry}>

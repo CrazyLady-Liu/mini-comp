@@ -9,3 +9,6 @@ export type { EmptyStateProps } from './EmptyState';
 
 export { default as NavBar } from './NavBar';
 export type { NavBarProps } from './NavBar';
+
+export { default as CategoryGrid } from './CategoryGrid';
+export type { CategoryGridProps } from './CategoryGrid';
