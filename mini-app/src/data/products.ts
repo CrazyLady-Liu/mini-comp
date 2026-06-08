@@ -188,6 +188,219 @@ export const products: Product[] = [
       { id: 1, name: '单杯', price: 8.99, stock: 60 },
       { id: 2, name: '4杯装', price: 32.99, stock: 40 }
     ]
+  },
+  {
+    id: 13,
+    name: '金龙鱼大米',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 39.9,
+    originalPrice: 49.9,
+    unit: '袋/5kg',
+    sales: 890,
+    tag: 'hot',
+    categoryId: 6,
+    description: '东北优质大米，颗粒饱满',
+    stock: 120,
+    specs: [
+      { id: 1, name: '5kg装', price: 39.9, stock: 80 }
+    ]
+  },
+  {
+    id: 14,
+    name: '金龙鱼花生油',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 69.9,
+    unit: '桶/5L',
+    sales: 567,
+    categoryId: 6,
+    description: '压榨一级花生油，香浓醇厚',
+    stock: 60,
+    specs: [
+      { id: 1, name: '5L装', price: 69.9, stock: 40 }
+    ]
+  },
+  {
+    id: 15,
+    name: '海天酱油',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 12.9,
+    unit: '瓶/500ml',
+    sales: 2345,
+    tag: 'hot',
+    categoryId: 6,
+    description: '鲜味生抽，酿造酱油',
+    stock: 200,
+    specs: [
+      { id: 1, name: '500ml装', price: 12.9, stock: 150 }
+    ]
+  },
+  {
+    id: 16,
+    name: '雪花啤酒',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 4.99,
+    originalPrice: 6.99,
+    unit: '瓶/500ml',
+    sales: 3456,
+    tag: 'discount',
+    categoryId: 7,
+    description: '清爽型啤酒，麦香浓郁',
+    stock: 500,
+    specs: [
+      { id: 1, name: '单瓶', price: 4.99, stock: 300 },
+      { id: 2, name: '6瓶装', price: 27.99, stock: 100 }
+    ]
+  },
+  {
+    id: 17,
+    name: '可口可乐',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 3.5,
+    unit: '瓶/330ml',
+    sales: 5678,
+    categoryId: 7,
+    description: '经典口味，畅爽解渴',
+    stock: 800,
+    specs: [
+      { id: 1, name: '单瓶', price: 3.5, stock: 500 }
+    ]
+  },
+  {
+    id: 18,
+    name: '农夫山泉',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 2.5,
+    unit: '瓶/550ml',
+    sales: 9876,
+    tag: 'hot',
+    categoryId: 7,
+    description: '天然矿泉水，健康饮用水',
+    stock: 1000,
+    specs: [
+      { id: 1, name: '单瓶', price: 2.5, stock: 600 }
+    ]
+  },
+  {
+    id: 19,
+    name: '奥利奥饼干',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 9.99,
+    originalPrice: 12.99,
+    unit: '盒/116g',
+    sales: 2345,
+    tag: 'new',
+    categoryId: 8,
+    description: '巧克力夹心饼干，香脆可口',
+    stock: 150,
+    specs: [
+      { id: 1, name: '单盒', price: 9.99, stock: 100 }
+    ]
+  },
+  {
+    id: 20,
+    name: '乐事薯片',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 7.99,
+    unit: '袋/70g',
+    sales: 3456,
+    categoryId: 8,
+    description: '原味薯片，酥脆美味',
+    stock: 200,
+    specs: [
+      { id: 1, name: '单袋', price: 7.99, stock: 150 }
+    ]
+  },
+  {
+    id: 21,
+    name: '德芙巧克力',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 19.9,
+    originalPrice: 25.9,
+    unit: '盒/84g',
+    sales: 1234,
+    tag: 'discount',
+    categoryId: 8,
+    description: '丝滑牛奶巧克力，甜蜜享受',
+    stock: 100,
+    specs: [
+      { id: 1, name: '单盒', price: 19.9, stock: 70 }
+    ]
+  },
+  {
+    id: 22,
+    name: '基围虾',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 45.9,
+    originalPrice: 55.9,
+    unit: '斤',
+    sales: 345,
+    tag: 'hot',
+    categoryId: 5,
+    description: '鲜活基围虾，肉质鲜嫩',
+    stock: 50,
+    specs: [
+      { id: 1, name: '1斤装', price: 45.9, stock: 30 }
+    ]
+  },
+  {
+    id: 23,
+    name: '大闸蟹',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 128,
+    unit: '只',
+    sales: 156,
+    tag: 'preorder',
+    categoryId: 5,
+    description: '阳澄湖大闸蟹，膏满黄肥',
+    stock: 0,
+    specs: [
+      { id: 1, name: '单只', price: 128, stock: 0 }
+    ]
+  },
+  {
+    id: 24,
+    name: '牛肉卷',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 35.9,
+    originalPrice: 42.9,
+    unit: '盒/500g',
+    sales: 567,
+    tag: 'discount',
+    categoryId: 4,
+    description: '肥牛卷，火锅必备',
+    stock: 80,
+    specs: [
+      { id: 1, name: '500g装', price: 35.9, stock: 50 }
+    ]
+  },
+  {
+    id: 25,
+    name: '鸡腿',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 12.9,
+    unit: '斤',
+    sales: 876,
+    categoryId: 4,
+    description: '新鲜鸡腿，肉质紧实',
+    stock: 150,
+    specs: [
+      { id: 1, name: '1斤装', price: 12.9, stock: 100 }
+    ]
+  },
+  {
+    id: 26,
+    name: '老豆腐',
+    image: 'https://picsum.photos/id/1080/300/300',
+    price: 4.99,
+    unit: '块/300g',
+    sales: 2345,
+    tag: 'hot',
+    categoryId: 3,
+    description: '手工老豆腐，豆香浓郁',
+    stock: 200,
+    specs: [
+      { id: 1, name: '1块', price: 4.99, stock: 150 }
+    ]
   }
 ];
 

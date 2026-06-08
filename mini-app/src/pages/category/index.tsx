@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { ProductCard } from '@/components';
 import { categories } from '@/data/categories';
@@ -13,6 +13,13 @@ const CategoryPage: React.FC = () => {
   const [sortType, setSortType] = useState<string>('default');
 
   const categoryIcons = ['🛒', '🥬', '🍎', '🥛', '🥩', '🦐', '🍚', '🍺', '🍪', '🧀'];
+
+  useDidShow(() => {
+    const storedCategoryId = Taro.getStorageSync('activeCategoryId');
+    if (storedCategoryId !== '' && storedCategoryId !== undefined && storedCategoryId !== null) {
+      setActiveCategoryId(Number(storedCategoryId));
+    }
+  });
 
   const filteredProducts = useMemo(() => {
     let result = [...products];

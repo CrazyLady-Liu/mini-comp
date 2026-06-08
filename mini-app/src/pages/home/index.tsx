@@ -15,6 +15,7 @@ const HomePage: React.FC = () => {
 
   const handleCategoryClick = (categoryId: number) => {
     console.log('[Home] 点击分类:', categoryId);
+    Taro.setStorageSync('activeCategoryId', categoryId);
     Taro.switchTab({
       url: '/pages/category/index'
     });

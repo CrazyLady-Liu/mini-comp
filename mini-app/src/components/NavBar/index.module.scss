@@ -4,7 +4,7 @@
   width: 100%;
   box-sizing: border-box;
   box-shadow: none;
-  transition: background-color $transition-normal;
+  transition: background-color $transition-base;
 }
 
 .navBarContent {
@@ -45,7 +45,7 @@
 }
 
 .backText {
-  font-size: $font-size-base;
+  font-size: $font-size-md;
   margin-left: -$spacing-xs;
   color: $color-text-primary;
 }
