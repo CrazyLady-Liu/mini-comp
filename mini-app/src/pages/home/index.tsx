@@ -38,6 +38,13 @@ const HomePage: React.FC = () => {
     setSearchVisible(false);
   };
 
+  const handleCouponCenter = () => {
+    console.log('[Home] 点击领券中心');
+    Taro.navigateTo({
+      url: '/pages/coupon-center/index'
+    });
+  };
+
   usePullDownRefresh(() => {
     console.log('[Home] 下拉刷新');
     setTimeout(() => {
@@ -97,7 +104,7 @@ const HomePage: React.FC = () => {
           <Text className={styles.quickIcon}>🔥</Text>
           <Text className={styles.quickText}>今日特惠</Text>
         </View>
-        <View className={styles.quickItem}>
+        <View className={styles.quickItem} onClick={handleCouponCenter}>
           <Text className={styles.quickIcon}>🎫</Text>
           <Text className={styles.quickText}>领券中心</Text>
         </View>

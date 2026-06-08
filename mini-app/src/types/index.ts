@@ -96,3 +96,29 @@ export interface UserInfo {
   points: number;
   couponCount: number;
 }
+
+export type CouponType = 'full' | 'category' | 'threshold' | 'preorder' | 'pickup';
+
+export type CouponStatus = 'available' | 'used' | 'expired';
+
+export interface Coupon {
+  id: number;
+  name: string;
+  type: CouponType;
+  typeText: string;
+  discountValue: number;
+  discountType: 'amount' | 'percent';
+  minAmount: number;
+  maxDiscount?: number;
+  categoryName?: string;
+  categoryId?: number;
+  validFrom: string;
+  validTo: string;
+  validDays?: number;
+  stock: number;
+  receivedCount: number;
+  description: string;
+  usageNote?: string;
+  status?: CouponStatus;
+  useTime?: string;
+}

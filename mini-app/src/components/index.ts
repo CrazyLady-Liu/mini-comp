@@ -15,3 +15,6 @@ export type { CategoryGridProps } from './CategoryGrid';
 
 export { default as SearchPanel } from './SearchPanel';
 export type { SearchPanelProps } from './SearchPanel';
+
+export { default as CouponCard } from './CouponCard';
+export type { CouponCardProps } from './CouponCard';

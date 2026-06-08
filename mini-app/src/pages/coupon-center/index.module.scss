@@ -1,0 +1,132 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.navBarRight {
+  display: flex;
+  align-items: center;
+
+  .myCoupons {
+    font-size: $font-size-sm;
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.categoryTabs {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $color-bg-card;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.tabScroll {
+  white-space: nowrap;
+  padding: 0 $spacing-md;
+}
+
+.tabItem {
+  display: inline-block;
+  padding: 24rpx $spacing-md;
+  margin-right: $spacing-sm;
+  position: relative;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  .tabText {
+    font-size: $font-size-md;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+  }
+
+  &.active .tabText {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+
+  &.active::after {
+    content: '';
+    position: absolute;
+    bottom: 8rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40rpx;
+    height: 6rpx;
+    background: $color-primary;
+    border-radius: 3rpx;
+  }
+}
+
+.couponSection {
+  padding: $spacing-md $spacing-lg $spacing-lg;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.recommendSection {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  margin-top: $spacing-md;
+
+  .sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+
+    .sectionTitle {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $color-text-primary;
+      margin: 0;
+    }
+
+    .sectionMore {
+      font-size: $font-size-sm;
+      color: $color-text-tertiary;
+    }
+  }
+}
+
+.productScroll {
+  white-space: nowrap;
+}
+
+.productItem {
+  display: inline-block;
+  width: 220rpx;
+  margin-right: $spacing-md;
+  vertical-align: top;
+  white-space: normal;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.emptyCoupons {
+  padding: 80rpx 0;
+  text-align: center;
+
+  .emptyIcon {
+    font-size: 80rpx;
+    margin-bottom: $spacing-md;
+  }
+
+  .emptyText {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}

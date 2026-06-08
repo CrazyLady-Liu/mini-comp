@@ -1,0 +1,225 @@
+@use '@/styles/variables.scss' as *;
+
+.couponCard {
+  position: relative;
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.leftArea {
+  position: relative;
+  width: 220rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md 0;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  color: $color-text-white;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    right: -12rpx;
+    width: 24rpx;
+    height: 24rpx;
+    border-radius: 50%;
+    background: $color-bg-page;
+    z-index: 1;
+  }
+
+  &::before {
+    top: -12rpx;
+  }
+
+  &::after {
+    bottom: -12rpx;
+  }
+}
+
+.amount {
+  display: flex;
+  align-items: baseline;
+  line-height: 1;
+
+  .symbol {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    margin-right: 4rpx;
+  }
+
+  .value {
+    font-size: 64rpx;
+    font-weight: $font-weight-bold;
+  }
+
+  .percent {
+    font-size: 48rpx;
+    font-weight: $font-weight-bold;
+
+    .unit {
+      font-size: $font-size-lg;
+      margin-left: 4rpx;
+    }
+  }
+}
+
+.condition {
+  margin-top: $spacing-xs;
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+.couponType {
+  margin-top: $spacing-sm;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: $font-size-xs;
+}
+
+.rightArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg $spacing-md $spacing-md;
+  margin-left: 12rpx;
+}
+
+.couponInfo {
+  .name {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    line-height: 1.4;
+    margin-bottom: $spacing-xs;
+  }
+
+  .desc {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: 1.4;
+    margin-bottom: $spacing-xs;
+  }
+
+  .validity {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+}
+
+.couponFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-sm;
+
+  .stockInfo {
+    font-size: $font-size-xs;
+    color: $color-text-tertiary;
+  }
+
+  .actionBtn {
+    min-width: 140rpx;
+    height: 56rpx;
+    padding: 0 $spacing-md;
+    border-radius: $radius-button;
+    background: $color-primary;
+    color: $color-text-white;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+
+    &:active {
+      opacity: 0.85;
+    }
+
+    &.disabled {
+      background: $color-text-disabled;
+      color: $color-text-white;
+    }
+
+    &.received {
+      background: $color-bg-hover;
+      color: $color-text-tertiary;
+    }
+  }
+}
+
+.disabled {
+  .leftArea {
+    background: linear-gradient(135deg, $color-text-tertiary 0%, $color-text-disabled 100%);
+  }
+
+  .couponInfo .name,
+  .couponInfo .desc {
+    color: $color-text-tertiary;
+  }
+}
+
+.received {
+  .leftArea {
+    opacity: 0.8;
+  }
+}
+
+.typeFull .leftArea {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+}
+
+.typeCategory .leftArea {
+  background: linear-gradient(135deg, $color-info 0%, #2563eb 100%);
+}
+
+.typeThreshold .leftArea {
+  background: linear-gradient(135deg, $color-orange 0%, #ea580c 100%);
+}
+
+.typePreorder .leftArea {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.typePickup .leftArea {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.horizontal {
+  .leftArea {
+    width: 200rpx;
+  }
+}
+
+.small {
+  .leftArea {
+    width: 180rpx;
+    padding: $spacing-sm 0;
+  }
+
+  .amount {
+    .value {
+      font-size: 48rpx;
+    }
+  }
+
+  .rightArea {
+    padding: $spacing-sm $spacing-md $spacing-sm $spacing-sm;
+  }
+
+  .couponInfo .name {
+    font-size: $font-size-md;
+  }
+
+  .couponInfo .desc {
+    font-size: $font-size-xs;
+  }
+}
