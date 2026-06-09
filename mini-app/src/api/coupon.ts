@@ -2,6 +2,30 @@ import type { Coupon, Product } from '@/types';
 import { coupons as mockCoupons, couponCategories } from '@/data/coupons';
 import { getDiscountProducts } from '@/data/products';
 
+export const COUPON_ERROR_CODES = {
+  COUPON_NOT_EXIST: 1001,
+  COUPON_OUT_OF_STOCK: 1002,
+  COUPON_ALREADY_RECEIVED: 1003,
+  COUPON_EXPIRED: 1004,
+  COUPON_NOT_STARTED: 1005,
+  USER_NOT_QUALIFIED: 1006,
+  USER_NOT_LOGIN: 1007,
+  SELF_POINT_NOT_MATCH: 1008,
+  SYSTEM_ERROR: 500
+} as const;
+
+export const COUPON_ERROR_MESSAGES: Record<number, string> = {
+  [COUPON_ERROR_CODES.COUPON_NOT_EXIST]: '优惠券不存在',
+  [COUPON_ERROR_CODES.COUPON_OUT_OF_STOCK]: '券已领完',
+  [COUPON_ERROR_CODES.COUPON_ALREADY_RECEIVED]: '已领取过该券',
+  [COUPON_ERROR_CODES.COUPON_EXPIRED]: '优惠券已过期',
+  [COUPON_ERROR_CODES.COUPON_NOT_STARTED]: '活动未开始',
+  [COUPON_ERROR_CODES.USER_NOT_QUALIFIED]: '不符合领取条件',
+  [COUPON_ERROR_CODES.USER_NOT_LOGIN]: '请先登录',
+  [COUPON_ERROR_CODES.SELF_POINT_NOT_MATCH]: '该自提点不支持此优惠券',
+  [COUPON_ERROR_CODES.SYSTEM_ERROR]: '系统繁忙，请稍后再试'
+};
+
 export interface ApiResponse<T = any> {
   code: number;
   message: string;

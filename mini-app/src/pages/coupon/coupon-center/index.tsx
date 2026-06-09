@@ -4,7 +4,7 @@ import Taro, { useRouter, usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { NavBar, CouponCard, ProductCard } from '@/components';
 import { couponCategories } from '@/data/coupons';
-import { getCouponList, receiveCoupon, getRecommendProducts, getMyCouponList } from '@/api/coupon';
+import { getCouponList, receiveCoupon, getRecommendProducts, getMyCouponList, COUPON_ERROR_MESSAGES } from '@/api/coupon';
 import type { Coupon, Product } from '@/types';
 import classnames from 'classnames';
 
@@ -72,6 +72,7 @@ const CouponCenterPage: React.FC = () => {
 
   const handleReceive = async (coupon: Coupon) => {
     if (loadingId !== null) return;
+
     if (receivedIds.includes(coupon.id)) {
       Taro.showToast({
         title: '已领取过该券',
@@ -79,6 +80,7 @@ const CouponCenterPage: React.FC = () => {
       });
       return;
     }
+
     if (coupon.stock <= 0) {
       Taro.showToast({
         title: '券已领完',
@@ -103,15 +105,19 @@ const CouponCenterPage: React.FC = () => {
           icon: 'success'
         });
       } else {
+        const errorMsg = COUPON_ERROR_MESSAGES[res.code] || res.message || '领取失败';
         Taro.showToast({
-          title: res.message || '领取失败',
-          icon: 'none'
+          title: errorMsg,
+          icon: 'none',
+          duration: 2000
         });
       }
     } catch (e: any) {
+      const errorMsg = e?.message || '不符合领取条件';
       Taro.showToast({
-        title: e?.message || '不符合领取条件',
-        icon: 'none'
+        title: errorMsg,
+        icon: 'none',
+        duration: 2000
       });
     } finally {
       setLoadingId(null);
@@ -125,8 +131,8 @@ const CouponCenterPage: React.FC = () => {
   };
 
   const handleMoreProducts = () => {
-    Taro.navigateTo({
-      url: '/pages/category/index?from=coupon'
+    Taro.switchTab({
+      url: '/pages/category/index'
     });
   };
 
@@ -209,7 +215,10 @@ const CouponCenterPage: React.FC = () => {
       <View className={styles.recommendSection}>
         <View className={styles.sectionHeader}>
           <Text className={styles.sectionTitle}>领券好物</Text>
-          <Text className={styles.sectionMore} onClick={handleMoreProducts}>更多 ›</Text>
+          <View className={styles.sectionMoreWrap} onClick={handleMoreProducts}>
+            <Text className={styles.sectionMore}>更多</Text>
+            <Text className={styles.sectionMoreArrow}>›</Text>
+          </View>
         </View>
         <ScrollView
           scrollX
