@@ -105,19 +105,19 @@ const CouponCenterPage: React.FC = () => {
           icon: 'success'
         });
       } else {
-        const errorMsg = COUPON_ERROR_MESSAGES[res.code] || res.message || '领取失败';
+        const msg = COUPON_ERROR_MESSAGES[res.code] || res.message || '领取失败';
         Taro.showToast({
-          title: errorMsg,
-          icon: 'none',
-          duration: 2000
+          title: msg,
+          icon: 'none'
         });
       }
-    } catch (e: any) {
-      const errorMsg = e?.message || '不符合领取条件';
+    } catch (err) {
+      console.error('领取异常：', err);
+      const res: any = err ?? {};
+      const msg = COUPON_ERROR_MESSAGES[res.code] || '网络异常，请稍后再试';
       Taro.showToast({
-        title: errorMsg,
-        icon: 'none',
-        duration: 2000
+        title: msg,
+        icon: 'none'
       });
     } finally {
       setLoadingId(null);
@@ -132,7 +132,11 @@ const CouponCenterPage: React.FC = () => {
 
   const handleMoreProducts = () => {
     Taro.switchTab({
-      url: '/pages/category/index'
+      url: '/pages/category/index',
+      fail: (e) => {
+        console.error('switchTab 失败：', e);
+        Taro.showToast({ title: '跳转失败', icon: 'none' });
+      }
     });
   };
 
