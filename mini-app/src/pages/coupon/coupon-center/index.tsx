@@ -1,12 +1,14 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { useRouter, usePullDownRefresh } from '@tarojs/taro';
+import Taro, { useRouter, usePullDownRefresh, useDidShow, useDidHide } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { NavBar, CouponCard, ProductCard } from '@/components';
 import { couponCategories } from '@/data/coupons';
 import { getCouponList, receiveCoupon, getRecommendProducts, getMyCouponList, COUPON_ERROR_MESSAGES } from '@/api/coupon';
 import type { Coupon, Product } from '@/types';
 import classnames from 'classnames';
+
+const REFRESH_INTERVAL = 30 * 1000;
 
 const CouponCenterPage: React.FC = () => {
   const router = useRouter();
@@ -15,16 +17,21 @@ const CouponCenterPage: React.FC = () => {
   const [receivedIds, setReceivedIds] = useState<number[]>([]);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [recommendProducts, setRecommendProducts] = useState<Product[]>([]);
   const [myCouponCount, setMyCouponCount] = useState<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isFirstLoad = useRef<boolean>(true);
 
   const selfPointId = useMemo(() => {
     const id = router.params.selfPointId;
     return id ? Number(id) : 1;
   }, [router.params]);
 
-  const fetchCouponList = useCallback(async (type = 'all') => {
-    setLoading(true);
+  const fetchCouponList = useCallback(async (type = 'all', showLoading = false) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     try {
       const res = await getCouponList({ type, selfPointId });
       if (res.code === 0) {
@@ -33,7 +40,9 @@ const CouponCenterPage: React.FC = () => {
     } catch (e) {
       console.error('[CouponCenter] 获取优惠券列表失败:', e);
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   }, [selfPointId]);
 
@@ -59,15 +68,66 @@ const CouponCenterPage: React.FC = () => {
     }
   }, []);
 
-  React.useEffect(() => {
-    fetchCouponList(activeCategory);
-    fetchRecommendProducts();
-    fetchMyCouponCount();
+  const refreshStock = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      const res = await getCouponList({ type: activeCategory, selfPointId });
+      if (res.code === 0) {
+        setCouponList(res.data.list);
+      }
+    } catch (e) {
+      console.error('[CouponCenter] 刷新库存失败:', e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [activeCategory, selfPointId, refreshing]);
+
+  const startAutoRefresh = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    timerRef.current = setInterval(() => {
+      refreshStock();
+    }, REFRESH_INTERVAL);
+  }, [refreshStock]);
+
+  const stopAutoRefresh = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      fetchCouponList(activeCategory, true);
+      fetchRecommendProducts();
+      fetchMyCouponCount();
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopAutoRefresh();
+    };
+  }, [stopAutoRefresh]);
+
+  useDidShow(() => {
+    startAutoRefresh();
+    refreshStock();
+    fetchMyCouponCount();
+  });
+
+  useDidHide(() => {
+    stopAutoRefresh();
+  });
+
   const handleCategoryChange = (categoryId: string) => {
+    if (activeCategory === categoryId) return;
     setActiveCategory(categoryId);
-    fetchCouponList(categoryId);
+    fetchCouponList(categoryId, true);
   };
 
   const handleReceive = async (coupon: Coupon) => {
@@ -142,7 +202,7 @@ const CouponCenterPage: React.FC = () => {
 
   usePullDownRefresh(() => {
     Promise.all([
-      fetchCouponList(activeCategory),
+      fetchCouponList(activeCategory, false),
       fetchRecommendProducts(),
       fetchMyCouponCount()
     ]).finally(() => {

@@ -47,10 +47,39 @@ const MyCouponPage: React.FC = () => {
   };
 
   const handleUseCoupon = (coupon: Coupon) => {
-    if (coupon.status === 'available') {
-      Taro.switchTab({
-        url: '/pages/home/index'
-      });
+    if (coupon.status !== 'available') return;
+
+    switch (coupon.type) {
+      case 'category':
+        Taro.switchTab({
+          url: '/pages/category/index',
+          fail: (e) => {
+            console.error('跳分类页失败：', e);
+            Taro.showToast({ title: '跳转失败', icon: 'none' });
+          }
+        });
+        break;
+      case 'preorder':
+        Taro.switchTab({
+          url: '/pages/home/index',
+          fail: (e) => {
+            console.error('跳首页失败：', e);
+            Taro.showToast({ title: '跳转失败', icon: 'none' });
+          }
+        });
+        break;
+      case 'pickup':
+      case 'full':
+      case 'threshold':
+      default:
+        Taro.switchTab({
+          url: '/pages/home/index',
+          fail: (e) => {
+            console.error('跳首页失败：', e);
+            Taro.showToast({ title: '跳转失败', icon: 'none' });
+          }
+        });
+        break;
     }
   };
 
