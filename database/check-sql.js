@@ -114,7 +114,8 @@ files.forEach(fileInfo => {
       check(`    ${field}`, regex.test(content));
     });
 
-    const activityIndexes = ['idx_status', 'idx_preorder_start_time', 'idx_preorder_end_time', 'idx_sort', 'idx_deleted_at'];
+    const activityIndexes = ['idx_status', 'idx_preorder_start_time', 'idx_preorder_end_time',
+      'idx_sort', 'idx_deleted_at', 'idx_status_sort'];
     console.log();
     console.log('  preorder_activity 表索引检查:');
     activityIndexes.forEach(idx => {
@@ -123,7 +124,7 @@ files.forEach(fileInfo => {
 
     const productFields = ['id', 'activity_id', 'product_id', 'product_name', 'product_image',
       'spec_id', 'spec_name', 'preorder_price', 'original_price', 'preorder_stock',
-      'sold_count', 'sort', 'created_at', 'updated_at'];
+      'sold_count', 'sort', 'created_at', 'updated_at', 'deleted_at'];
     console.log();
     console.log('  preorder_activity_product 表字段检查:');
     productFields.forEach(field => {
@@ -131,7 +132,8 @@ files.forEach(fileInfo => {
       check(`    ${field}`, regex.test(content));
     });
 
-    const productIndexes = ['idx_activity_id', 'idx_product_id', 'idx_activity_product'];
+    const productIndexes = ['idx_activity_id', 'idx_product_id', 'idx_activity_product',
+      'idx_deleted_at', 'uk_activity_product_spec'];
     console.log();
     console.log('  preorder_activity_product 表索引检查:');
     productIndexes.forEach(idx => {

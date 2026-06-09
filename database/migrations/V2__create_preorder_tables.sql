@@ -31,7 +31,8 @@ CREATE TABLE `preorder_activity` (
   KEY `idx_preorder_start_time` (`preorder_start_time`),
   KEY `idx_preorder_end_time` (`preorder_end_time`),
   KEY `idx_sort` (`sort`),
-  KEY `idx_deleted_at` (`deleted_at`)
+  KEY `idx_deleted_at` (`deleted_at`),
+  KEY `idx_status_sort` (`status`, `sort`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='预售活动主表';
 
 -- -----------------------------------------------------------
@@ -53,10 +54,13 @@ CREATE TABLE `preorder_activity_product` (
   `sort`              INT             NOT NULL DEFAULT 0      COMMENT '商品排序(活动内排序)',
   `created_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '创建时间',
   `updated_at`        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  COMMENT '更新时间',
+  `deleted_at`        DATETIME        DEFAULT NULL            COMMENT '删除时间(软删除)',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_activity_product_spec` (`activity_id`, `product_id`, `spec_id`),
   KEY `idx_activity_id` (`activity_id`),
   KEY `idx_product_id` (`product_id`),
-  KEY `idx_activity_product` (`activity_id`, `product_id`)
+  KEY `idx_activity_product` (`activity_id`, `product_id`, `sort`),
+  KEY `idx_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='预售活动商品关联表';
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -78,17 +78,67 @@ const HomePage: React.FC = () => {
   };
 
   const handlePreorderEntry = () => {
-    console.log('[Home] 点击预售专区');
-    Taro.navigateTo({
-      url: '/pages/preorder/index'
-    });
+    console.log('========== 点击预售专区 ==========');
+    try {
+      const url = '/pages/preorder/index';
+      console.log('跳转URL:', url);
+      Taro.showToast({
+        title: '跳转中...',
+        icon: 'none',
+        duration: 1000
+      });
+      Taro.navigateTo({
+        url: url,
+        success: function(res) {
+          console.log('跳转成功:', res);
+        },
+        fail: function(err) {
+          console.log('跳转失败:', err);
+          Taro.showToast({
+            title: '跳转失败',
+            icon: 'none'
+          });
+        }
+      });
+    } catch (e) {
+      console.log('跳转异常:', e);
+      Taro.showToast({
+        title: '发生错误',
+        icon: 'none'
+      });
+    }
   };
 
   const handleViewMorePreorder = () => {
-    console.log('[Home] 点击明日预售查看更多');
-    Taro.navigateTo({
-      url: '/pages/preorder/index'
-    });
+    console.log('========== 点击明日预售查看更多 ==========');
+    try {
+      const url = '/pages/preorder/index';
+      console.log('跳转URL:', url);
+      Taro.showToast({
+        title: '跳转中...',
+        icon: 'none',
+        duration: 1000
+      });
+      Taro.navigateTo({
+        url: url,
+        success: function(res) {
+          console.log('跳转成功:', res);
+        },
+        fail: function(err) {
+          console.log('跳转失败:', err);
+          Taro.showToast({
+            title: '跳转失败',
+            icon: 'none'
+          });
+        }
+      });
+    } catch (e) {
+      console.log('跳转异常:', e);
+      Taro.showToast({
+        title: '发生错误',
+        icon: 'none'
+      });
+    }
   };
 
   usePullDownRefresh(() => {
@@ -180,7 +230,9 @@ const HomePage: React.FC = () => {
             明日预售
             <Text className={styles.preorderBadge}>限时</Text>
           </Text>
-          <Text className={styles.sectionMore} onClick={handleViewMorePreorder}>查看更多 ›</Text>
+          <View className={styles.sectionMore} onClick={handleViewMorePreorder}>
+            <Text>查看更多 ›</Text>
+          </View>
         </View>
         <ScrollView scrollX className={styles.productScroll}>
           <View className={styles.productGrid}>
