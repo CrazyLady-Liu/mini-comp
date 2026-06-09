@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { View, Text, Image, Swiper, SwiperItem, ScrollView, Input } from '@tarojs/components';
 import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -77,47 +77,24 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handlePreorderEntry = () => {
-    console.log('========== 点击预售专区 ==========');
-    try {
-      const url = '/pages/preorder/index';
-      console.log('跳转URL:', url);
-      Taro.showToast({
-        title: '跳转中...',
-        icon: 'none',
-        duration: 1000
-      });
-      Taro.navigateTo({
-        url: url,
-        success: function(res) {
-          console.log('跳转成功:', res);
-        },
-        fail: function(err) {
-          console.log('跳转失败:', err);
-          Taro.showToast({
-            title: '跳转失败',
-            icon: 'none'
-          });
-        }
-      });
-    } catch (e) {
-      console.log('跳转异常:', e);
-      Taro.showToast({
-        title: '发生错误',
-        icon: 'none'
-      });
-    }
-  };
+  const lastClickTimeRef = useRef<number>(0);
 
-  const handleViewMorePreorder = () => {
-    console.log('========== 点击明日预售查看更多 ==========');
+  const navigateToPreorder = useCallback(() => {
+    const now = Date.now();
+    if (now - lastClickTimeRef.current < 1000) {
+      console.log('[Home] 点击过于频繁，已防抖');
+      return;
+    }
+    lastClickTimeRef.current = now;
+
+    console.log('========== 跳转预售专区 ==========');
     try {
       const url = '/pages/preorder/index';
       console.log('跳转URL:', url);
       Taro.showToast({
         title: '跳转中...',
         icon: 'none',
-        duration: 1000
+        duration: 800
       });
       Taro.navigateTo({
         url: url,
@@ -130,6 +107,7 @@ const HomePage: React.FC = () => {
             title: '跳转失败',
             icon: 'none'
           });
+          lastClickTimeRef.current = 0;
         }
       });
     } catch (e) {
@@ -138,8 +116,19 @@ const HomePage: React.FC = () => {
         title: '发生错误',
         icon: 'none'
       });
+      lastClickTimeRef.current = 0;
     }
-  };
+  }, []);
+
+  const handlePreorderEntry = useCallback(() => {
+    console.log('[Home] 点击预售专区快捷入口');
+    navigateToPreorder();
+  }, [navigateToPreorder]);
+
+  const handleViewMorePreorder = useCallback(() => {
+    console.log('[Home] 点击明日预售查看更多');
+    navigateToPreorder();
+  }, [navigateToPreorder]);
 
   usePullDownRefresh(() => {
     console.log('[Home] 下拉刷新');
@@ -203,8 +192,12 @@ const HomePage: React.FC = () => {
       </View>
 
       <View className={styles.quickEntry}>
-        <View className={styles.quickItem} onClick={handlePreorderEntry}>
-          <View className={styles.quickIconWrap}>
+        <View
+          className={styles.quickItem}
+          onClick={handlePreorderEntry}
+          onTouchStart={() => {}}
+        >
+          <View className={styles.quickIconBox}>
             <Text className={styles.quickIcon}>📦</Text>
             <View className={styles.quickRedDot}></View>
           </View>
@@ -226,12 +219,16 @@ const HomePage: React.FC = () => {
 
       <View className={`${styles.section} ${styles.preorderSection}`}>
         <View className={styles.sectionHeader}>
-          <Text className={styles.sectionTitle}>
-            明日预售
+          <View className={styles.sectionTitleWrap}>
+            <Text className={styles.sectionTitle}>明日预售</Text>
             <Text className={styles.preorderBadge}>限时</Text>
-          </Text>
-          <View className={styles.sectionMore} onClick={handleViewMorePreorder}>
-            <Text>查看更多 ›</Text>
+          </View>
+          <View
+            className={styles.sectionMore}
+            onClick={handleViewMorePreorder}
+          >
+            <Text className={styles.sectionMoreText}>查看更多</Text>
+            <Text className={styles.sectionMoreArrow}>›</Text>
           </View>
         </View>
         <ScrollView scrollX className={styles.productScroll}>
