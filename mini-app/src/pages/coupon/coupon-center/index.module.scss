@@ -136,11 +136,8 @@
 }
 
 .productItem {
-  display: inline-block;
-  width: 220rpx;
+  @include scroll-x-item(240rpx);
   margin-right: $spacing-md;
-  vertical-align: top;
-  white-space: normal;
 
   &:last-child {
     margin-right: 0;

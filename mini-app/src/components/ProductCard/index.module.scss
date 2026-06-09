@@ -16,21 +16,31 @@
 .imageWrap {
   position: relative;
   width: 100%;
-  height: 280rpx;
+  aspect-ratio: 1 / 1;
+  padding: $spacing-xs;
+  box-sizing: border-box;
 }
 
 .image {
   width: 100%;
   height: 100%;
+  border-radius: $radius-md;
 }
 
 .tag {
   position: absolute;
-  top: 16rpx;
-  left: 16rpx;
-  padding: 4rpx 12rpx;
-  border-radius: $radius-sm;
+  top: $spacing-sm;
+  left: $spacing-sm;
+  z-index: 2;
+  height: 40rpx;
+  line-height: 40rpx;
+  padding: 0 $spacing-sm;
+  border-radius: $radius-xs;
   font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &-preorder {
     background: $color-bg-tag-preorder;
@@ -56,63 +66,70 @@
 .tagText {
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
+  line-height: 1;
 }
 
 .info {
-  padding: $spacing-md;
+  padding: 0 $spacing-md $spacing-md;
 }
 
 .name {
-  @include text-ellipsis;
+  @include text-ellipsis-multi(2);
   font-size: $font-size-md;
   font-weight: $font-weight-medium;
   color: $color-text-primary;
-  line-height: 1.4;
+  line-height: $line-height-tight;
+  height: calc(#{$font-size-md} * #{$line-height-tight} * 2);
 }
 
 .desc {
-  @include text-ellipsis;
+  @include text-ellipsis-multi(1);
   margin-top: $spacing-xs;
   font-size: $font-size-sm;
   color: $color-text-tertiary;
-  line-height: 1.4;
+  line-height: $line-height-tight;
+  height: calc(#{$font-size-sm} * #{$line-height-tight});
 }
 
 .bottom {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-top: $spacing-md;
+  margin-top: $spacing-sm;
 }
 
 .priceWrap {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
 }
 
 .priceSymbol {
   font-size: $font-size-sm;
   color: $color-price;
-  font-weight: $font-weight-semibold;
+  font-weight: $font-weight-bold;
+  margin-right: 2rpx;
 }
 
 .price {
-  font-size: $font-size-xl;
+  font-size: $font-size-xxl;
   color: $color-price;
   font-weight: $font-weight-bold;
   line-height: 1;
 }
 
 .originalPrice {
-  margin-left: $spacing-sm;
-  font-size: $font-size-sm;
+  margin-left: $spacing-xs;
+  font-size: $font-size-xs;
   color: $color-text-tertiary;
   text-decoration: line-through;
+  line-height: 1;
 }
 
 .sales {
   font-size: $font-size-xs;
   color: $color-text-tertiary;
+  line-height: 1;
 }
 
 .highlight {
@@ -121,12 +138,13 @@
 
 .horizontal {
   display: flex;
-  height: 200rpx;
+  height: 220rpx;
 
   .imageWrap {
-    width: 200rpx;
-    height: 200rpx;
+    width: 220rpx;
+    aspect-ratio: 1 / 1;
     flex-shrink: 0;
+    padding: $spacing-xs;
   }
 
   .info {
@@ -138,10 +156,12 @@
   }
 
   .name {
-    @include text-ellipsis-multi(1);
+    @include text-ellipsis-multi(2);
+    height: calc(#{$font-size-md} * #{$line-height-tight} * 2);
   }
 
   .desc {
     @include text-ellipsis-multi(1);
+    height: calc(#{$font-size-sm} * #{$line-height-tight});
   }
 }
