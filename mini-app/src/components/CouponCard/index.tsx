@@ -15,6 +15,7 @@ export interface CouponCardProps {
   loading?: boolean;
   onClick?: () => void;
   onReceive?: () => void;
+  renderAction?: () => React.ReactNode;
 }
 
 const CouponCard: React.FC<CouponCardProps> = ({
@@ -27,7 +28,8 @@ const CouponCard: React.FC<CouponCardProps> = ({
   disabled = false,
   loading = false,
   onClick,
-  onReceive
+  onReceive,
+  renderAction
 }) => {
   const isOutOfStock = coupon.stock <= 0;
   const isDisabled = disabled || isOutOfStock || loading;
@@ -119,17 +121,21 @@ const CouponCard: React.FC<CouponCardProps> = ({
             剩余 {coupon.stock} 张 / 已领 {coupon.receivedCount}
           </Text>
           {showAction && (
-            <View
-              className={classnames(
-                styles.actionBtn,
-                isDisabled && styles.disabled,
-                received && styles.received,
-                loading && styles.loading
-              )}
-              onClick={handleReceive}
-            >
-              {loading ? '领取中...' : received ? '已领取' : isOutOfStock ? '已抢光' : actionText}
-            </View>
+            renderAction ? (
+              renderAction()
+            ) : (
+              <View
+                className={classnames(
+                  styles.actionBtn,
+                  isDisabled && styles.disabled,
+                  received && styles.received,
+                  loading && styles.loading
+                )}
+                onClick={handleReceive}
+              >
+                {loading ? '领取中...' : received ? '已领取' : isOutOfStock ? '已抢光' : actionText}
+              </View>
+            )
           )}
         </View>
       </View>

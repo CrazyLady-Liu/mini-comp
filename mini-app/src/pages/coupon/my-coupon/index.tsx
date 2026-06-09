@@ -47,38 +47,48 @@ const MyCouponPage: React.FC = () => {
   };
 
   const handleUseCoupon = (coupon: Coupon) => {
-    if (coupon.status !== 'available') return;
+    if (coupon.status !== 'available') {
+      Taro.showToast({
+        title: coupon.status === 'used' ? '该优惠券已使用' : '该优惠券已过期',
+        icon: 'none'
+      });
+      return;
+    }
+
+    const navigateToPage = (url: string, isTabBar: boolean = false) => {
+      if (isTabBar) {
+        Taro.switchTab({
+          url,
+          fail: (e) => {
+            console.error('跳转失败：', e);
+            Taro.showToast({ title: '跳转失败', icon: 'none' });
+          }
+        });
+      } else {
+        Taro.navigateTo({
+          url,
+          fail: (e) => {
+            console.error('跳转失败：', e);
+            Taro.showToast({ title: '跳转失败', icon: 'none' });
+          }
+        });
+      }
+    };
 
     switch (coupon.type) {
       case 'category':
-        Taro.switchTab({
-          url: '/pages/category/index',
-          fail: (e) => {
-            console.error('跳分类页失败：', e);
-            Taro.showToast({ title: '跳转失败', icon: 'none' });
-          }
-        });
+        navigateToPage('/pages/category/index', true);
         break;
       case 'preorder':
-        Taro.switchTab({
-          url: '/pages/home/index',
-          fail: (e) => {
-            console.error('跳首页失败：', e);
-            Taro.showToast({ title: '跳转失败', icon: 'none' });
-          }
-        });
+        navigateToPage('/pages/home/index', true);
         break;
       case 'pickup':
+        navigateToPage('/pages/home/index', true);
+        break;
       case 'full':
       case 'threshold':
       default:
-        Taro.switchTab({
-          url: '/pages/home/index',
-          fail: (e) => {
-            console.error('跳首页失败：', e);
-            Taro.showToast({ title: '跳转失败', icon: 'none' });
-          }
-        });
+        navigateToPage('/pages/home/index', true);
         break;
     }
   };
@@ -147,10 +157,16 @@ const MyCouponPage: React.FC = () => {
                 key={(coupon as any).userCouponId || coupon.id}
                 coupon={coupon}
                 showAction={coupon.status === 'available'}
-                actionText={getActionText(coupon)}
                 received={coupon.status !== 'available'}
                 disabled={coupon.status !== 'available'}
-                onClick={() => handleUseCoupon(coupon)}
+                renderAction={coupon.status === 'available' ? () => (
+                  <View
+                    className={styles.useBtn}
+                    onClick={() => handleUseCoupon(coupon)}
+                  >
+                    去使用
+                  </View>
+                ) : undefined}
               />
             ))}
           </View>

@@ -57,6 +57,24 @@
   padding: $spacing-md $spacing-lg;
 }
 
+.useBtn {
+  min-width: 140rpx;
+  height: 56rpx;
+  padding: 0 $spacing-md;
+  border-radius: $radius-button;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
 .loading {
   padding: 80rpx 0;
   text-align: center;
