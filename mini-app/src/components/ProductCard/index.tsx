@@ -45,16 +45,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical',
       onClick={handleClick}
     >
       <View className={styles.imageWrap}>
-        <Image
-          className={styles.image}
-          src={product.image}
-          mode="aspectFill"
-        />
-        {product.tag && (
-          <View className={classnames(styles.tag, styles[`tag-${product.tag}`])}>
-            <Text className={styles.tagText}>{tagText}</Text>
-          </View>
-        )}
+        <View className={styles.imageInner}>
+          <Image
+            className={styles.image}
+            src={product.image}
+            mode="aspectFill"
+          />
+          {product.tag && (
+            <View className={classnames(styles.tag, styles[`tag-${product.tag}`])}>
+              <Text className={styles.tagText}>{tagText}</Text>
+            </View>
+          )}
+        </View>
       </View>
       <View className={styles.info}>
         <Text className={styles.name}>{renderHighlightedText(product.name)}</Text>

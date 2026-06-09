@@ -105,13 +105,27 @@
       font-weight: $font-weight-semibold;
       color: $color-text-primary;
       margin: 0;
+      position: relative;
+      padding-left: $spacing-sm;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6rpx;
+        height: 28rpx;
+        background: $color-primary;
+        border-radius: 3rpx;
+      }
     }
 
     .sectionMoreWrap {
       display: flex;
       align-items: center;
       padding: $spacing-xs $spacing-sm;
-      margin: -$spacing-xs (-$spacing-sm);
+      margin: (-$spacing-xs) (-$spacing-sm);
 
       &:active {
         opacity: 0.7;
@@ -133,6 +147,8 @@
 
 .productScroll {
   white-space: nowrap;
+  margin: 0 (-$spacing-lg);
+  padding: 0 $spacing-lg;
 }
 
 .productItem {
