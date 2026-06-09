@@ -205,9 +205,23 @@
   }
 }
 
+.quickIconWrap {
+  position: relative;
+  margin-bottom: $spacing-sm;
+}
+
 .quickIcon {
   font-size: 48rpx;
-  margin-bottom: $spacing-sm;
+}
+
+.quickRedDot {
+  position: absolute;
+  top: -4rpx;
+  right: -8rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background: $color-error;
+  border-radius: 50%;
 }
 
 .quickText {

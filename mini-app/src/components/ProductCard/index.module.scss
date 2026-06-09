@@ -83,6 +83,39 @@
   line-height: 1;
 }
 
+.preorderBadge {
+  position: absolute;
+  top: $spacing-xs;
+  right: $spacing-xs;
+  z-index: 2;
+  height: 36rpx;
+  line-height: 36rpx;
+  padding: 0 $spacing-sm;
+  border-radius: $radius-xs;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  &-new {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: $color-text-white;
+  }
+
+  &-limited {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: $color-text-white;
+  }
+}
+
+.preorderBadgeText {
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+  line-height: 1;
+}
+
 .info {
   flex: 1;
   display: flex;

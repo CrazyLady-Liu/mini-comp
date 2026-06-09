@@ -77,6 +77,20 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const handlePreorderEntry = () => {
+    console.log('[Home] 点击预售专区');
+    Taro.navigateTo({
+      url: '/pages/preorder/index'
+    });
+  };
+
+  const handleViewMorePreorder = () => {
+    console.log('[Home] 点击明日预售查看更多');
+    Taro.navigateTo({
+      url: '/pages/preorder/index'
+    });
+  };
+
   usePullDownRefresh(() => {
     console.log('[Home] 下拉刷新');
     setTimeout(() => {
@@ -139,8 +153,11 @@ const HomePage: React.FC = () => {
       </View>
 
       <View className={styles.quickEntry}>
-        <View className={styles.quickItem}>
-          <Text className={styles.quickIcon}>📦</Text>
+        <View className={styles.quickItem} onClick={handlePreorderEntry}>
+          <View className={styles.quickIconWrap}>
+            <Text className={styles.quickIcon}>📦</Text>
+            <View className={styles.quickRedDot}></View>
+          </View>
           <Text className={styles.quickText}>预售专区</Text>
         </View>
         <View className={styles.quickItem}>
@@ -163,7 +180,7 @@ const HomePage: React.FC = () => {
             明日预售
             <Text className={styles.preorderBadge}>限时</Text>
           </Text>
-          <Text className={styles.sectionMore}>查看更多 ›</Text>
+          <Text className={styles.sectionMore} onClick={handleViewMorePreorder}>查看更多 ›</Text>
         </View>
         <ScrollView scrollX className={styles.productScroll}>
           <View className={styles.productGrid}>

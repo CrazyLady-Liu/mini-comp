@@ -25,6 +25,14 @@ export const getTagText = (tag?: string): string => {
   return tag ? tagMap[tag] || '' : '';
 };
 
+export const getPreorderTagText = (preorderTag?: string): string => {
+  const tagMap: Record<string, string> = {
+    new: '新品预售',
+    limited: '限时预售'
+  };
+  return preorderTag ? tagMap[preorderTag] || '' : '';
+};
+
 const SEARCH_HISTORY_KEY = 'searchHistory';
 const MAX_HISTORY_COUNT = 10;
 

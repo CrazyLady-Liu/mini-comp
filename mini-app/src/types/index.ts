@@ -7,6 +7,7 @@ export interface Product {
   unit: string;
   sales: number;
   tag?: 'preorder' | 'new' | 'hot' | 'discount';
+  preorderTag?: 'new' | 'limited';
   categoryId: number;
   description?: string;
   stock: number;

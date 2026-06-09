@@ -3,7 +3,7 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import type { Product } from '@/types';
-import { formatPrice, formatSales, getTagText, getHighlightSegments } from '@/utils/format';
+import { formatPrice, formatSales, getTagText, getPreorderTagText, getHighlightSegments } from '@/utils/format';
 import classnames from 'classnames';
 
 export interface ProductCardProps {
@@ -25,6 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical',
   };
 
   const tagText = getTagText(product.tag);
+  const preorderTagText = getPreorderTagText(product.preorderTag);
 
   const renderHighlightedText = (text: string) => {
     if (!highlightKeyword) return text;
@@ -54,6 +55,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, layout = 'vertical',
           {product.tag && (
             <View className={classnames(styles.tag, styles[`tag-${product.tag}`])}>
               <Text className={styles.tagText}>{tagText}</Text>
+            </View>
+          )}
+          {product.preorderTag && (
+            <View className={classnames(styles.preorderBadge, styles[`preorderBadge-${product.preorderTag}`])}>
+              <Text className={styles.preorderBadgeText}>{preorderTagText}</Text>
             </View>
           )}
         </View>
