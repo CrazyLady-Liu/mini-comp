@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import type { Coupon } from '@/types';
 import classnames from 'classnames';
@@ -13,6 +12,7 @@ export interface CouponCardProps {
   actionText?: string;
   received?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   onClick?: () => void;
   onReceive?: () => void;
 }
@@ -25,13 +25,15 @@ const CouponCard: React.FC<CouponCardProps> = ({
   actionText = '立即领取',
   received = false,
   disabled = false,
+  loading = false,
   onClick,
   onReceive
 }) => {
   const isOutOfStock = coupon.stock <= 0;
-  const isDisabled = disabled || isOutOfStock;
+  const isDisabled = disabled || isOutOfStock || loading;
 
   const handleClick = () => {
+    if (loading) return;
     if (onClick) {
       onClick();
     }
@@ -39,14 +41,9 @@ const CouponCard: React.FC<CouponCardProps> = ({
 
   const handleReceive = (e: any) => {
     e.stopPropagation();
-    if (isDisabled || received) return;
+    if (isDisabled || received || loading) return;
     if (onReceive) {
       onReceive();
-    } else {
-      Taro.showToast({
-        title: '领取成功',
-        icon: 'success'
-      });
     }
   };
 
@@ -126,11 +123,12 @@ const CouponCard: React.FC<CouponCardProps> = ({
               className={classnames(
                 styles.actionBtn,
                 isDisabled && styles.disabled,
-                received && styles.received
+                received && styles.received,
+                loading && styles.loading
               )}
               onClick={handleReceive}
             >
-              {received ? '已领取' : isOutOfStock ? '已抢光' : actionText}
+              {loading ? '领取中...' : received ? '已领取' : isOutOfStock ? '已抢光' : actionText}
             </View>
           )}
         </View>

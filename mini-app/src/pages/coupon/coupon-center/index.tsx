@@ -1,84 +1,153 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useRouter, usePullDownRefresh } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { NavBar, CouponCard, ProductCard } from '@/components';
-import { coupons, couponCategories } from '@/data/coupons';
-import { getDiscountProducts } from '@/data/products';
+import { couponCategories } from '@/data/coupons';
+import { getCouponList, receiveCoupon, getRecommendProducts, getMyCouponList } from '@/api/coupon';
 import type { Coupon, Product } from '@/types';
 import classnames from 'classnames';
 
 const CouponCenterPage: React.FC = () => {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [couponList, setCouponList] = useState<Coupon[]>([]);
   const [receivedIds, setReceivedIds] = useState<number[]>([]);
+  const [loadingId, setLoadingId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [recommendProducts] = useState<Product[]>(getDiscountProducts());
+  const [recommendProducts, setRecommendProducts] = useState<Product[]>([]);
+  const [myCouponCount, setMyCouponCount] = useState<number>(0);
 
   const selfPointId = useMemo(() => {
     const id = router.params.selfPointId;
-    console.log('[CouponCenter] 路由参数:', router.params);
-    console.log('[CouponCenter] selfPointId:', id);
     return id ? Number(id) : 1;
   }, [router.params]);
 
-  const filteredCoupons = useMemo(() => {
-    if (activeCategory === 'all') {
-      return coupons;
+  const fetchCouponList = useCallback(async (type = 'all') => {
+    setLoading(true);
+    try {
+      const res = await getCouponList({ type, selfPointId });
+      if (res.code === 0) {
+        setCouponList(res.data.list);
+      }
+    } catch (e) {
+      console.error('[CouponCenter] 获取优惠券列表失败:', e);
+    } finally {
+      setLoading(false);
     }
-    return coupons.filter(c => c.type === activeCategory);
-  }, [activeCategory]);
+  }, [selfPointId]);
+
+  const fetchRecommendProducts = useCallback(async () => {
+    try {
+      const res = await getRecommendProducts(8);
+      if (res.code === 0) {
+        setRecommendProducts(res.data);
+      }
+    } catch (e) {
+      console.error('[CouponCenter] 获取推荐商品失败:', e);
+    }
+  }, []);
+
+  const fetchMyCouponCount = useCallback(async () => {
+    try {
+      const res = await getMyCouponList({ status: 'available' });
+      if (res.code === 0) {
+        setMyCouponCount(res.data.total);
+      }
+    } catch (e) {
+      console.error('[CouponCenter] 获取我的优惠券数量失败:', e);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchCouponList(activeCategory);
+    fetchRecommendProducts();
+    fetchMyCouponCount();
+  }, []);
 
   const handleCategoryChange = (categoryId: string) => {
-    console.log('[CouponCenter] 切换分类:', categoryId, 'selfPointId:', selfPointId);
     setActiveCategory(categoryId);
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 300);
+    fetchCouponList(categoryId);
   };
 
-  const handleReceive = (coupon: Coupon) => {
-    console.log('[CouponCenter] 领取优惠券:', coupon.id, 'selfPointId:', selfPointId);
+  const handleReceive = async (coupon: Coupon) => {
+    if (loadingId !== null) return;
     if (receivedIds.includes(coupon.id)) {
       Taro.showToast({
-        title: '您已领取过该优惠券',
+        title: '已领取过该券',
         icon: 'none'
       });
       return;
     }
     if (coupon.stock <= 0) {
       Taro.showToast({
-        title: '优惠券已抢光',
+        title: '券已领完',
         icon: 'none'
       });
       return;
     }
-    setReceivedIds([...receivedIds, coupon.id]);
-    Taro.showToast({
-      title: '领取成功',
-      icon: 'success'
-    });
+
+    setLoadingId(coupon.id);
+    try {
+      const res = await receiveCoupon({ couponId: coupon.id, selfPointId });
+      if (res.code === 0) {
+        setReceivedIds(prev => [...prev, coupon.id]);
+        setCouponList(prev => prev.map(c =>
+          c.id === coupon.id
+            ? { ...c, stock: Math.max(0, c.stock - 1), receivedCount: c.receivedCount + 1 }
+            : c
+        ));
+        setMyCouponCount(prev => prev + 1);
+        Taro.showToast({
+          title: '领取成功！',
+          icon: 'success'
+        });
+      } else {
+        Taro.showToast({
+          title: res.message || '领取失败',
+          icon: 'none'
+        });
+      }
+    } catch (e: any) {
+      Taro.showToast({
+        title: e?.message || '不符合领取条件',
+        icon: 'none'
+      });
+    } finally {
+      setLoadingId(null);
+    }
   };
 
   const handleMyCoupons = () => {
-    console.log('[CouponCenter] 跳转到我的优惠券');
-    Taro.showToast({
-      title: '我的优惠券开发中',
-      icon: 'none'
+    Taro.navigateTo({
+      url: '/pages/coupon/my-coupon/index'
+    });
+  };
+
+  const handleMoreProducts = () => {
+    Taro.navigateTo({
+      url: '/pages/category/index?from=coupon'
     });
   };
 
   usePullDownRefresh(() => {
-    console.log('[CouponCenter] 下拉刷新, selfPointId:', selfPointId);
-    setTimeout(() => {
+    Promise.all([
+      fetchCouponList(activeCategory),
+      fetchRecommendProducts(),
+      fetchMyCouponCount()
+    ]).finally(() => {
       Taro.stopPullDownRefresh();
-    }, 1000);
+    });
   });
 
   const rightContent = (
     <View className={styles.navBarRight} onClick={handleMyCoupons}>
       <Text className={styles.myCoupons}>我的优惠券</Text>
+      {myCouponCount > 0 && (
+        <View className={styles.couponBadge}>
+          <Text className={styles.badgeText}>{myCouponCount > 99 ? '99+' : myCouponCount}</Text>
+        </View>
+      )}
     </View>
   );
 
@@ -95,7 +164,8 @@ const CouponCenterPage: React.FC = () => {
         <ScrollView
           scrollX
           className={styles.tabScroll}
-          showsHorizontalScrollIndicator={false}
+          enhanced
+          showScrollbar={false}
         >
           {couponCategories.map(category => (
             <View
@@ -118,12 +188,13 @@ const CouponCenterPage: React.FC = () => {
             <Text className={styles.emptyIcon}>⏳</Text>
             <Text className={styles.emptyText}>加载中...</Text>
           </View>
-        ) : filteredCoupons.length > 0 ? (
-          filteredCoupons.map(coupon => (
+        ) : couponList.length > 0 ? (
+          couponList.map(coupon => (
             <CouponCard
               key={coupon.id}
               coupon={coupon}
               received={receivedIds.includes(coupon.id)}
+              loading={loadingId === coupon.id}
               onReceive={() => handleReceive(coupon)}
             />
           ))
@@ -138,12 +209,13 @@ const CouponCenterPage: React.FC = () => {
       <View className={styles.recommendSection}>
         <View className={styles.sectionHeader}>
           <Text className={styles.sectionTitle}>领券好物</Text>
-          <Text className={styles.sectionMore}>更多 ›</Text>
+          <Text className={styles.sectionMore} onClick={handleMoreProducts}>更多 ›</Text>
         </View>
         <ScrollView
           scrollX
           className={styles.productScroll}
-          showsHorizontalScrollIndicator={false}
+          enhanced
+          showScrollbar={false}
         >
           {recommendProducts.map(product => (
             <View key={product.id} className={styles.productItem}>
