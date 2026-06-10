@@ -6,7 +6,7 @@
   padding-bottom: 140rpx;
 }
 
-.placeholder {
+.empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,19 +14,7 @@
   padding: 200rpx 0;
 }
 
-.icon {
-  font-size: 120rpx;
-  margin-bottom: $spacing-lg;
-}
-
-.title {
-  font-size: $font-size-xl;
-  color: $color-text-primary;
-  font-weight: $font-weight-semibold;
-  margin-bottom: $spacing-sm;
-}
-
-.desc {
+.emptyText {
   font-size: $font-size-md;
   color: $color-text-tertiary;
 }
@@ -74,4 +62,72 @@
   font-size: $font-size-md;
   color: $color-text-secondary;
   line-height: 1.6;
+}
+
+.addressFooter {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.setDefault {
+  display: flex;
+  align-items: center;
+}
+
+.radio {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid $color-border;
+  border-radius: 50%;
+  margin-right: $spacing-xs;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.radioChecked {
+  border-color: $color-primary;
+}
+
+.radioInner {
+  width: 20rpx;
+  height: 20rpx;
+  background: $color-primary;
+  border-radius: 50%;
+}
+
+.setDefaultText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: #fff;
+}
+
+.addBtn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addBtnText {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
 }

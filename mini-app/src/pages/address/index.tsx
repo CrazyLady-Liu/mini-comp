@@ -1,59 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar } from '@/components';
-import { addresses } from '@/data/user';
+import { NavBar, AddressModal } from '@/components';
+import { useAddress } from '@/store/AddressContext';
 
 const AddressPage: React.FC = () => {
+  const { state, dispatch } = useAddress();
+  const [modalVisible, setModalVisible] = useState(false);
+
   const handleAddAddress = () => {
-    Taro.showToast({ title: '新增地址功能开发中', icon: 'none' });
+    setModalVisible(true);
+  };
+
+  const handleSetDefault = (id: number) => {
+    dispatch({ type: 'SET_DEFAULT', payload: { id } });
   };
 
   return (
     <View className={styles.container}>
       <NavBar title="收货地址" />
       <ScrollView scrollY className={styles.addressList}>
-        {addresses.map(addr => (
-          <View key={addr.id} className={styles.addressItem}>
-            <View className={styles.addressHeader}>
-              <Text className={styles.name}>{addr.name}</Text>
-              <Text className={styles.phone}>{addr.phone}</Text>
-              {addr.isDefault && (
-                <Text className={styles.defaultTag}>默认</Text>
-              )}
-            </View>
-            <Text className={styles.addressDetail}>
-              {addr.province}{addr.city}{addr.district}{addr.detail}
-            </Text>
+        {state.list.length === 0 ? (
+          <View className={styles.empty}>
+            <Text className={styles.emptyText}>暂无收货地址</Text>
           </View>
-        ))}
+        ) : (
+          state.list.map(addr => (
+            <View key={addr.id} className={styles.addressItem}>
+              <View className={styles.addressHeader}>
+                <Text className={styles.name}>{addr.name}</Text>
+                <Text className={styles.phone}>{addr.phone}</Text>
+                {addr.isDefault && (
+                  <Text className={styles.defaultTag}>默认</Text>
+                )}
+              </View>
+              <Text className={styles.addressDetail}>
+                {addr.province}{addr.city}{addr.district}{addr.detail}
+              </Text>
+              <View className={styles.addressFooter}>
+                <View
+                  className={styles.setDefault}
+                  onClick={() => handleSetDefault(addr.id)}
+                >
+                  <View className={`${styles.radio} ${addr.isDefault ? styles.radioChecked : ''}`}>
+                    {addr.isDefault && <View className={styles.radioInner} />}
+                  </View>
+                  <Text className={styles.setDefaultText}>设为默认</Text>
+                </View>
+              </View>
+            </View>
+          ))
+        )}
       </ScrollView>
 
-      <View style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: '24rpx 32rpx',
-        paddingBottom: 'calc(24rpx + env(safe-area-inset-bottom))',
-        background: '#fff'
-      }}>
-        <View
-          style={{
-            width: '100%',
-            height: '88rpx',
-            background: 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)',
-            borderRadius: '48rpx',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-          onClick={handleAddAddress}
-        >
-          <Text style={{ color: '#fff', fontSize: '30rpx', fontWeight: '600' }}>新增收货地址</Text>
+      <View className={styles.bottomBar}>
+        <View className={styles.addBtn} onClick={handleAddAddress}>
+          <Text className={styles.addBtnText}>新增收货地址</Text>
         </View>
       </View>
+
+      <AddressModal visible={modalVisible} onClose={() => setModalVisible(false)} />
     </View>
   );
 };

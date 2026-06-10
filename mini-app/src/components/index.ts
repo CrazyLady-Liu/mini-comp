@@ -18,3 +18,5 @@ export type { SearchPanelProps } from './SearchPanel';
 
 export { default as CouponCard } from './CouponCard';
 export type { CouponCardProps } from './CouponCard';
+
+export { default as AddressModal } from './AddressModal';
