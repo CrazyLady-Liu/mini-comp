@@ -3,6 +3,7 @@ import { View, Text, Input, ScrollView, Switch } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useAddress } from '@/store/AddressContext';
+import RegionPicker from '@/components/RegionPicker';
 
 interface AddressModalProps {
   visible: boolean;
@@ -40,6 +41,15 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleRegionChange = (region: { province: string; city: string; district: string }) => {
+    setForm(prev => ({
+      ...prev,
+      province: region.province,
+      city: region.city,
+      district: region.district
+    }));
+  };
+
   const handleSwitchChange = (checked: boolean) => {
     setForm(prev => ({ ...prev, isDefault: checked }));
   };
@@ -57,16 +67,16 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
       Taro.showToast({ title: '请输入正确的手机号码', icon: 'none' });
       return false;
     }
-    if (!form.province.trim()) {
-      Taro.showToast({ title: '请输入省份', icon: 'none' });
+    if (!form.province) {
+      Taro.showToast({ title: '请选择省份', icon: 'none' });
       return false;
     }
-    if (!form.city.trim()) {
-      Taro.showToast({ title: '请输入城市', icon: 'none' });
+    if (!form.city) {
+      Taro.showToast({ title: '请选择城市', icon: 'none' });
       return false;
     }
-    if (!form.district.trim()) {
-      Taro.showToast({ title: '请输入区/县', icon: 'none' });
+    if (!form.district) {
+      Taro.showToast({ title: '请选择区/县', icon: 'none' });
       return false;
     }
     if (!form.detail.trim()) {
@@ -84,9 +94,9 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
       payload: {
         name: form.name.trim(),
         phone: form.phone.trim(),
-        province: form.province.trim(),
-        city: form.city.trim(),
-        district: form.district.trim(),
+        province: form.province,
+        city: form.city,
+        district: form.district,
         detail: form.detail.trim(),
         isDefault: form.isDefault
       }
@@ -133,33 +143,17 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
 
           <View className={styles.formItem}>
             <Text className={styles.label}>所在地区</Text>
-            <View className={styles.regionRow}>
-              <Input
-                className={styles.regionInput}
-                placeholder="省份"
-                value={form.province}
-                onInput={e => handleInputChange('province', e.detail.value)}
-              />
-              <Input
-                className={styles.regionInput}
-                placeholder="城市"
-                value={form.city}
-                onInput={e => handleInputChange('city', e.detail.value)}
-              />
-              <Input
-                className={styles.regionInput}
-                placeholder="区/县"
-                value={form.district}
-                onInput={e => handleInputChange('district', e.detail.value)}
-              />
-            </View>
+            <RegionPicker
+              value={{ province: form.province, city: form.city, district: form.district }}
+              onChange={handleRegionChange}
+            />
           </View>
 
           <View className={styles.formItem}>
             <Text className={styles.label}>详细地址</Text>
             <Input
               className={styles.input}
-              placeholder="街道、楼牌号等"
+              placeholder="街道、楼栋、门牌号等"
               value={form.detail}
               onInput={e => handleInputChange('detail', e.detail.value)}
             />

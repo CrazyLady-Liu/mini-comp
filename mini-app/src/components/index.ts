@@ -20,3 +20,5 @@ export { default as CouponCard } from './CouponCard';
 export type { CouponCardProps } from './CouponCard';
 
 export { default as AddressModal } from './AddressModal';
+
+export { default as RegionPicker } from './RegionPicker';

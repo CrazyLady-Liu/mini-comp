@@ -82,23 +82,6 @@
   box-sizing: border-box;
 }
 
-.regionRow {
-  display: flex;
-  gap: $spacing-sm;
-}
-
-.regionInput {
-  flex: 1;
-  height: 88rpx;
-  padding: 0 $spacing-sm;
-  background: $color-bg-page;
-  border-radius: $radius-md;
-  font-size: $font-size-md;
-  color: $color-text-primary;
-  box-sizing: border-box;
-  text-align: center;
-}
-
 .formItemRow {
   display: flex;
   align-items: center;
