@@ -15,12 +15,16 @@ interface RegionPickerProps {
   onChange: (value: RegionValue) => void;
 }
 
+const findIndexByValue = (list: RegionOption[], val: string): number => {
+  const idx = list.findIndex(item => item.value === val || item.label === val);
+  return idx >= 0 ? idx : 0;
+};
+
 const RegionPicker: React.FC<RegionPickerProps> = ({ value, onChange }) => {
   const [locating, setLocating] = useState(false);
 
   const provinceIndex = useMemo(() => {
-    const idx = regionData.findIndex(p => p.value === value.province);
-    return idx >= 0 ? idx : 0;
+    return findIndexByValue(regionData, value.province);
   }, [value.province]);
 
   const cityList = useMemo(() => {
@@ -28,8 +32,7 @@ const RegionPicker: React.FC<RegionPickerProps> = ({ value, onChange }) => {
   }, [provinceIndex]);
 
   const cityIndex = useMemo(() => {
-    const idx = cityList.findIndex(c => c.value === value.city);
-    return idx >= 0 ? idx : 0;
+    return findIndexByValue(cityList, value.city);
   }, [value.city, cityList]);
 
   const districtList = useMemo(() => {
@@ -37,41 +40,62 @@ const RegionPicker: React.FC<RegionPickerProps> = ({ value, onChange }) => {
   }, [cityList, cityIndex]);
 
   const districtIndex = useMemo(() => {
-    const idx = districtList.findIndex(d => d.value === value.district);
-    return idx >= 0 ? idx : 0;
+    return findIndexByValue(districtList, value.district);
   }, [value.district, districtList]);
 
-  const handleProvinceChange = useCallback((e) => {
-    const pIdx = e.detail.value;
+  const range: any[][] = useMemo(() => {
+    const provinces = regionData.map(p => p.label);
+    const cities = cityList.map(c => c.label);
+    const districts = districtList.map(d => d.label);
+    return [provinces, cities, districts];
+  }, [cityList, districtList]);
+
+  const valueArr = useMemo(() => {
+    return [provinceIndex, cityIndex, districtIndex];
+  }, [provinceIndex, cityIndex, districtIndex]);
+
+  const handleColumnChange = useCallback((e) => {
+    const { column, value: newIndex } = e.detail;
+
+    if (column === 0) {
+      const province = regionData[newIndex];
+      const firstCity = province?.children?.[0];
+      const firstDistrict = firstCity?.children?.[0];
+      onChange({
+        province: province?.value || '',
+        city: firstCity?.value || '',
+        district: firstDistrict?.value || ''
+      });
+    } else if (column === 1) {
+      const city = cityList[newIndex];
+      const firstDistrict = city?.children?.[0];
+      onChange({
+        ...value,
+        city: city?.value || '',
+        district: firstDistrict?.value || ''
+      });
+    } else if (column === 2) {
+      const district = districtList[newIndex];
+      onChange({
+        ...value,
+        district: district?.value || ''
+      });
+    }
+  }, [cityList, districtList, value, onChange]);
+
+  const handleChange = useCallback((e) => {
+    const [pIdx, cIdx, dIdx] = e.detail.value;
     const province = regionData[pIdx];
-    const firstCity = province?.children?.[0];
-    const firstDistrict = firstCity?.children?.[0];
+    const cities = province?.children || [];
+    const city = cities[cIdx];
+    const districts = city?.children || [];
+    const district = districts[dIdx];
     onChange({
       province: province?.value || '',
-      city: firstCity?.value || '',
-      district: firstDistrict?.value || ''
-    });
-  }, [onChange]);
-
-  const handleCityChange = useCallback((e) => {
-    const cIdx = e.detail.value;
-    const city = cityList[cIdx];
-    const firstDistrict = city?.children?.[0];
-    onChange({
-      ...value,
       city: city?.value || '',
-      district: firstDistrict?.value || ''
-    });
-  }, [cityList, value, onChange]);
-
-  const handleDistrictChange = useCallback((e) => {
-    const dIdx = e.detail.value;
-    const district = districtList[dIdx];
-    onChange({
-      ...value,
       district: district?.value || ''
     });
-  }, [districtList, value, onChange]);
+  }, [onChange]);
 
   const findRegionMatch = useCallback((searchName: string, list: RegionOption[]): number => {
     const idx = list.findIndex(item => item.value === searchName || item.label === searchName);
@@ -157,40 +181,36 @@ const RegionPicker: React.FC<RegionPickerProps> = ({ value, onChange }) => {
     }
   }, []);
 
-  const provinceRange = useMemo(() => regionData.map(p => p.label), []);
-  const cityRange = useMemo(() => cityList.map(c => c.label), [cityList]);
-  const districtRange = useMemo(() => districtList.map(d => d.label), [districtList]);
-
   return (
     <View className={styles.regionPicker}>
-      <View className={styles.pickerRow}>
-        <Picker mode="selector" range={provinceRange} value={provinceIndex} onChange={handleProvinceChange}>
+      <Picker
+        mode="multiSelector"
+        range={range}
+        value={valueArr}
+        onColumnChange={handleColumnChange}
+        onChange={handleChange}
+      >
+        <View className={styles.pickerRow}>
           <View className={styles.pickerItem}>
             <Text className={`${styles.pickerText} ${!value.province ? styles.pickerPlaceholder : ''}`}>
               {value.province || '请选择省份'}
             </Text>
             <Text className={styles.pickerArrow}>▾</Text>
           </View>
-        </Picker>
-
-        <Picker mode="selector" range={cityRange} value={cityIndex} onChange={handleCityChange}>
           <View className={styles.pickerItem}>
             <Text className={`${styles.pickerText} ${!value.city ? styles.pickerPlaceholder : ''}`}>
               {value.city || '请选择城市'}
             </Text>
             <Text className={styles.pickerArrow}>▾</Text>
           </View>
-        </Picker>
-
-        <Picker mode="selector" range={districtRange} value={districtIndex} onChange={handleDistrictChange}>
           <View className={styles.pickerItem}>
             <Text className={`${styles.pickerText} ${!value.district ? styles.pickerPlaceholder : ''}`}>
               {value.district || '请选择区县'}
             </Text>
             <Text className={styles.pickerArrow}>▾</Text>
           </View>
-        </Picker>
-      </View>
+        </View>
+      </Picker>
 
       <View className={styles.locationBtn} onClick={handleLocation}>
         <Text className={styles.locationIcon}>📍</Text>
