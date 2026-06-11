@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -14,36 +14,68 @@ const ProductDetailPage: React.FC = () => {
   const { dispatch } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedSpecId, setSelectedSpecId] = useState<number | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
 
   useEffect(() => {
     const id = router.params.id ? Number(router.params.id) : 1;
     const p = getProductById(id);
     if (p) {
       setProduct(p);
-      if (p.specs && p.specs.length > 0) {
-        setSelectedSpecId(p.specs[0].id);
-      }
     }
     console.log('[ProductDetail] 商品ID:', id);
   }, [router.params.id]);
 
+  const selectedSpec = useMemo(() => {
+    if (!product || !product.specs) return null;
+    return product.specs.find(s => s.id === selectedSpecId) || null;
+  }, [product, selectedSpecId]);
+
+  const currentStock = useMemo(() => {
+    return selectedSpec ? selectedSpec.stock : (product?.stock ?? 0);
+  }, [selectedSpec, product]);
+
+  const isSpecSelected = selectedSpecId !== null;
+  const isSoldOut = isSpecSelected && currentStock <= 0;
+  const isQuantityExceed = isSpecSelected && quantity > currentStock;
+  const isBuyBtnDisabled = !isSpecSelected || isSoldOut;
+
+  const validateBeforeAction = (): boolean => {
+    if (!product) return false;
+
+    if (product.specs && product.specs.length > 0 && !isSpecSelected) {
+      Taro.showToast({ title: '请先选择商品规格', icon: 'none' });
+      return false;
+    }
+
+    if (isSoldOut) {
+      Taro.showToast({ title: '该规格已售罄，无法购买', icon: 'none' });
+      return false;
+    }
+
+    if (isQuantityExceed) {
+      Taro.showToast({ title: '购买数量超出剩余库存', icon: 'none' });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleAddCart = () => {
-    if (!product) return;
-    console.log('[ProductDetail] 加入购物车:', product.id, quantity);
+    if (!validateBeforeAction()) return;
+    console.log('[ProductDetail] 加入购物车:', product!.id, quantity);
     dispatch({
       type: 'ADD_ITEM',
-      payload: { product, quantity, specId: selectedSpecId || undefined }
+      payload: { product: product!, quantity, specId: selectedSpecId || undefined }
     });
     Taro.showToast({ title: '已加入购物车', icon: 'success' });
   };
 
   const handleBuyNow = () => {
-    if (!product) return;
-    console.log('[ProductDetail] 立即购买:', product.id, quantity);
+    if (!validateBeforeAction()) return;
+    console.log('[ProductDetail] 立即购买:', product!.id, quantity);
     dispatch({
       type: 'ADD_ITEM',
-      payload: { product, quantity, specId: selectedSpecId || undefined }
+      payload: { product: product!, quantity, specId: selectedSpecId || undefined }
     });
     Taro.navigateTo({
       url: '/pages/order-confirm/index'
@@ -70,9 +102,9 @@ const ProductDetailPage: React.FC = () => {
     );
   }
 
-  const selectedSpec = product.specs?.find(s => s.id === selectedSpecId);
   const displayPrice = selectedSpec ? selectedSpec.price : product.price;
   const tagText = getTagText(product.tag);
+  const displayStock = selectedSpec ? selectedSpec.stock : product.stock;
 
   return (
     <View className={styles.container}>
@@ -108,7 +140,7 @@ const ProductDetailPage: React.FC = () => {
 
           <View className={styles.salesInfo}>
             <Text>已售{formatSales(product.sales)}</Text>
-            <Text>库存{product.stock}{product.unit}</Text>
+            <Text>库存{displayStock}{product.unit}</Text>
           </View>
         </View>
 
@@ -116,18 +148,26 @@ const ProductDetailPage: React.FC = () => {
           <View className={styles.specSection}>
             <Text className={styles.sectionTitle}>规格选择</Text>
             <View className={styles.specList}>
-              {product.specs.map(spec => (
-                <View
-                  key={spec.id}
-                  className={classnames(
-                    styles.specItem,
-                    selectedSpecId === spec.id && styles.active
-                  )}
-                  onClick={() => setSelectedSpecId(spec.id)}
-                >
-                  <Text>{spec.name}</Text>
-                </View>
-              ))}
+              {product.specs.map(spec => {
+                const specSoldOut = spec.stock <= 0;
+                return (
+                  <View
+                    key={spec.id}
+                    className={classnames(
+                      styles.specItem,
+                      selectedSpecId === spec.id && styles.active,
+                      specSoldOut && styles.disabled
+                    )}
+                    onClick={() => {
+                      if (!specSoldOut) {
+                        setSelectedSpecId(spec.id);
+                      }
+                    }}
+                  >
+                    <Text>{spec.name}</Text>
+                  </View>
+                );
+              })}
             </View>
           </View>
         )}
@@ -159,11 +199,27 @@ const ProductDetailPage: React.FC = () => {
           </View>
         </View>
         <View className={styles.footerBtns}>
-          <View className={styles.addCartBtn} onClick={handleAddCart}>
-            <Text className={styles.btnText}>加入购物车</Text>
+          <View
+            className={classnames(
+              styles.addCartBtn,
+              isBuyBtnDisabled && styles.btnDisabled
+            )}
+            onClick={handleAddCart}
+          >
+            <Text className={styles.btnText}>
+              {isSpecSelected && isSoldOut ? '已售罄' : '加入购物车'}
+            </Text>
           </View>
-          <View className={styles.buyNowBtn} onClick={handleBuyNow}>
-            <Text className={styles.btnText}>立即购买</Text>
+          <View
+            className={classnames(
+              styles.buyNowBtn,
+              isBuyBtnDisabled && styles.btnDisabled
+            )}
+            onClick={handleBuyNow}
+          >
+            <Text className={styles.btnText}>
+              {isSpecSelected && isSoldOut ? '已售罄' : '立即购买'}
+            </Text>
           </View>
         </View>
       </View>

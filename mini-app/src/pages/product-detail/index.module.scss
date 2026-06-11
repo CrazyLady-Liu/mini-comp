@@ -114,6 +114,14 @@
     font-weight: $font-weight-medium;
   }
 
+  &.disabled {
+    border-color: $color-border;
+    background: $color-bg-page;
+    color: $color-text-tertiary;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
   &:active {
     opacity: 0.8;
   }
@@ -212,6 +220,16 @@
   &:active {
     opacity: 0.9;
     transform: scale(0.98);
+  }
+}
+
+.btnDisabled {
+  background: $color-bg-disabled !important;
+  opacity: 0.7;
+  pointer-events: none;
+
+  .btnText {
+    color: $color-text-tertiary !important;
   }
 }
 
