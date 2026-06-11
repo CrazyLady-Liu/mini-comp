@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import OrderCard from '@/components/OrderCard';
 import EmptyState from '@/components/EmptyState';
-import { getOrdersByStatus } from '@/data/orders';
+import { orders, getOrdersByStatus } from '@/data/orders';
 import type { OrderStatus } from '@/types';
 import classnames from 'classnames';
 
