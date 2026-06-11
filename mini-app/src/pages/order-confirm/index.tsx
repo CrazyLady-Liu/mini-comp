@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar } from '@/components';
+import NavBar from '@/components/NavBar';
 import { formatPrice } from '@/utils/format';
 import classnames from 'classnames';
 

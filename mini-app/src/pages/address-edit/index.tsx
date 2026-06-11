@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar, AddressModal } from '@/components';
+import NavBar from '@/components/NavBar';
+import AddressModal from '@/components/AddressModal';
 import { useAddress } from '@/store/AddressContext';
 import type { Address } from '@/types';
 

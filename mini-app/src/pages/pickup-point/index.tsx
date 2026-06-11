@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar } from '@/components';
+import NavBar from '@/components/NavBar';
 import { pickupPoints } from '@/data/user';
 import classnames from 'classnames';
 

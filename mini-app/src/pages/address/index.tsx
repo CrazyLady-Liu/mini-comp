@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar, AddressModal } from '@/components';
+import NavBar from '@/components/NavBar';
+import AddressModal from '@/components/AddressModal';
 import { useAddress } from '@/store/AddressContext';
 
 const AddressPage: React.FC = () => {

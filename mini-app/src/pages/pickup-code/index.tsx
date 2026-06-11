@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar } from '@/components';
+import NavBar from '@/components/NavBar';
 import { getOrderById } from '@/data/orders';
 import type { Order } from '@/types';
 

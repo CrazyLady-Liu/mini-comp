@@ -2,7 +2,9 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useRouter, usePullDownRefresh, useDidShow, useDidHide } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { NavBar, CouponCard, ProductCard } from '@/components';
+import NavBar from '@/components/NavBar';
+import CouponCard from '@/components/CouponCard';
+import ProductCard from '@/components/ProductCard';
 import { couponCategories } from '@/data/coupons';
 import { getCouponList, receiveCoupon, getRecommendProducts, getMyCouponList, COUPON_ERROR_MESSAGES } from '@/api/coupon';
 import type { Coupon, Product } from '@/types';

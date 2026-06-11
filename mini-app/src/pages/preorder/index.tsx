@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { ProductCard } from '@/components';
+import ProductCard from '@/components/ProductCard';
 import { getPreorderProducts } from '@/data/products';
 import type { Product } from '@/types';
 import classnames from 'classnames';
