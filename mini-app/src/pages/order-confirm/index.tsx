@@ -18,7 +18,6 @@ const OrderConfirmPage: React.FC = () => {
       <View className={styles.placeholder}>
         <Text className={styles.icon}>📝</Text>
         <Text className={styles.title}>确认订单</Text>
-        <Text className={styles.desc}>功能正在完善中...</Text>
       </View>
 
       <View style={{

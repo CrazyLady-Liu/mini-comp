@@ -226,7 +226,6 @@
 .btnDisabled {
   background: $color-bg-disabled !important;
   opacity: 0.7;
-  pointer-events: none;
 
   .btnText {
     color: $color-text-tertiary !important;
