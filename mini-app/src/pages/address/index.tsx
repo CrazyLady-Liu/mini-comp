@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { NavBar, AddressModal } from '@/components';
 import { useAddress } from '@/store/AddressContext';
@@ -12,7 +13,14 @@ const AddressPage: React.FC = () => {
     setModalVisible(true);
   };
 
-  const handleSetDefault = (id: number) => {
+  const handleAddressClick = (id: number) => {
+    Taro.navigateTo({
+      url: `/pages/address-edit/index?id=${id}`
+    });
+  };
+
+  const handleSetDefault = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
     dispatch({ type: 'SET_DEFAULT', payload: { id } });
   };
 
@@ -26,7 +34,11 @@ const AddressPage: React.FC = () => {
           </View>
         ) : (
           state.list.map(addr => (
-            <View key={addr.id} className={styles.addressItem}>
+            <View
+              key={addr.id}
+              className={styles.addressItem}
+              onClick={() => handleAddressClick(addr.id)}
+            >
               <View className={styles.addressHeader}>
                 <Text className={styles.name}>{addr.name}</Text>
                 <Text className={styles.phone}>{addr.phone}</Text>
@@ -40,7 +52,7 @@ const AddressPage: React.FC = () => {
               <View className={styles.addressFooter}>
                 <View
                   className={styles.setDefault}
-                  onClick={() => handleSetDefault(addr.id)}
+                  onClick={(e) => handleSetDefault(e, addr.id)}
                 >
                   <View className={`${styles.radio} ${addr.isDefault ? styles.radioChecked : ''}`}>
                     {addr.isDefault && <View className={styles.radioInner} />}

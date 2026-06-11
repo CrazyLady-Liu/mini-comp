@@ -8,6 +8,7 @@ interface AddressState {
 
 type AddressAction =
   | { type: 'ADD_ADDRESS'; payload: Omit<Address, 'id'> }
+  | { type: 'UPDATE_ADDRESS'; payload: Address }
   | { type: 'SET_DEFAULT'; payload: { id: number } }
   | { type: 'DELETE_ADDRESS'; payload: { id: number } };
 
@@ -32,6 +33,28 @@ const addressReducer = (state: AddressState, action: AddressAction): AddressStat
       return {
         ...state,
         list: [...newList, newAddress]
+      };
+    }
+    case 'UPDATE_ADDRESS': {
+      const updated = action.payload;
+      let newList = state.list.map(addr => {
+        if (addr.id === updated.id) {
+          return updated;
+        }
+        if (updated.isDefault) {
+          return { ...addr, isDefault: false };
+        }
+        return addr;
+      });
+
+      const hasDefault = newList.some(addr => addr.isDefault);
+      if (!hasDefault && newList.length > 0) {
+        newList[0].isDefault = true;
+      }
+
+      return {
+        ...state,
+        list: newList
       };
     }
     case 'SET_DEFAULT': {

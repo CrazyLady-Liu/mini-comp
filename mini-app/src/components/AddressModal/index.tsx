@@ -4,14 +4,17 @@ import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useAddress } from '@/store/AddressContext';
 import RegionPicker from '@/components/RegionPicker';
+import type { Address } from '@/types';
 
 interface AddressModalProps {
   visible: boolean;
   onClose: () => void;
+  editAddress?: Address | null;
 }
 
-const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
+const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose, editAddress }) => {
   const { dispatch } = useAddress();
+  const isEdit = !!editAddress;
 
   const [form, setForm] = useState({
     name: '',
@@ -25,17 +28,29 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
 
   useEffect(() => {
     if (visible) {
-      setForm({
-        name: '',
-        phone: '',
-        province: '',
-        city: '',
-        district: '',
-        detail: '',
-        isDefault: false
-      });
+      if (editAddress) {
+        setForm({
+          name: editAddress.name,
+          phone: editAddress.phone,
+          province: editAddress.province,
+          city: editAddress.city,
+          district: editAddress.district,
+          detail: editAddress.detail,
+          isDefault: editAddress.isDefault
+        });
+      } else {
+        setForm({
+          name: '',
+          phone: '',
+          province: '',
+          city: '',
+          district: '',
+          detail: '',
+          isDefault: false
+        });
+      }
     }
-  }, [visible]);
+  }, [visible, editAddress]);
 
   const handleInputChange = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -89,20 +104,37 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
   const handleSubmit = () => {
     if (!validateForm()) return;
 
-    dispatch({
-      type: 'ADD_ADDRESS',
-      payload: {
-        name: form.name.trim(),
-        phone: form.phone.trim(),
-        province: form.province,
-        city: form.city,
-        district: form.district,
-        detail: form.detail.trim(),
-        isDefault: form.isDefault
-      }
-    });
+    if (isEdit && editAddress) {
+      dispatch({
+        type: 'UPDATE_ADDRESS',
+        payload: {
+          id: editAddress.id,
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          province: form.province,
+          city: form.city,
+          district: form.district,
+          detail: form.detail.trim(),
+          isDefault: form.isDefault
+        }
+      });
+      Taro.showToast({ title: '地址修改成功', icon: 'success' });
+    } else {
+      dispatch({
+        type: 'ADD_ADDRESS',
+        payload: {
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          province: form.province,
+          city: form.city,
+          district: form.district,
+          detail: form.detail.trim(),
+          isDefault: form.isDefault
+        }
+      });
+      Taro.showToast({ title: '地址添加成功', icon: 'success' });
+    }
 
-    Taro.showToast({ title: '地址添加成功', icon: 'success' });
     onClose();
   };
 
@@ -112,7 +144,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ visible, onClose }) => {
     <View className={styles.mask} onClick={onClose}>
       <View className={styles.modal} onClick={e => e.stopPropagation()}>
         <View className={styles.header}>
-          <Text className={styles.title}>新增收货地址</Text>
+          <Text className={styles.title}>{isEdit ? '编辑收货地址' : '新增收货地址'}</Text>
           <View className={styles.closeBtn} onClick={onClose}>
             <Text className={styles.closeIcon}>×</Text>
           </View>

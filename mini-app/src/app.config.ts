@@ -9,6 +9,7 @@ export default defineAppConfig({
     'pages/order-confirm/index',
     'pages/pickup-code/index',
     'pages/address/index',
+    'pages/address-edit/index',
     'pages/pickup-point/index',
     'pages/search-result/index',
     'pages/coupon/coupon-center/index',
