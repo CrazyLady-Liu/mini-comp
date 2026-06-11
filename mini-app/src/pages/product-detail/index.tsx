@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -15,6 +15,8 @@ const ProductDetailPage: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedSpecId, setSelectedSpecId] = useState<number | null>(null);
   const [quantity] = useState(1);
+  const [isBuying, setIsBuying] = useState(false);
+  const buyCoolDownRef = useRef<number | null>(null);
 
   useEffect(() => {
     const id = router.params.id ? Number(router.params.id) : 1;
@@ -23,6 +25,11 @@ const ProductDetailPage: React.FC = () => {
       setProduct(p);
     }
     console.log('[ProductDetail] 商品ID:', id);
+    return () => {
+      if (buyCoolDownRef.current) {
+        clearTimeout(buyCoolDownRef.current);
+      }
+    };
   }, [router.params.id]);
 
   const selectedSpec = useMemo(() => {
@@ -37,13 +44,18 @@ const ProductDetailPage: React.FC = () => {
   const isSpecSelected = selectedSpecId !== null;
   const isSoldOut = isSpecSelected && currentStock <= 0;
   const isQuantityExceed = isSpecSelected && quantity > currentStock;
-  const isBuyBtnDisabled = !isSpecSelected || isSoldOut;
+  const isBuyBtnDisabled = !isSpecSelected || isSoldOut || isBuying;
 
-  const validateBeforeAction = (): boolean => {
+  const validateBeforeBuy = (): boolean => {
     if (!product) return false;
 
     if (product.specs && product.specs.length > 0 && !isSpecSelected) {
       Taro.showToast({ title: '请先选择商品规格', icon: 'none' });
+      return false;
+    }
+
+    if (quantity < 1) {
+      Taro.showToast({ title: '购买数量不能小于1', icon: 'none' });
       return false;
     }
 
@@ -61,7 +73,7 @@ const ProductDetailPage: React.FC = () => {
   };
 
   const handleAddCart = () => {
-    if (!validateBeforeAction()) return;
+    if (!validateBeforeBuy()) return;
     console.log('[ProductDetail] 加入购物车:', product!.id, quantity);
     dispatch({
       type: 'ADD_ITEM',
@@ -71,14 +83,31 @@ const ProductDetailPage: React.FC = () => {
   };
 
   const handleBuyNow = () => {
-    if (!validateBeforeAction()) return;
-    console.log('[ProductDetail] 立即购买:', product!.id, quantity);
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: { product: product!, quantity, specId: selectedSpecId || undefined }
-    });
+    if (isBuying) return;
+    if (!validateBeforeBuy()) return;
+
+    setIsBuying(true);
+
+    const params = new URLSearchParams();
+    params.append('productId', String(product!.id));
+    params.append('productName', product!.name);
+    params.append('productImage', product!.image);
+    params.append('quantity', String(quantity));
+    params.append('price', String(selectedSpec ? selectedSpec.price : product!.price));
+    if (selectedSpecId !== null && selectedSpec) {
+      params.append('specId', String(selectedSpecId));
+      params.append('specName', selectedSpec.name);
+    }
+
+    console.log('[ProductDetail] 立即购买，路由参数:', params.toString());
+
+    buyCoolDownRef.current = setTimeout(() => {
+      setIsBuying(false);
+      buyCoolDownRef.current = null;
+    }, 1500) as unknown as number;
+
     Taro.navigateTo({
-      url: '/pages/order-confirm/index'
+      url: `/pages/order-confirm/index?${params.toString()}`
     });
   };
 
@@ -217,9 +246,16 @@ const ProductDetailPage: React.FC = () => {
             )}
             onClick={handleBuyNow}
           >
-            <Text className={styles.btnText}>
-              {isSpecSelected && isSoldOut ? '已售罄' : '立即购买'}
-            </Text>
+            {isBuying ? (
+              <View className={styles.loadingWrapper}>
+                <Text className={styles.loadingSpinner}></Text>
+                <Text className={styles.btnText}>购买中...</Text>
+              </View>
+            ) : (
+              <Text className={styles.btnText}>
+                {isSpecSelected && isSoldOut ? '已售罄' : '立即购买'}
+              </Text>
+            )}
           </View>
         </View>
       </View>
