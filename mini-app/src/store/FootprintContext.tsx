@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import Taro from '@tarojs/taro';
 import type { FootprintItem, Product } from '@/types';
 import { getProductById } from '@/data/products';
@@ -16,15 +16,46 @@ type FootprintAction =
   | { type: 'TOGGLE_SELECT'; payload: { productId: number } }
   | { type: 'TOGGLE_SELECT_ALL'; payload: { selected: boolean } }
   | { type: 'CLEAR_ALL' }
-  | { type: 'INIT'; payload: FootprintItem[] };
+  | { type: 'SET_ITEMS'; payload: FootprintItem[] };
 
 const initialState: FootprintState = {
   items: []
 };
 
+const loadFootprintFromStorage = (): FootprintItem[] => {
+  try {
+    const data = Taro.getStorageSync(FOOTPRINT_STORAGE_KEY);
+    if (data) {
+      const parsed = JSON.parse(data) as FootprintItem[];
+      return parsed.map(item => {
+        const product = getProductById(item.productId);
+        if (product) {
+          return { ...item, product, selected: false };
+        }
+        return null;
+      }).filter(Boolean) as FootprintItem[];
+    }
+  } catch (e) {
+    console.error('加载足迹数据失败', e);
+  }
+  return [];
+};
+
+const saveFootprintToStorage = (items: FootprintItem[]) => {
+  try {
+    const dataToSave = items.map(item => ({
+      productId: item.productId,
+      browseTime: item.browseTime
+    }));
+    Taro.setStorageSync(FOOTPRINT_STORAGE_KEY, JSON.stringify(dataToSave));
+  } catch (e) {
+    console.error('保存足迹数据失败', e);
+  }
+};
+
 const footprintReducer = (state: FootprintState, action: FootprintAction): FootprintState => {
   switch (action.type) {
-    case 'INIT': {
+    case 'SET_ITEMS': {
       return { ...state, items: action.payload };
     }
     case 'ADD_FOOTPRINT': {
@@ -85,58 +116,38 @@ const footprintReducer = (state: FootprintState, action: FootprintAction): Footp
   }
 };
 
-const FootprintContext = createContext<{
+interface FootprintContextValue {
   state: FootprintState;
   dispatch: React.Dispatch<FootprintAction>;
-} | null>(null);
+  refreshFootprints: () => void;
+}
 
-const loadFootprintFromStorage = (): FootprintItem[] => {
-  try {
-    const data = Taro.getStorageSync(FOOTPRINT_STORAGE_KEY);
-    if (data) {
-      const parsed = JSON.parse(data) as FootprintItem[];
-      return parsed.map(item => {
-        const product = getProductById(item.productId);
-        if (product) {
-          return { ...item, product, selected: false };
-        }
-        return null;
-      }).filter(Boolean) as FootprintItem[];
-    }
-  } catch (e) {
-    console.error('加载足迹数据失败', e);
-  }
-  return [];
-};
-
-const saveFootprintToStorage = (items: FootprintItem[]) => {
-  try {
-    const dataToSave = items.map(item => ({
-      productId: item.productId,
-      browseTime: item.browseTime
-    }));
-    Taro.setStorageSync(FOOTPRINT_STORAGE_KEY, JSON.stringify(dataToSave));
-  } catch (e) {
-    console.error('保存足迹数据失败', e);
-  }
-};
+const FootprintContext = createContext<FootprintContextValue | null>(null);
 
 export const FootprintProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(footprintReducer, initialState);
 
-  useEffect(() => {
+  const refreshFootprints = useCallback(() => {
     const items = loadFootprintFromStorage();
-    dispatch({ type: 'INIT', payload: items });
+    dispatch({ type: 'SET_ITEMS', payload: items });
   }, []);
 
   useEffect(() => {
-    if (state.items.length > 0 || Taro.getStorageSync(FOOTPRINT_STORAGE_KEY)) {
-      saveFootprintToStorage(state.items);
-    }
+    refreshFootprints();
+  }, [refreshFootprints]);
+
+  useEffect(() => {
+    saveFootprintToStorage(state.items);
   }, [state.items]);
 
+  const contextValue: FootprintContextValue = {
+    state,
+    dispatch,
+    refreshFootprints
+  };
+
   return (
-    <FootprintContext.Provider value={{ state, dispatch }}>
+    <FootprintContext.Provider value={contextValue}>
       {children}
     </FootprintContext.Provider>
   );

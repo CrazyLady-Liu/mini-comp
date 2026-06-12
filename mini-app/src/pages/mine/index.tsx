@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -6,20 +6,28 @@ import { userInfo } from '@/data/user';
 import { useFootprint, selectFootprintCount } from '@/store/FootprintContext';
 
 const MinePage: React.FC = () => {
-  const { state: footprintState } = useFootprint();
+  const { state: footprintState, refreshFootprints } = useFootprint();
 
-  const footprintCount = useMemo(() => {
-    return selectFootprintCount(footprintState.items);
-  }, [footprintState.items]);
+  const footprintCount = selectFootprintCount(footprintState.items);
 
-  useDidShow(() => {});
+  useDidShow(() => {
+    refreshFootprints();
+  });
 
-  const handleFootprint = () => {
-    console.log('[Mine] 浏览足迹');
-    Taro.navigateTo({
-      url: '/pages/footprint/index'
-    });
-  };
+  const handleFootprint = useCallback(() => {
+    try {
+      console.log('[Mine] 点击足迹，跳转列表页');
+      Taro.navigateTo({
+        url: '/pages/footprint/index',
+        fail: (err) => {
+          console.error('[Mine] 跳转足迹页失败:', err);
+          Taro.showToast({ title: '页面跳转失败', icon: 'none' });
+        }
+      });
+    } catch (error) {
+      console.error('[Mine] 处理足迹点击异常:', error);
+    }
+  }, []);
 
   const handleOrderClick = (status: string) => {
     console.log('[Mine] 查看订单:', status);
