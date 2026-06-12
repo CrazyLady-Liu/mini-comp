@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
 import { CartProvider } from './store/CartContext';
 import { AddressProvider } from './store/AddressContext';
+import { FootprintProvider } from './store/FootprintContext';
 import './app.scss';
 
 function App(props) {
@@ -14,7 +15,9 @@ function App(props) {
   return (
     <CartProvider>
       <AddressProvider>
-        {props.children}
+        <FootprintProvider>
+          {props.children}
+        </FootprintProvider>
       </AddressProvider>
     </CartProvider>
   );

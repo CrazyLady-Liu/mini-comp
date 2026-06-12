@@ -123,3 +123,10 @@ export interface Coupon {
   status?: CouponStatus;
   useTime?: string;
 }
+
+export interface FootprintItem {
+  productId: number;
+  product: Product;
+  browseTime: number;
+  selected?: boolean;
+}

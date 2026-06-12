@@ -14,7 +14,8 @@ export default defineAppConfig({
     'pages/search-result/index',
     'pages/coupon/coupon-center/index',
     'pages/coupon/my-coupon/index',
-    'pages/preorder/index'
+    'pages/preorder/index',
+    'pages/footprint/index'
   ],
   window: {
     backgroundTextStyle: 'light',

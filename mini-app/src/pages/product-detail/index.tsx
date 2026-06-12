@@ -5,6 +5,7 @@ import styles from './index.module.scss';
 import NavBar from '@/components/NavBar';
 import { getProductById } from '@/data/products';
 import { useCart } from '@/store/CartContext';
+import { useFootprint } from '@/store/FootprintContext';
 import { formatPrice, formatSales, getTagText } from '@/utils/format';
 import classnames from 'classnames';
 import type { Product } from '@/types';
@@ -12,6 +13,7 @@ import type { Product } from '@/types';
 const ProductDetailPage: React.FC = () => {
   const router = useRouter();
   const { dispatch } = useCart();
+  const { dispatch: footprintDispatch } = useFootprint();
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedSpecId, setSelectedSpecId] = useState<number | null>(null);
   const [quantity] = useState(1);
@@ -23,6 +25,7 @@ const ProductDetailPage: React.FC = () => {
     const p = getProductById(id);
     if (p) {
       setProduct(p);
+      footprintDispatch({ type: 'ADD_FOOTPRINT', payload: { product: p } });
     }
     console.log('[ProductDetail] 商品ID:', id);
     return () => {
@@ -30,7 +33,7 @@ const ProductDetailPage: React.FC = () => {
         clearTimeout(buyCoolDownRef.current);
       }
     };
-  }, [router.params.id]);
+  }, [router.params.id, footprintDispatch]);
 
   const selectedSpec = useMemo(() => {
     if (!product || !product.specs) return null;

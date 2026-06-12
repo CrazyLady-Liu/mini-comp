@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Image } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { userInfo } from '@/data/user';
+import { useFootprint, selectFootprintCount } from '@/store/FootprintContext';
 
 const MinePage: React.FC = () => {
+  const { state: footprintState } = useFootprint();
+
+  const footprintCount = useMemo(() => {
+    return selectFootprintCount(footprintState.items);
+  }, [footprintState.items]);
+
+  useDidShow(() => {});
+
+  const handleFootprint = () => {
+    console.log('[Mine] 浏览足迹');
+    Taro.navigateTo({
+      url: '/pages/footprint/index'
+    });
+  };
+
   const handleOrderClick = (status: string) => {
     console.log('[Mine] 查看订单:', status);
     Taro.switchTab({
@@ -95,8 +111,8 @@ const MinePage: React.FC = () => {
           <Text className={styles.assetValue}>3</Text>
           <Text className={styles.assetLabel}>收藏</Text>
         </View>
-        <View className={styles.assetItem}>
-          <Text className={styles.assetValue}>12</Text>
+        <View className={styles.assetItem} onClick={handleFootprint}>
+          <Text className={styles.assetValue}>{footprintCount}</Text>
           <Text className={styles.assetLabel}>足迹</Text>
         </View>
       </View>
