@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import type { Order } from '@/types';
 import { formatPrice } from '@/utils/format';
+import { isOrderPayable } from '@/utils/order';
 import classnames from 'classnames';
 
 export interface OrderCardProps {
@@ -13,6 +14,17 @@ export interface OrderCardProps {
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, onClick, onAction }) => {
+  const [canPay, setCanPay] = useState(false);
+
+  useEffect(() => {
+    const updatePayStatus = () => {
+      setCanPay(isOrderPayable(order.status, order.createTime));
+    };
+    updatePayStatus();
+    const timer = setInterval(updatePayStatus, 1000);
+    return () => clearInterval(timer);
+  }, [order.status, order.createTime]);
+
   const handleClick = () => {
     if (onClick) {
       onClick();
@@ -26,13 +38,24 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick, onAction }) => {
   };
 
   const showActionBtn = order.status === 'pending' || order.status === 'ready';
+  const isPayBtnDisabled = order.status === 'pending' && !canPay;
+
+  const handleActionClick = (e: any) => {
+    e.stopPropagation();
+    if (order.status === 'pending') {
+      if (!canPay) return;
+      onAction?.('pay');
+    } else if (order.status === 'ready') {
+      onAction?.('pickup');
+    }
+  };
 
   return (
     <View className={styles.card} onClick={handleClick}>
       <View className={styles.header}>
         <Text className={styles.orderNo}>订单号: {order.orderNo}</Text>
         <Text className={classnames(styles.status, styles[`status-${order.status}`])}>
-          {order.statusText}
+          {order.status === 'pending' && !canPay ? '已超时' : order.statusText}
         </Text>
       </View>
 
@@ -60,16 +83,17 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onClick, onAction }) => {
           实付 <Text className={styles.totalPrice}>¥{formatPrice(order.payAmount)}</Text>
         </Text>
         {showActionBtn && (
-          <View className={styles.actionBtn} onClick={(e) => {
-            e.stopPropagation();
-            if (order.status === 'pending') {
-              onAction?.('pay');
-            } else if (order.status === 'ready') {
-              onAction?.('pickup');
-            }
-          }}>
+          <View
+            className={classnames(
+              styles.actionBtn,
+              isPayBtnDisabled && styles.actionBtnDisabled
+            )}
+            onClick={handleActionClick}
+          >
             <Text className={styles.actionBtnText}>
-              {order.status === 'pending' ? '去付款' : '去自提'}
+              {order.status === 'pending'
+                ? (canPay ? '去付款' : '已超时')
+                : '去自提'}
             </Text>
           </View>
         )}

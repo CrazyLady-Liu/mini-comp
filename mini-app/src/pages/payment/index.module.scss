@@ -1,0 +1,308 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 180rpx;
+}
+
+.content {
+  padding: $spacing-md $page-padding;
+}
+
+.orderCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid $color-divider;
+}
+
+.orderNo {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.orderStatus {
+  font-size: $font-size-sm;
+  color: $color-warning;
+  font-weight: $font-weight-medium;
+}
+
+.amountSection {
+  padding: $spacing-xl 0;
+  text-align: center;
+}
+
+.amountLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.amountValue {
+  font-size: 64rpx;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+
+  &-symbol {
+    font-size: 36rpx;
+    margin-right: 4rpx;
+  }
+}
+
+.countdown {
+  margin-top: $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.countdownValue {
+  color: $color-warning;
+  font-weight: $font-weight-medium;
+}
+
+.sectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-md;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $color-divider;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.payMethodList {
+  padding: 0 $spacing-lg;
+}
+
+.payMethodItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg 0;
+  border-bottom: 1px solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.payMethodIcon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.payMethodIcon-wechat {
+  background: #07c160;
+  color: #fff;
+}
+
+.payMethodIcon-alipay {
+  background: #1677ff;
+  color: #fff;
+}
+
+.payMethodInfo {
+  flex: 1;
+}
+
+.payMethodName {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.payMethodDesc {
+  margin-top: 4rpx;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.payMethodCheck {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.payMethodCheck-active {
+  background: $color-primary;
+  border-color: $color-primary;
+
+  .payMethodCheckIcon {
+    color: #fff;
+  }
+}
+
+.payMethodCheckIcon {
+  font-size: 24rpx;
+  color: transparent;
+  font-weight: $font-weight-bold;
+}
+
+.orderItems {
+  padding: 0 $spacing-lg;
+}
+
+.orderItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1px solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.orderItemImage {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+}
+
+.orderItemInfo {
+  flex: 1;
+  margin-left: $spacing-md;
+  overflow: hidden;
+}
+
+.orderItemName {
+  @include text-ellipsis;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.orderItemSpec {
+  @include text-ellipsis;
+  margin-top: 4rpx;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.orderItemRight {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.orderItemPrice {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.orderItemQty {
+  margin-top: 4rpx;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: baseline;
+}
+
+.footerLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.footerPrice {
+  font-size: 40rpx;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+}
+
+.payBtn {
+  padding: 0 80rpx;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.payBtnDisabled {
+  background: $color-bg-disabled !important;
+  opacity: 0.7;
+}
+
+.payBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.payLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+}
+
+.paySpinner {
+  width: 28rpx;
+  height: 28rpx;
+  border: 3rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

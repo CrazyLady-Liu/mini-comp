@@ -7,6 +7,7 @@ export default defineAppConfig({
     'pages/mine/index',
     'pages/product-detail/index',
     'pages/order-confirm/index',
+    'pages/payment/index',
     'pages/pickup-code/index',
     'pages/address/index',
     'pages/address-edit/index',

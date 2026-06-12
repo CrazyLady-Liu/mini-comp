@@ -35,7 +35,9 @@ const OrderPage: React.FC = () => {
         url: `/pages/pickup-code/index?id=${orderId}`
       });
     } else if (action === 'pay') {
-      Taro.showToast({ title: '支付功能开发中', icon: 'none' });
+      Taro.navigateTo({
+        url: `/pages/payment/index?id=${orderId}`
+      });
     }
   };
 
