@@ -752,12 +752,144 @@
   };
 
   const Products = {
+    isExporting: false,
+
     init() {
       this.initTabs();
       this.initFilters();
       this.initModal();
+      this.initExport();
       this.render();
     },
+
+    initExport() {
+      const btn = document.getElementById('exportProductBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => this.exportExcel());
+    },
+
+    getExportFileName() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const dateStr = `${y}${m}${d}`;
+
+      const filters = [];
+      const tab = AppState.productTab;
+      const tabMap = { all: '全部', on: '在售', off: '下架', out: '售罄', low: '库存预警' };
+      if (tab && tab !== 'all' && tabMap[tab]) filters.push(tabMap[tab]);
+
+      const cat = document.getElementById('productCategoryFilter')?.value;
+      if (cat) filters.push(cat);
+
+      const kw = document.getElementById('productSearch')?.value.trim();
+      if (kw) filters.push(`搜索_${kw}`);
+
+      const filterStr = filters.length ? '_' + filters.join('_') : '';
+      return `商品数据_${dateStr}${filterStr}.xlsx`;
+    },
+
+    showExportLoading(show) {
+      const el = document.getElementById('exportLoading');
+      if (!el) return;
+      if (show) {
+        el.classList.add('show');
+      } else {
+        el.classList.remove('show');
+      }
+    },
+
+    exportExcel() {
+      if (this.isExporting) {
+        Utils.showToast('正在生成文件，请稍候...', 'info');
+        return;
+      }
+
+      const data = this.getFiltered();
+      if (!data.length) {
+        Utils.showToast('没有可导出的商品数据', 'error');
+        return;
+      }
+
+      this.isExporting = true;
+      const exportBtn = document.getElementById('exportProductBtn');
+      if (exportBtn) {
+        exportBtn.disabled = true;
+        exportBtn.style.opacity = '0.6';
+        exportBtn.style.cursor = 'not-allowed';
+      }
+      this.showExportLoading(true);
+
+      const fileName = this.getExportFileName();
+
+      setTimeout(() => {
+        try {
+          this._doExport(data, fileName);
+          Utils.showToast('导出成功，文件已开始下载', 'success');
+        } catch (e) {
+          Utils.showToast('导出失败：' + e.message, 'error');
+        } finally {
+          this.isExporting = false;
+          if (exportBtn) {
+            exportBtn.disabled = false;
+            exportBtn.style.opacity = '';
+            exportBtn.style.cursor = '';
+          }
+          this.showExportLoading(false);
+        }
+      }, 1200 + Math.random() * 800);
+    },
+
+    _doExport(data, fileName) {
+      const headers = ['商品名称', '分类', '进价(元)', '售价(元)', '库存', '单位', '销量', '状态', '库存预警值', '创建时间'];
+      const statusMap = { on: '在售', off: '下架', out: '售罄' };
+
+      const rows = data.map(p => [
+        p.name,
+        p.category,
+        p.costPrice.toFixed(2),
+        p.salePrice.toFixed(2),
+        p.stock,
+        p.unit,
+        p.sales,
+        statusMap[p.status] || p.status,
+        p.warnStock,
+        p.createdAt
+      ]);
+
+      let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+      html += '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>商品数据</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>';
+      html += '<body><table border="1" cellspacing="0" cellpadding="2" style="border-collapse:collapse;">';
+
+      html += '<tr style="background:#f1f5f9;font-weight:bold;">';
+      headers.forEach(h => {
+        html += `<td style="padding:6px 10px;font-size:12px;">${h}</td>`;
+      });
+      html += '</tr>';
+
+      rows.forEach(row => {
+        html += '<tr>';
+        row.forEach(cell => {
+          const val = (cell === null || cell === undefined) ? '' : String(cell);
+          html += `<td style="padding:4px 10px;font-size:12px;mso-number-format:'\@';">${val}</td>`;
+        });
+        html += '</tr>';
+      });
+
+      html += '</table></body></html>';
+
+      const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    },
+
     initTabs() {
       document.querySelectorAll('#productTabs .tab').forEach(t => {
         t.addEventListener('click', () => {
