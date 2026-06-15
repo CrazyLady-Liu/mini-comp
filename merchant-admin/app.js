@@ -355,9 +355,16 @@
     },
 
     createItem(file, previewUrl) {
+      const signature = file ? {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        lastModified: file.lastModified || Date.now()
+      } : null;
       return {
         uid: this.genId(),
         file: file || null,
+        fileSignature: signature,
         localPreview: previewUrl || '',
         remoteUrl: '',
         fileName: file ? file.name : '',
@@ -394,6 +401,31 @@
       if (img.status === 'success' && img.remoteUrl) return img.remoteUrl;
       if (img.localPreview) return img.localPreview;
       return img.remoteUrl || '';
+    },
+
+    validateFileIntegrity(img) {
+      if (!img) return { valid: false, reason: '图片记录不存在' };
+      if (!img.file) return { valid: false, reason: '文件引用已丢失' };
+      if (!(img.file instanceof File) && !(img.file instanceof Blob)) {
+        return { valid: false, reason: '文件对象类型异常' };
+      }
+      if (img.fileSignature) {
+        const sig = img.fileSignature;
+        if (img.file.name !== sig.fileName) return { valid: false, reason: '文件名与原始记录不一致' };
+        if (img.file.size !== sig.fileSize) return { valid: false, reason: '文件大小与原始记录不一致，文件可能已损坏' };
+        if (sig.fileType && img.file.type !== sig.fileType) return { valid: false, reason: '文件类型与原始记录不一致' };
+        if (sig.lastModified && img.file.lastModified && img.file.lastModified !== sig.lastModified) {
+          return { valid: false, reason: '文件修改时间不一致，文件可能已被替换' };
+        }
+      }
+      if (img.file.size <= 0) return { valid: false, reason: '文件大小为 0，可能已失效' };
+      return { valid: true };
+    },
+
+    markFileLost(img) {
+      img.file = null;
+      img.status = 'error';
+      img.errorMsg = '原始文件已失效，请删除后重新选择';
     },
 
     init() {
@@ -480,7 +512,16 @@
 
     doUpload(uid) {
       const item = this.findById(uid);
-      if (!item || !item.file) return;
+      if (!item) return;
+
+      const integrity = this.validateFileIntegrity(item);
+      if (!integrity.valid) {
+        this.markFileLost(item);
+        Utils.showToast(`图片「${item.fileName || '未命名'}」${integrity.reason}，请删除后重新选择`, 'error');
+        this.render();
+        this.updateAddBtnVisibility();
+        return;
+      }
 
       item.status = 'uploading';
       item.errorMsg = '';
@@ -505,8 +546,14 @@
 
     retryUpload(uid) {
       const item = this.findById(uid);
-      if (!item || !item.file) {
-        Utils.showToast('原始文件信息已丢失，请删除后重新选择图片', 'error');
+      if (!item) return;
+
+      const integrity = this.validateFileIntegrity(item);
+      if (!integrity.valid) {
+        this.markFileLost(item);
+        Utils.showToast(`${integrity.reason}，请删除后重新选择图片`, 'error');
+        this.render();
+        this.updateAddBtnVisibility();
         return;
       }
 
@@ -525,7 +572,7 @@
         } else {
           current.status = 'error';
           current.errorMsg = result.message;
-          Utils.showToast(`上传失败：${result.message}`, 'error');
+          Utils.showToast(`重新上传失败：${result.message}`, 'error');
         }
         this.render();
         this.updateAddBtnVisibility();
