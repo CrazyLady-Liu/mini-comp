@@ -71,21 +71,21 @@
 
   const MockData = {
     products: [
-      { id: 1, name: '有机西红柿', category: '时令蔬菜', costPrice: 3.2, salePrice: 5.99, stock: 28, warnStock: 30, sales: 1234, status: 'on', unit: '斤', createdAt: '2024-05-10 09:00', image: 'https://picsum.photos/id/292/80/80' },
-      { id: 2, name: '新鲜黄瓜', category: '时令蔬菜', costPrice: 1.8, salePrice: 3.99, stock: 200, warnStock: 50, sales: 856, status: 'on', unit: '斤', createdAt: '2024-05-10 09:10', image: 'https://picsum.photos/id/312/80/80' },
-      { id: 3, name: '红富士苹果', category: '新鲜水果', costPrice: 4.5, salePrice: 6.99, stock: 0, warnStock: 40, sales: 2341, status: 'out', unit: '斤', createdAt: '2024-05-10 09:20', image: 'https://picsum.photos/id/431/80/80' },
-      { id: 4, name: '土鸡蛋', category: '蛋奶豆品', costPrice: 13.0, salePrice: 19.9, stock: 8, warnStock: 20, sales: 567, status: 'on', unit: '盒', createdAt: '2024-05-10 09:30', image: 'https://picsum.photos/id/326/80/80' },
-      { id: 5, name: '新鲜牛奶', category: '蛋奶豆品', costPrice: 8.5, salePrice: 12.9, stock: 80, warnStock: 30, sales: 789, status: 'on', unit: '瓶', createdAt: '2024-05-10 09:40', image: 'https://picsum.photos/id/401/80/80' },
-      { id: 6, name: '精选五花肉', category: '肉禽蛋品', costPrice: 21.0, salePrice: 28.9, stock: 30, warnStock: 25, sales: 432, status: 'on', unit: '斤', createdAt: '2024-05-10 09:50', image: 'https://picsum.photos/id/570/80/80' },
-      { id: 7, name: '新鲜草莓', category: '新鲜水果', costPrice: 18.0, salePrice: 25.9, stock: 0, warnStock: 15, sales: 1024, status: 'out', unit: '斤', createdAt: '2024-05-10 10:00', image: 'https://picsum.photos/id/580/80/80' },
-      { id: 8, name: '有机西兰花', category: '时令蔬菜', costPrice: 5.5, salePrice: 8.99, stock: 60, warnStock: 20, sales: 567, status: 'on', unit: '个', createdAt: '2024-05-10 10:10', image: 'https://picsum.photos/id/625/80/80' },
-      { id: 9, name: '进口香蕉', category: '新鲜水果', costPrice: 2.8, salePrice: 4.99, stock: 150, warnStock: 40, sales: 1567, status: 'on', unit: '斤', createdAt: '2024-05-10 10:20', image: 'https://picsum.photos/id/1080/80/80' },
-      { id: 10, name: '新鲜胡萝卜', category: '时令蔬菜', costPrice: 1.2, salePrice: 2.99, stock: 5, warnStock: 50, sales: 678, status: 'on', unit: '斤', createdAt: '2024-05-10 10:30', image: 'https://picsum.photos/id/835/80/80' },
-      { id: 11, name: '三文鱼', category: '海鲜水产', costPrice: 65.0, salePrice: 89.9, stock: 20, warnStock: 10, sales: 234, status: 'on', unit: '斤', createdAt: '2024-05-10 10:40', image: 'https://picsum.photos/id/505/80/80' },
-      { id: 12, name: '原味酸奶', category: '蛋奶豆品', costPrice: 5.5, salePrice: 8.99, stock: 100, warnStock: 40, sales: 1234, status: 'on', unit: '杯', createdAt: '2024-05-10 10:50', image: 'https://picsum.photos/id/401/80/80' },
-      { id: 13, name: '东北大米', category: '粮油调味', costPrice: 3.8, salePrice: 5.99, stock: 500, warnStock: 100, sales: 890, status: 'on', unit: '斤', createdAt: '2024-05-12 08:00', image: 'https://picsum.photos/id/292/80/80' },
-      { id: 14, name: '菜籽油', category: '粮油调味', costPrice: 62.0, salePrice: 88.0, stock: 45, warnStock: 30, sales: 186, status: 'on', unit: '桶', createdAt: '2024-05-12 08:10', image: 'https://picsum.photos/id/312/80/80' },
-      { id: 15, name: '紫皮洋葱', category: '时令蔬菜', costPrice: 1.5, salePrice: 2.59, stock: 0, warnStock: 40, sales: 412, status: 'off', unit: '斤', createdAt: '2024-05-12 08:20', image: 'https://picsum.photos/id/312/80/80' }
+      { id: 1, name: '有机西红柿', category: '时令蔬菜', costPrice: 3.2, salePrice: 5.99, stock: 28, warnStock: 30, sales: 1234, status: 'on', unit: '斤', createdAt: '2024-05-10 09:00', image: 'https://picsum.photos/id/292/80/80', images: ['https://picsum.photos/id/292/400/400', 'https://picsum.photos/id/293/400/400'] },
+      { id: 2, name: '新鲜黄瓜', category: '时令蔬菜', costPrice: 1.8, salePrice: 3.99, stock: 200, warnStock: 50, sales: 856, status: 'on', unit: '斤', createdAt: '2024-05-10 09:10', image: 'https://picsum.photos/id/312/80/80', images: ['https://picsum.photos/id/312/400/400'] },
+      { id: 3, name: '红富士苹果', category: '新鲜水果', costPrice: 4.5, salePrice: 6.99, stock: 0, warnStock: 40, sales: 2341, status: 'out', unit: '斤', createdAt: '2024-05-10 09:20', image: 'https://picsum.photos/id/431/80/80', images: ['https://picsum.photos/id/431/400/400', 'https://picsum.photos/id/432/400/400', 'https://picsum.photos/id/433/400/400'] },
+      { id: 4, name: '土鸡蛋', category: '蛋奶豆品', costPrice: 13.0, salePrice: 19.9, stock: 8, warnStock: 20, sales: 567, status: 'on', unit: '盒', createdAt: '2024-05-10 09:30', image: 'https://picsum.photos/id/326/80/80', images: ['https://picsum.photos/id/326/400/400'] },
+      { id: 5, name: '新鲜牛奶', category: '蛋奶豆品', costPrice: 8.5, salePrice: 12.9, stock: 80, warnStock: 30, sales: 789, status: 'on', unit: '瓶', createdAt: '2024-05-10 09:40', image: 'https://picsum.photos/id/401/80/80', images: ['https://picsum.photos/id/401/400/400'] },
+      { id: 6, name: '精选五花肉', category: '肉禽蛋品', costPrice: 21.0, salePrice: 28.9, stock: 30, warnStock: 25, sales: 432, status: 'on', unit: '斤', createdAt: '2024-05-10 09:50', image: 'https://picsum.photos/id/570/80/80', images: ['https://picsum.photos/id/570/400/400'] },
+      { id: 7, name: '新鲜草莓', category: '新鲜水果', costPrice: 18.0, salePrice: 25.9, stock: 0, warnStock: 15, sales: 1024, status: 'out', unit: '斤', createdAt: '2024-05-10 10:00', image: 'https://picsum.photos/id/580/80/80', images: ['https://picsum.photos/id/580/400/400'] },
+      { id: 8, name: '有机西兰花', category: '时令蔬菜', costPrice: 5.5, salePrice: 8.99, stock: 60, warnStock: 20, sales: 567, status: 'on', unit: '个', createdAt: '2024-05-10 10:10', image: 'https://picsum.photos/id/625/80/80', images: ['https://picsum.photos/id/625/400/400'] },
+      { id: 9, name: '进口香蕉', category: '新鲜水果', costPrice: 2.8, salePrice: 4.99, stock: 150, warnStock: 40, sales: 1567, status: 'on', unit: '斤', createdAt: '2024-05-10 10:20', image: 'https://picsum.photos/id/1080/80/80', images: ['https://picsum.photos/id/1080/400/400'] },
+      { id: 10, name: '新鲜胡萝卜', category: '时令蔬菜', costPrice: 1.2, salePrice: 2.99, stock: 5, warnStock: 50, sales: 678, status: 'on', unit: '斤', createdAt: '2024-05-10 10:30', image: 'https://picsum.photos/id/835/80/80', images: ['https://picsum.photos/id/835/400/400'] },
+      { id: 11, name: '三文鱼', category: '海鲜水产', costPrice: 65.0, salePrice: 89.9, stock: 20, warnStock: 10, sales: 234, status: 'on', unit: '斤', createdAt: '2024-05-10 10:40', image: 'https://picsum.photos/id/505/80/80', images: ['https://picsum.photos/id/505/400/400'] },
+      { id: 12, name: '原味酸奶', category: '蛋奶豆品', costPrice: 5.5, salePrice: 8.99, stock: 100, warnStock: 40, sales: 1234, status: 'on', unit: '杯', createdAt: '2024-05-10 10:50', image: 'https://picsum.photos/id/401/80/80', images: ['https://picsum.photos/id/401/400/400'] },
+      { id: 13, name: '东北大米', category: '粮油调味', costPrice: 3.8, salePrice: 5.99, stock: 500, warnStock: 100, sales: 890, status: 'on', unit: '斤', createdAt: '2024-05-12 08:00', image: 'https://picsum.photos/id/292/80/80', images: ['https://picsum.photos/id/292/400/400'] },
+      { id: 14, name: '菜籽油', category: '粮油调味', costPrice: 62.0, salePrice: 88.0, stock: 45, warnStock: 30, sales: 186, status: 'on', unit: '桶', createdAt: '2024-05-12 08:10', image: 'https://picsum.photos/id/312/80/80', images: ['https://picsum.photos/id/312/400/400'] },
+      { id: 15, name: '紫皮洋葱', category: '时令蔬菜', costPrice: 1.5, salePrice: 2.59, stock: 0, warnStock: 40, sales: 412, status: 'off', unit: '斤', createdAt: '2024-05-12 08:20', image: 'https://picsum.photos/id/312/80/80', images: ['https://picsum.photos/id/312/400/400'] }
     ],
     preorders: [
       { id: 'PO20240607001', user: '张**', phone: '138****1234', items: [{ name: '有机西红柿', qty: 2, price: 5.99, image: 'https://picsum.photos/id/292/80/80' }, { name: '新鲜黄瓜', qty: 1, price: 3.99, image: 'https://picsum.photos/id/312/80/80' }], qty: 3, amount: 15.97, pickup: '阳光社区店', pickupTime: '2024-06-08 08:00-10:00', status: 'pending', createdAt: '2024-06-07 09:30' },
@@ -170,7 +170,8 @@
     preorderTab: 'all',
     editingProductId: null,
     editingPickupId: null,
-    verifiedOrder: null
+    verifiedOrder: null,
+    productImages: []
   };
 
   const Auth = {
@@ -340,6 +341,204 @@
     }
   };
 
+  const ImageUploader = {
+    MAX_IMAGES: 6,
+    MAX_SIZE: 5 * 1024 * 1024,
+    ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+    ALLOWED_EXT: ['.jpg', '.jpeg', '.png', '.webp'],
+
+    init() {
+      this.fileInput = document.getElementById('productImageInput');
+      this.listEl = document.getElementById('productImageList');
+      this.addBtn = document.getElementById('addImageBtn');
+
+      if (!this.fileInput || !this.listEl || !this.addBtn) return;
+
+      this.addBtn.addEventListener('click', () => this.fileInput.click());
+      this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+
+      this.listEl.addEventListener('click', (e) => {
+        const delBtn = e.target.closest('.delete-btn');
+        if (delBtn) {
+          const index = parseInt(delBtn.dataset.index);
+          this.removeImage(index);
+        }
+      });
+
+      this.listEl.addEventListener('dragstart', (e) => this.handleDragStart(e));
+      this.listEl.addEventListener('dragend', (e) => this.handleDragEnd(e));
+      this.listEl.addEventListener('dragover', (e) => this.handleDragOver(e));
+      this.listEl.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+      this.listEl.addEventListener('drop', (e) => this.handleDrop(e));
+    },
+
+    validateFile(file) {
+      if (!this.ALLOWED_TYPES.includes(file.type)) {
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (!this.ALLOWED_EXT.includes(ext)) {
+          return { valid: false, message: '图片格式不支持，请上传 jpg、png 或 webp 格式' };
+        }
+      }
+      if (file.size > this.MAX_SIZE) {
+        return { valid: false, message: '图片大小不能超过 5M' };
+      }
+      return { valid: true };
+    },
+
+    handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      const remainingSlots = this.MAX_IMAGES - AppState.productImages.length;
+      if (remainingSlots <= 0) {
+        Utils.showToast(`最多只能上传 ${this.MAX_IMAGES} 张图片`, 'error');
+        e.target.value = '';
+        return;
+      }
+
+      const filesToProcess = files.slice(0, remainingSlots);
+      let processedCount = 0;
+      let hasError = false;
+
+      filesToProcess.forEach(file => {
+        const validation = this.validateFile(file);
+        if (!validation.valid) {
+          Utils.showToast(validation.message, 'error');
+          hasError = true;
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const imageData = {
+            id: Date.now() + Math.random(),
+            url: ev.target.result,
+            name: file.name,
+            size: file.size,
+            type: file.type
+          };
+          AppState.productImages.push(imageData);
+          processedCount++;
+          if (processedCount === filesToProcess.length) {
+            this.render();
+            this.updateAddBtnVisibility();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      e.target.value = '';
+      if (!hasError && files.length > remainingSlots) {
+        Utils.showToast(`已超过 ${this.MAX_IMAGES} 张，只保留前 ${remainingSlots} 张`, 'info');
+      }
+    },
+
+    removeImage(index) {
+      AppState.productImages.splice(index, 1);
+      this.render();
+      this.updateAddBtnVisibility();
+    },
+
+    handleDragStart(e) {
+      const item = e.target.closest('.image-item');
+      if (!item) return;
+
+      this.draggedIndex = parseInt(item.dataset.index);
+      item.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.draggedIndex);
+    },
+
+    handleDragEnd(e) {
+      const item = e.target.closest('.image-item');
+      if (item) item.classList.remove('dragging');
+      document.querySelectorAll('.image-item').forEach(el => el.classList.remove('drag-over'));
+    },
+
+    handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const item = e.target.closest('.image-item');
+      document.querySelectorAll('.image-item').forEach(el => el.classList.remove('drag-over'));
+      if (item) item.classList.add('drag-over');
+    },
+
+    handleDragLeave(e) {
+      const item = e.target.closest('.image-item');
+      if (item && !item.contains(e.relatedTarget)) {
+        item.classList.remove('drag-over');
+      }
+    },
+
+    handleDrop(e) {
+      e.preventDefault();
+      const targetItem = e.target.closest('.image-item');
+      if (!targetItem || this.draggedIndex === undefined) return;
+
+      const targetIndex = parseInt(targetItem.dataset.index);
+      if (this.draggedIndex === targetIndex) return;
+
+      const images = AppState.productImages;
+      const [draggedItem] = images.splice(this.draggedIndex, 1);
+      images.splice(targetIndex, 0, draggedItem);
+
+      this.render();
+      this.draggedIndex = undefined;
+    },
+
+    updateAddBtnVisibility() {
+      if (AppState.productImages.length >= this.MAX_IMAGES) {
+        this.addBtn.classList.add('hidden');
+      } else {
+        this.addBtn.classList.remove('hidden');
+      }
+    },
+
+    render() {
+      const images = AppState.productImages;
+      this.listEl.innerHTML = images.map((img, index) => `
+        <div class="image-item" draggable="true" data-index="${index}">
+          ${index === 0 ? '<span class="main-tag">主图</span>' : ''}
+          <img src="${img.url}" alt="${img.name || '商品图片'}">
+          <button class="delete-btn" data-index="${index}" title="删除">×</button>
+          <span class="drag-handle">拖动排序</span>
+        </div>
+      `).join('');
+    },
+
+    reset() {
+      AppState.productImages = [];
+      this.render();
+      this.updateAddBtnVisibility();
+    },
+
+    setImages(imageUrls) {
+      AppState.productImages = imageUrls.map((url, index) => ({
+        id: Date.now() + index,
+        url: url,
+        name: `图片${index + 1}`,
+        isExisting: true
+      }));
+      this.render();
+      this.updateAddBtnVisibility();
+    },
+
+    getMainImage() {
+      return AppState.productImages[0]?.url || '';
+    },
+
+    getAllImages() {
+      return AppState.productImages.map(img => img.url);
+    },
+
+    validate() {
+      if (AppState.productImages.length === 0) {
+        return { valid: false, message: '请至少上传 1 张商品主图' };
+      }
+      return { valid: true };
+    }
+  };
+
   const Products = {
     init() {
       this.initTabs();
@@ -369,6 +568,7 @@
       });
     },
     initModal() {
+      ImageUploader.init();
       document.getElementById('addProductBtn').addEventListener('click', () => {
         AppState.editingProductId = null;
         document.getElementById('productModalTitle').textContent = '新增商品';
@@ -377,6 +577,7 @@
           if (el) el.value = '';
         });
         document.getElementById('pStatus').value = 'on';
+        ImageUploader.reset();
         Utils.openModal('productModal');
       });
       document.getElementById('saveProductBtn').addEventListener('click', () => {
@@ -389,13 +590,19 @@
           Utils.showToast('请填写完整的必填项', 'error');
           return;
         }
+        const imgValidation = ImageUploader.validate();
+        if (!imgValidation.valid) {
+          Utils.showToast(imgValidation.message, 'error');
+          return;
+        }
         const data = {
           name, category, costPrice, salePrice, stock,
           unit: document.getElementById('pUnit').value || '斤',
           status: document.getElementById('pStatus').value,
           warnStock: parseInt(document.getElementById('pWarnStock').value) || Math.floor(stock * 0.2),
           createdAt: Utils.formatDate(new Date()),
-          image: 'https://picsum.photos/id/' + Math.floor(Math.random() * 1000) + '/80/80',
+          image: ImageUploader.getMainImage(),
+          images: ImageUploader.getAllImages(),
           sales: 0
         };
         if (AppState.editingProductId) {
@@ -1100,6 +1307,8 @@
       document.getElementById('pUnit').value = p.unit;
       document.getElementById('pStatus').value = p.status;
       document.getElementById('pWarnStock').value = p.warnStock;
+      const existingImages = p.images && p.images.length ? p.images : [p.image];
+      ImageUploader.setImages(existingImages);
       Utils.openModal('productModal');
     },
     toggleProduct(id) {

@@ -1019,12 +1019,14 @@
             <input type="number" class="input w100" id="pWarnStock" placeholder="低于该值将预警">
           </div>
           <div class="form-group full">
-            <label>商品图片</label>
-            <div class="upload-zone">
-              <div class="upload-placeholder">
-                <span class="upload-icon">📷</span>
-                <p>点击或拖拽上传商品图片</p>
+            <label>商品图片 <span style="color:#ef4444;">*</span> <span style="color:#94a3b8;font-weight:400;font-size:12px;">（最多6张，第一张为主图，支持 jpg/png/webp，单张不超过5M）</span></label>
+            <div class="image-upload-area">
+              <div class="image-list" id="productImageList"></div>
+              <div class="image-add-btn" id="addImageBtn" title="添加图片">
+                <span class="image-add-icon">+</span>
+                <span class="image-add-text">上传图片</span>
               </div>
+              <input type="file" id="productImageInput" accept=".jpg,.jpeg,.png,.webp" multiple style="display:none;">
             </div>
           </div>
           <div class="form-group full">
