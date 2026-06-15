@@ -7,7 +7,58 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="layout">
+  <div id="loginPage" class="login-page">
+    <div class="login-container">
+      <div class="login-left">
+        <div class="brand-logo">🥬</div>
+        <h1 class="brand-title">鲜来鲜往</h1>
+        <p class="brand-slogan">社区生鲜 · 新鲜直达</p>
+        <div class="brand-features">
+          <div class="feature-item"><span>✓</span> 预售订单管理</div>
+          <div class="feature-item"><span>✓</span> 商品库存管控</div>
+          <div class="feature-item"><span>✓</span> 核销自提一体</div>
+          <div class="feature-item"><span>✓</span> 营销活动管理</div>
+          <div class="feature-item"><span>✓</span> 数据损耗分析</div>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-form-wrap">
+          <h2 class="login-title">商家登录</h2>
+          <p class="login-subtitle">欢迎使用鲜来鲜往商家管理系统</p>
+          <form id="loginForm" class="login-form">
+            <div class="form-group">
+              <label>账号</label>
+              <div class="input-wrap">
+                <span class="input-icon">👤</span>
+                <input type="text" id="loginAccount" placeholder="请输入商家账号" value="admin">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>密码</label>
+              <div class="input-wrap">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="loginPassword" placeholder="请输入登录密码" value="123456">
+              </div>
+            </div>
+            <div class="form-options">
+              <label class="checkbox-wrap">
+                <input type="checkbox" id="rememberMe" checked>
+                <span>记住密码</span>
+              </label>
+              <a href="#" class="forgot-link">忘记密码?</a>
+            </div>
+            <button type="submit" class="login-btn">登 录</button>
+            <div id="loginError" class="login-error"></div>
+          </form>
+          <div class="login-tips">
+            <p>💡 默认账号: admin / 123456</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainApp" class="layout" style="display:none;">
     <aside class="sidebar">
       <div class="logo">
         <span class="logo-icon">🥬</span>
@@ -19,31 +70,44 @@
           <span class="menu-icon">📊</span>
           <span>工作台</span>
         </div>
+        <div class="menu-item" data-page="preorder">
+          <span class="menu-icon">📦</span>
+          <span>预售订单管理</span>
+        </div>
         <div class="menu-item" data-page="products">
           <span class="menu-icon">🥗</span>
           <span>商品管理</span>
         </div>
-        <div class="menu-item" data-page="orders">
-          <span class="menu-icon">📋</span>
-          <span>订单管理</span>
-        </div>
-        <div class="menu-item" data-page="purchase">
-          <span class="menu-icon">📦</span>
-          <span>采购管理</span>
-        </div>
         <div class="menu-item" data-page="pickup">
           <span class="menu-icon">🏪</span>
           <span>自提点管理</span>
+        </div>
+        <div class="menu-item" data-page="verify">
+          <span class="menu-icon">✅</span>
+          <span>核销管理</span>
+        </div>
+        <div class="menu-item" data-page="marketing">
+          <span class="menu-icon">🎯</span>
+          <span>活动营销管理</span>
+        </div>
+        <div class="menu-item" data-page="aftersale">
+          <span class="menu-icon">🔄</span>
+          <span>售后订单管理</span>
+        </div>
+        <div class="menu-item" data-page="statistics">
+          <span class="menu-icon">📈</span>
+          <span>数据统计与损耗</span>
         </div>
       </nav>
       <div class="sidebar-footer">
         <div class="user-info">
           <div class="avatar">👨‍💼</div>
           <div class="user-detail">
-            <div class="username">张老板</div>
+            <div class="username" id="currentUser">张老板</div>
             <div class="role">商家管理员</div>
           </div>
         </div>
+        <button class="logout-btn" id="logoutBtn">退出登录</button>
       </div>
     </aside>
 
@@ -59,8 +123,9 @@
           </div>
           <div class="notification">
             <span>🔔</span>
-            <span class="badge">3</span>
+            <span class="badge">5</span>
           </div>
+          <div class="header-date" id="currentDate"></div>
         </div>
       </header>
 
@@ -70,7 +135,7 @@
             <div class="stat-card">
               <div class="stat-icon green">💰</div>
               <div class="stat-info">
-                <div class="stat-value">¥12,580</div>
+                <div class="stat-value" id="statTodayRevenue">¥12,580</div>
                 <div class="stat-label">今日营业额</div>
                 <div class="stat-trend up">↑ 12.5% 较昨日</div>
               </div>
@@ -78,24 +143,24 @@
             <div class="stat-card">
               <div class="stat-icon blue">📋</div>
               <div class="stat-info">
-                <div class="stat-value">156</div>
+                <div class="stat-value" id="statTodayOrders">156</div>
                 <div class="stat-label">今日订单数</div>
                 <div class="stat-trend up">↑ 8.3% 较昨日</div>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon orange">👥</div>
+              <div class="stat-icon orange">🥬</div>
               <div class="stat-info">
-                <div class="stat-value">328</div>
-                <div class="stat-label">今日用户数</div>
-                <div class="stat-trend up">↑ 15.2% 较昨日</div>
+                <div class="stat-value" id="statPreorderCount">48</div>
+                <div class="stat-label">预售订单</div>
+                <div class="stat-trend up">↑ 18.6% 较昨日</div>
               </div>
             </div>
             <div class="stat-card">
               <div class="stat-icon purple">📦</div>
               <div class="stat-info">
-                <div class="stat-value">23</div>
-                <div class="stat-label">待分拣订单</div>
+                <div class="stat-value" id="statPendingVerify">23</div>
+                <div class="stat-label">待核销</div>
                 <div class="stat-trend down">↓ 5.1% 较昨日</div>
               </div>
             </div>
@@ -104,24 +169,14 @@
           <div class="dashboard-grid">
             <div class="panel">
               <div class="panel-header">
-                <h3>今日订单趋势</h3>
-                <select class="select">
-                  <option>今日</option>
-                  <option>本周</option>
-                  <option>本月</option>
+                <h3>近7日销售趋势</h3>
+                <select class="select" id="trendSelect">
+                  <option value="7">近7日</option>
+                  <option value="30">近30日</option>
                 </select>
               </div>
               <div class="chart-placeholder">
-                <div class="bar-chart">
-                  <div class="bar" style="height: 40%"><span>6:00</span></div>
-                  <div class="bar" style="height: 60%"><span>8:00</span></div>
-                  <div class="bar" style="height: 85%"><span>10:00</span></div>
-                  <div class="bar" style="height: 70%"><span>12:00</span></div>
-                  <div class="bar" style="height: 55%"><span>14:00</span></div>
-                  <div class="bar" style="height: 75%"><span>16:00</span></div>
-                  <div class="bar" style="height: 90%"><span>18:00</span></div>
-                  <div class="bar" style="height: 65%"><span>20:00</span></div>
-                </div>
+                <div class="bar-chart" id="trendChart"></div>
               </div>
             </div>
 
@@ -130,134 +185,126 @@
                 <h3>热销商品TOP5</h3>
                 <a href="#" class="more">查看更多</a>
               </div>
-              <div class="product-rank">
-                <div class="rank-item">
-                  <span class="rank-num first">1</span>
-                  <img src="https://picsum.photos/id/292/80/80" class="rank-img">
-                  <div class="rank-info">
-                    <div class="rank-name">有机西红柿</div>
-                    <div class="rank-sales">销量：328斤</div>
-                  </div>
-                  <div class="rank-amount">¥1,856</div>
-                </div>
-                <div class="rank-item">
-                  <span class="rank-num second">2</span>
-                  <img src="https://picsum.photos/id/431/80/80" class="rank-img">
-                  <div class="rank-info">
-                    <div class="rank-name">红富士苹果</div>
-                    <div class="rank-sales">销量：256斤</div>
-                  </div>
-                  <div class="rank-amount">¥1,698</div>
-                </div>
-                <div class="rank-item">
-                  <span class="rank-num third">3</span>
-                  <img src="https://picsum.photos/id/1080/80/80" class="rank-img">
-                  <div class="rank-info">
-                    <div class="rank-name">进口香蕉</div>
-                    <div class="rank-sales">销量：198斤</div>
-                  </div>
-                  <div class="rank-amount">¥986</div>
-                </div>
-                <div class="rank-item">
-                  <span class="rank-num">4</span>
-                  <img src="https://picsum.photos/id/326/80/80" class="rank-img">
-                  <div class="rank-info">
-                    <div class="rank-name">土鸡蛋</div>
-                    <div class="rank-sales">销量：156盒</div>
-                  </div>
-                  <div class="rank-amount">¥3,104</div>
-                </div>
-                <div class="rank-item">
-                  <span class="rank-num">5</span>
-                  <img src="https://picsum.photos/id/570/80/80" class="rank-img">
-                  <div class="rank-info">
-                    <div class="rank-name">精选五花肉</div>
-                    <div class="rank-sales">销量：89斤</div>
-                  </div>
-                  <div class="rank-amount">¥2,572</div>
-                </div>
+              <div class="product-rank" id="topProducts"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>待处理订单</h3>
+                <a href="#" class="more" data-nav="preorder">全部预售订单</a>
               </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>订单号</th>
+                    <th>商品</th>
+                    <th>自提点</th>
+                    <th>金额</th>
+                    <th>状态</th>
+                    <th>下单时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="pendingOrders"></tbody>
+              </table>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>库存预警</h3>
+                <a href="#" class="more" data-nav="products">查看全部商品</a>
+              </div>
+              <div class="stock-warn-list" id="stockWarnList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-preorder" class="page">
+          <div class="tabs" id="preorderTabs">
+            <div class="tab active" data-status="all">全部预售</div>
+            <div class="tab" data-status="pending">待备货</div>
+            <div class="tab" data-status="picking">分拣中</div>
+            <div class="tab" data-status="ready">待自提</div>
+            <div class="tab" data-status="completed">已完成</div>
+            <div class="tab" data-status="cancelled">已取消</div>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="date" class="input-date" id="preorderStartDate">
+              <span style="color: #94a3b8; margin: 0 8px;">至</span>
+              <input type="date" class="input-date" id="preorderEndDate">
+              <select class="select" id="preorderPickupFilter">
+                <option value="">全部自提点</option>
+                <option value="1">阳光社区店</option>
+                <option value="2">绿园小区店</option>
+                <option value="3">幸福家园店</option>
+              </select>
+              <button class="btn btn-outline">筛选</button>
+            </div>
+            <div class="toolbar-right">
+              <div class="search-input">
+                <span>🔍</span>
+                <input type="text" id="preorderSearch" placeholder="搜索订单号/用户">
+              </div>
+              <button class="btn btn-outline">导出</button>
+              <button class="btn btn-primary">批量打印分拣单</button>
             </div>
           </div>
 
           <div class="panel">
-            <div class="panel-header">
-              <h3>待处理订单</h3>
-              <a href="#" class="more">全部订单</a>
-            </div>
             <table class="data-table">
               <thead>
                 <tr>
+                  <th style="width:40px;"><input type="checkbox" id="checkAllPreorders"></th>
                   <th>订单号</th>
-                  <th>商品</th>
-                  <th>自提点</th>
+                  <th>用户</th>
+                  <th>商品明细</th>
+                  <th>数量</th>
                   <th>金额</th>
+                  <th>自提点</th>
+                  <th>自提时间</th>
                   <th>状态</th>
                   <th>下单时间</th>
                   <th>操作</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>202406070023</td>
-                  <td>有机西红柿 x2 + 黄瓜 x1</td>
-                  <td>阳光社区店</td>
-                  <td class="price">¥15.97</td>
-                  <td><span class="status-badge pending">待备货</span></td>
-                  <td>2024-06-07 09:30</td>
-                  <td>
-                    <button class="btn btn-primary btn-sm">开始分拣</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>202406070022</td>
-                  <td>土鸡蛋 x1 + 牛奶 x2</td>
-                  <td>绿园小区店</td>
-                  <td class="price">¥45.70</td>
-                  <td><span class="status-badge picking">分拣中</span></td>
-                  <td>2024-06-07 09:15</td>
-                  <td>
-                    <button class="btn btn-success btn-sm">完成分拣</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>202406070021</td>
-                  <td>精选五花肉 x1</td>
-                  <td>阳光社区店</td>
-                  <td class="price">¥28.90</td>
-                  <td><span class="status-badge ready">待自提</span></td>
-                  <td>2024-06-07 08:50</td>
-                  <td>
-                    <button class="btn btn-outline btn-sm">查看详情</button>
-                  </td>
-                </tr>
-              </tbody>
+              <tbody id="preorderTableBody"></tbody>
             </table>
+            <div class="pagination" id="preorderPagination"></div>
           </div>
         </div>
 
         <div id="page-products" class="page">
+          <div class="tabs" id="productTabs">
+            <div class="tab active" data-status="all">全部商品</div>
+            <div class="tab" data-status="on">在售</div>
+            <div class="tab" data-status="off">下架</div>
+            <div class="tab" data-status="out">售罄</div>
+            <div class="tab" data-status="low">库存预警</div>
+          </div>
+
           <div class="toolbar">
             <div class="toolbar-left">
-              <select class="select">
-                <option>全部分类</option>
-                <option>时令蔬菜</option>
-                <option>新鲜水果</option>
-                <option>蛋奶豆品</option>
-              </select>
-              <select class="select">
-                <option>全部状态</option>
-                <option>在售</option>
-                <option>下架</option>
-                <option>售罄</option>
+              <select class="select" id="productCategoryFilter">
+                <option value="">全部分类</option>
+                <option value="时令蔬菜">时令蔬菜</option>
+                <option value="新鲜水果">新鲜水果</option>
+                <option value="蛋奶豆品">蛋奶豆品</option>
+                <option value="肉禽蛋品">肉禽蛋品</option>
+                <option value="海鲜水产">海鲜水产</option>
+                <option value="粮油调味">粮油调味</option>
               </select>
             </div>
             <div class="toolbar-right">
               <div class="search-input">
                 <span>🔍</span>
-                <input type="text" placeholder="搜索商品名称">
+                <input type="text" id="productSearch" placeholder="搜索商品名称">
               </div>
-              <button class="btn btn-primary">+ 新增商品</button>
+              <button class="btn btn-outline">导出</button>
+              <button class="btn btn-primary" id="addProductBtn">+ 新增商品</button>
             </div>
           </div>
 
@@ -267,271 +314,18 @@
                 <tr>
                   <th>商品</th>
                   <th>分类</th>
-                  <th>价格</th>
+                  <th>进价</th>
+                  <th>售价</th>
                   <th>库存</th>
                   <th>销量</th>
                   <th>状态</th>
+                  <th>创建时间</th>
                   <th>操作</th>
                 </tr>
               </thead>
-              <tbody id="productTableBody">
-              </tbody>
+              <tbody id="productTableBody"></tbody>
             </table>
-            <div class="pagination">
-              <span>共 12 条记录</span>
-              <div class="page-nums">
-                <span class="page-num active">1</span>
-                <span class="page-num">2</span>
-                <span class="page-num">›</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="page-orders" class="page">
-          <div class="tabs">
-            <div class="tab active">全部订单</div>
-            <div class="tab">待付款</div>
-            <div class="tab">待备货</div>
-            <div class="tab">分拣中</div>
-            <div class="tab">待自提</div>
-            <div class="tab">已完成</div>
-          </div>
-
-          <div class="toolbar">
-            <div class="toolbar-left">
-              <input type="date" class="input-date">
-              <span style="color: #94a3b8; margin: 0 8px;">至</span>
-              <input type="date" class="input-date">
-              <button class="btn btn-outline">筛选</button>
-            </div>
-            <div class="toolbar-right">
-              <div class="search-input">
-                <span>🔍</span>
-                <input type="text" placeholder="搜索订单号">
-              </div>
-              <button class="btn btn-outline">导出</button>
-            </div>
-          </div>
-
-          <div class="panel">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>订单号</th>
-                  <th>用户</th>
-                  <th>商品</th>
-                  <th>金额</th>
-                  <th>自提点</th>
-                  <th>状态</th>
-                  <th>下单时间</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>202406070023</td>
-                  <td>张**</td>
-                  <td>有机西红柿 x2 + 黄瓜 x1</td>
-                  <td class="price">¥15.97</td>
-                  <td>阳光社区店</td>
-                  <td><span class="status-badge pending">待备货</span></td>
-                  <td>2024-06-07 09:30</td>
-                  <td>
-                    <button class="btn btn-primary btn-sm">开始分拣</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>202406070022</td>
-                  <td>李**</td>
-                  <td>土鸡蛋 x1 + 牛奶 x2</td>
-                  <td class="price">¥45.70</td>
-                  <td>绿园小区店</td>
-                  <td><span class="status-badge picking">分拣中</span></td>
-                  <td>2024-06-07 09:15</td>
-                  <td>
-                    <button class="btn btn-success btn-sm">完成分拣</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>202406070021</td>
-                  <td>王**</td>
-                  <td>精选五花肉 x1</td>
-                  <td class="price">¥28.90</td>
-                  <td>阳光社区店</td>
-                  <td><span class="status-badge ready">待自提</span></td>
-                  <td>2024-06-07 08:50</td>
-                  <td>
-                    <button class="btn btn-outline btn-sm">查看详情</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>202406070020</td>
-                  <td>赵**</td>
-                  <td>草莓 x2 + 香蕉 x2</td>
-                  <td class="price">¥61.78</td>
-                  <td>幸福家园店</td>
-                  <td><span class="status-badge completed">已完成</span></td>
-                  <td>2024-06-07 08:30</td>
-                  <td>
-                    <button class="btn btn-outline btn-sm">查看详情</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td>202406070019</td>
-                  <td>孙**</td>
-                  <td>原味酸奶 x4杯装</td>
-                  <td class="price">¥32.99</td>
-                  <td>阳光社区店</td>
-                  <td><span class="status-badge completed">已完成</span></td>
-                  <td>2024-06-07 08:00</td>
-                  <td>
-                    <button class="btn btn-outline btn-sm">查看详情</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="pagination">
-              <span>共 156 条记录</span>
-              <div class="page-nums">
-                <span class="page-num">‹</span>
-                <span class="page-num active">1</span>
-                <span class="page-num">2</span>
-                <span class="page-num">3</span>
-                <span class="page-num">...</span>
-                <span class="page-num">16</span>
-                <span class="page-num">›</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="page-purchase" class="page">
-          <div class="stats-grid">
-            <div class="stat-card small">
-              <div class="stat-icon orange">📋</div>
-              <div class="stat-info">
-                <div class="stat-value">8</div>
-                <div class="stat-label">待采购商品</div>
-              </div>
-            </div>
-            <div class="stat-card small">
-              <div class="stat-icon green">✅</div>
-              <div class="stat-info">
-                <div class="stat-value">3</div>
-                <div class="stat-label">今日采购单</div>
-              </div>
-            </div>
-            <div class="stat-card small">
-              <div class="stat-icon blue">💰</div>
-              <div class="stat-info">
-                <div class="stat-value">¥3,580</div>
-                <div class="stat-label">采购成本</div>
-              </div>
-            </div>
-            <div class="stat-card small">
-              <div class="stat-icon purple">🚚</div>
-              <div class="stat-info">
-                <div class="stat-value">2</div>
-                <div class="stat-label">配送中</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="panel">
-              <div class="panel-header">
-                <h3>采购汇总清单</h3>
-                <button class="btn btn-primary btn-sm">生成采购单</button>
-              </div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>商品</th>
-                    <th>分类</th>
-                    <th>订单需求量</th>
-                    <th>当前库存</th>
-                    <th>建议采购</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>有机西红柿</td>
-                    <td>时令蔬菜</td>
-                    <td>86斤</td>
-                    <td>100斤</td>
-                    <td>50斤</td>
-                    <td>
-                      <button class="btn btn-outline btn-sm">加入采购</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>新鲜黄瓜</td>
-                    <td>时令蔬菜</td>
-                    <td>120斤</td>
-                    <td>200斤</td>
-                    <td>-</td>
-                    <td>
-                      <button class="btn btn-outline btn-sm disabled">库存充足</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>土鸡蛋</td>
-                    <td>蛋奶豆品</td>
-                    <td>45盒</td>
-                    <td>30盒</td>
-                    <td>50盒</td>
-                    <td>
-                      <button class="btn btn-outline btn-sm">加入采购</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>精选五花肉</td>
-                    <td>肉禽蛋品</td>
-                    <td>35斤</td>
-                    <td>20斤</td>
-                    <td>50斤</td>
-                    <td>
-                      <button class="btn btn-outline btn-sm">加入采购</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="panel">
-              <div class="panel-header">
-                <h3>供应商管理</h3>
-                <button class="btn btn-primary btn-sm">+ 新增</button>
-              </div>
-              <div class="supplier-list">
-                <div class="supplier-item">
-                  <div class="supplier-info">
-                    <div class="supplier-name">绿源蔬菜基地</div>
-                    <div class="supplier-contact">联系人：王经理 138****1234</div>
-                    <div class="supplier-type">主营：时令蔬菜</div>
-                  </div>
-                  <button class="btn btn-outline btn-sm">查看</button>
-                </div>
-                <div class="supplier-item">
-                  <div class="supplier-info">
-                    <div class="supplier-name">鲜果直供合作社</div>
-                    <div class="supplier-contact">联系人：李老板 139****5678</div>
-                    <div class="supplier-type">主营：新鲜水果</div>
-                  </div>
-                  <button class="btn btn-outline btn-sm">查看</button>
-                </div>
-                <div class="supplier-item">
-                  <div class="supplier-info">
-                    <div class="supplier-name">优质肉联厂</div>
-                    <div class="supplier-contact">联系人：张总 137****9012</div>
-                    <div class="supplier-type">主营：肉禽蛋品</div>
-                  </div>
-                  <button class="btn btn-outline btn-sm">查看</button>
-                </div>
-              </div>
-            </div>
+            <div class="pagination" id="productPagination"></div>
           </div>
         </div>
 
@@ -540,102 +334,623 @@
             <div class="toolbar-left">
               <div class="search-input">
                 <span>🔍</span>
-                <input type="text" placeholder="搜索自提点名称">
+                <input type="text" id="pickupSearch" placeholder="搜索自提点名称/地址">
               </div>
+              <select class="select" id="pickupStatusFilter">
+                <option value="">全部状态</option>
+                <option value="active">营业中</option>
+                <option value="inactive">已停业</option>
+              </select>
             </div>
             <div class="toolbar-right">
-              <button class="btn btn-primary">+ 新增自提点</button>
+              <button class="btn btn-primary" id="addPickupBtn">+ 新增自提点</button>
             </div>
           </div>
 
-          <div class="pickup-grid">
-            <div class="pickup-card">
-              <div class="pickup-header">
-                <span class="pickup-status active">营业中</span>
-                <span class="pickup-actions">
-                  <button class="icon-btn">✏️</button>
-                  <button class="icon-btn">🗑️</button>
-                </span>
-              </div>
-              <h3 class="pickup-name">阳光社区自提点</h3>
-              <p class="pickup-address">📍 阳光小区1号楼1单元101室</p>
-              <div class="pickup-meta">
-                <span>🕐 08:00-20:00</span>
-                <span>📞 138****8001</span>
-              </div>
-              <div class="pickup-stats">
-                <div>
-                  <div class="stat-num">56</div>
-                  <div class="stat-label">今日订单</div>
+          <div class="pickup-stats-bar">
+            <div class="mini-stat">
+              <span class="mini-stat-num" id="totalPickups">5</span>
+              <span class="mini-stat-label">自提点总数</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat-num" id="activePickups">4</span>
+              <span class="mini-stat-label">营业中</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat-num" id="todayPickupOrders">133</span>
+              <span class="mini-stat-label">今日自提订单</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat-num" id="pickupCapacity">85%</span>
+              <span class="mini-stat-label">平均承载率</span>
+            </div>
+          </div>
+
+          <div class="pickup-grid" id="pickupGrid"></div>
+        </div>
+
+        <div id="page-verify" class="page">
+          <div class="tabs" id="verifyTabs">
+            <div class="tab active" data-type="scan">扫码核销</div>
+            <div class="tab" data-type="manual">手动核销</div>
+            <div class="tab" data-type="record">核销记录</div>
+          </div>
+
+          <div class="verify-content" id="verify-scan">
+            <div class="verify-panel">
+              <div class="scan-area">
+                <div class="scan-frame">
+                  <div class="scan-corner tl"></div>
+                  <div class="scan-corner tr"></div>
+                  <div class="scan-corner bl"></div>
+                  <div class="scan-corner br"></div>
+                  <div class="scan-line"></div>
                 </div>
-                <div>
-                  <div class="stat-num">38</div>
-                  <div class="stat-label">已完成</div>
+                <p class="scan-tip">请将自提码或二维码放入扫描框内</p>
+                <div class="scan-input-row">
+                  <input type="text" class="scan-input" id="scanCodeInput" placeholder="或手动输入12位自提码">
+                  <button class="btn btn-primary" id="scanConfirmBtn">确认核销</button>
                 </div>
-                <div>
-                  <div class="stat-num">12</div>
-                  <div class="stat-label">待自提</div>
+              </div>
+
+              <div class="verify-preview" id="verifyPreview" style="display:none;">
+                <h3>核销订单信息</h3>
+                <div class="verify-info-grid">
+                  <div class="info-row">
+                    <span class="info-label">订单号:</span>
+                    <span class="info-value" id="vpOrderNo"></span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">用户:</span>
+                    <span class="info-value" id="vpUser"></span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">自提点:</span>
+                    <span class="info-value" id="vpPickup"></span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">下单时间:</span>
+                    <span class="info-value" id="vpTime"></span>
+                  </div>
+                </div>
+                <div class="verify-items">
+                  <h4>商品明细</h4>
+                  <div id="vpItems"></div>
+                </div>
+                <div class="verify-footer">
+                  <span class="total-amount">合计金额: <strong id="vpAmount"></strong></span>
+                  <button class="btn btn-success btn-lg" id="vpConfirmBtn">✓ 确认核销</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="verify-content" id="verify-manual" style="display:none;">
+            <div class="panel">
+              <div class="panel-header"><h3>手动核销</h3></div>
+              <div style="padding:24px;">
+                <div class="form-row">
+                  <div class="form-group half">
+                    <label>自提点</label>
+                    <select class="select w100">
+                      <option>阳光社区店</option>
+                      <option>绿园小区店</option>
+                      <option>幸福家园店</option>
+                    </select>
+                  </div>
+                  <div class="form-group half">
+                    <label>用户手机号</label>
+                    <input type="text" class="input w100" placeholder="请输入用户手机号">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>订单号 / 商品关键词</label>
+                  <input type="text" class="input w100" id="manualOrderInput" placeholder="请输入订单号或商品名称搜索">
+                </div>
+                <button class="btn btn-primary" id="manualVerifyBtn">确认核销</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="verify-content" id="verify-record" style="display:none;">
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <input type="date" class="input-date">
+                <span style="color: #94a3b8; margin: 0 8px;">至</span>
+                <input type="date" class="input-date">
+                <button class="btn btn-outline">筛选</button>
+              </div>
+              <div class="toolbar-right">
+                <button class="btn btn-outline">导出记录</button>
+              </div>
+            </div>
+            <div class="panel">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>核销单号</th>
+                    <th>关联订单</th>
+                    <th>核销员</th>
+                    <th>自提点</th>
+                    <th>商品数</th>
+                    <th>核销金额</th>
+                    <th>核销方式</th>
+                    <th>核销时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="verifyRecordBody"></tbody>
+              </table>
+              <div class="pagination" id="verifyPagination"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-marketing" class="page">
+          <div class="tabs" id="marketingTabs">
+            <div class="tab active" data-type="coupon">优惠券管理</div>
+            <div class="tab" data-type="seckill">限时秒杀</div>
+            <div class="tab" data-type="discount">满减活动</div>
+            <div class="tab" data-type="group">拼团活动</div>
+          </div>
+
+          <div class="marketing-content" id="marketing-coupon">
+            <div class="coupon-stats">
+              <div class="mini-stat blue">
+                <span class="mini-stat-num">18</span>
+                <span class="mini-stat-label">进行中优惠券</span>
+              </div>
+              <div class="mini-stat green">
+                <span class="mini-stat-num">5,682</span>
+                <span class="mini-stat-label">累计已发放</span>
+              </div>
+              <div class="mini-stat orange">
+                <span class="mini-stat-num">3,124</span>
+                <span class="mini-stat-label">累计已使用</span>
+              </div>
+              <div class="mini-stat purple">
+                <span class="mini-stat-num">¥68,520</span>
+                <span class="mini-stat-label">拉动消费金额</span>
+              </div>
+            </div>
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <select class="select">
+                  <option>全部状态</option>
+                  <option>未开始</option>
+                  <option>进行中</option>
+                  <option>已结束</option>
+                </select>
+                <select class="select">
+                  <option>全部类型</option>
+                  <option>满减券</option>
+                  <option>折扣券</option>
+                  <option>新人券</option>
+                  <option>无门槛券</option>
+                </select>
+              </div>
+              <div class="toolbar-right">
+                <button class="btn btn-primary" id="addCouponBtn">+ 新建优惠券</button>
+              </div>
+            </div>
+            <div class="panel">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>优惠券名称</th>
+                    <th>类型</th>
+                    <th>面额</th>
+                    <th>使用门槛</th>
+                    <th>已领取/总数</th>
+                    <th>有效期</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="couponTableBody"></tbody>
+              </table>
+              <div class="pagination" id="couponPagination"></div>
+            </div>
+          </div>
+
+          <div class="marketing-content" id="marketing-seckill" style="display:none;">
+            <div class="toolbar">
+              <div class="toolbar-left">
+                <select class="select">
+                  <option>全部活动</option>
+                  <option>未开始</option>
+                  <option>进行中</option>
+                  <option>已结束</option>
+                </select>
+              </div>
+              <div class="toolbar-right">
+                <button class="btn btn-primary">+ 新建秒杀</button>
+              </div>
+            </div>
+            <div class="seckill-grid" id="seckillGrid"></div>
+          </div>
+
+          <div class="marketing-content" id="marketing-discount" style="display:none;">
+            <div class="toolbar">
+              <div class="toolbar-right">
+                <button class="btn btn-primary">+ 新建满减</button>
+              </div>
+            </div>
+            <div class="panel">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>活动名称</th>
+                    <th>满减规则</th>
+                    <th>适用商品</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>参与订单</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="discountTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="marketing-content" id="marketing-group" style="display:none;">
+            <div class="toolbar">
+              <div class="toolbar-right">
+                <button class="btn btn-primary">+ 新建拼团</button>
+              </div>
+            </div>
+            <div class="panel">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>拼团商品</th>
+                    <th>拼团价</th>
+                    <th>原价</th>
+                    <th>成团人数</th>
+                    <th>进行中团</th>
+                    <th>已成团</th>
+                    <th>结束时间</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="groupTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="page-aftersale" class="page">
+          <div class="tabs" id="aftersaleTabs">
+            <div class="tab active" data-status="all">全部售后</div>
+            <div class="tab" data-status="pending">待处理</div>
+            <div class="tab" data-status="processing">处理中</div>
+            <div class="tab" data-status="agreed">已同意</div>
+            <div class="tab" data-status="rejected">已拒绝</div>
+            <div class="tab" data-status="completed">已完成</div>
+          </div>
+
+          <div class="stats-grid small">
+            <div class="stat-card small">
+              <div class="stat-icon orange">⏳</div>
+              <div class="stat-info">
+                <div class="stat-value">6</div>
+                <div class="stat-label">待处理售后</div>
+              </div>
+            </div>
+            <div class="stat-card small">
+              <div class="stat-icon blue">🔄</div>
+              <div class="stat-info">
+                <div class="stat-value">3</div>
+                <div class="stat-label">处理中</div>
+              </div>
+            </div>
+            <div class="stat-card small">
+              <div class="stat-icon green">✓</div>
+              <div class="stat-info">
+                <div class="stat-value">87</div>
+                <div class="stat-label">本月已完成</div>
+              </div>
+            </div>
+            <div class="stat-card small">
+              <div class="stat-icon purple">💰</div>
+              <div class="stat-info">
+                <div class="stat-value">¥3,420</div>
+                <div class="stat-label">本月退款金额</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="date" class="input-date">
+              <span style="color: #94a3b8; margin: 0 8px;">至</span>
+              <input type="date" class="input-date">
+              <select class="select">
+                <option>全部售后类型</option>
+                <option>仅退款</option>
+                <option>退货退款</option>
+                <option>换货</option>
+              </select>
+              <button class="btn btn-outline">筛选</button>
+            </div>
+            <div class="toolbar-right">
+              <div class="search-input">
+                <span>🔍</span>
+                <input type="text" placeholder="搜索订单号/售后单号">
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>售后单号</th>
+                  <th>关联订单</th>
+                  <th>类型</th>
+                  <th>商品</th>
+                  <th>用户</th>
+                  <th>申请金额</th>
+                  <th>申请原因</th>
+                  <th>申请时间</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="aftersaleTableBody"></tbody>
+            </table>
+            <div class="pagination" id="aftersalePagination"></div>
+          </div>
+        </div>
+
+        <div id="page-statistics" class="page">
+          <div class="tabs" id="statisticsTabs">
+            <div class="tab active" data-type="overview">数据概览</div>
+            <div class="tab" data-type="rank">销售排行</div>
+            <div class="tab" data-type="loss">损耗管控</div>
+            <div class="tab" data-type="user">用户分析</div>
+          </div>
+
+          <div class="stats-content" id="stats-overview">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon green">💰</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="ovSales">¥386,520</div>
+                  <div class="stat-label">本月总销售额</div>
+                  <div class="stat-trend up">↑ 22.5% 环比</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon blue">📋</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="ovOrders">4,856</div>
+                  <div class="stat-label">本月总订单</div>
+                  <div class="stat-trend up">↑ 15.3% 环比</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon orange">🛒</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="ovUsers">2,456</div>
+                  <div class="stat-label">活跃用户数</div>
+                  <div class="stat-trend up">↑ 8.7% 环比</div>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon purple">😀</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="ovLoss">¥4,280</div>
+                  <div class="stat-label">本月损耗金额</div>
+                  <div class="stat-trend down">↓ 5.2% 环比</div>
                 </div>
               </div>
             </div>
 
-            <div class="pickup-card">
-              <div class="pickup-header">
-                <span class="pickup-status active">营业中</span>
-                <span class="pickup-actions">
-                  <button class="icon-btn">✏️</button>
-                  <button class="icon-btn">🗑️</button>
-                </span>
-              </div>
-              <h3 class="pickup-name">绿园小区自提点</h3>
-              <p class="pickup-address">📍 绿园小区东门便利店</p>
-              <div class="pickup-meta">
-                <span>🕐 07:00-22:00</span>
-                <span>📞 139****9002</span>
-              </div>
-              <div class="pickup-stats">
-                <div>
-                  <div class="stat-num">42</div>
-                  <div class="stat-label">今日订单</div>
+            <div class="dashboard-grid">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>月度销售趋势</h3>
+                  <select class="select">
+                    <option>本年度</option>
+                    <option>上年度</option>
+                  </select>
                 </div>
-                <div>
-                  <div class="stat-num">30</div>
-                  <div class="stat-label">已完成</div>
+                <div class="chart-placeholder tall">
+                  <svg id="monthlyChart" width="100%" height="220" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid meet"></svg>
                 </div>
-                <div>
-                  <div class="stat-num">8</div>
-                  <div class="stat-label">待自提</div>
+              </div>
+              <div class="panel">
+                <div class="panel-header"><h3>商品分类销售占比</h3></div>
+                <div class="chart-placeholder">
+                  <div class="pie-chart" id="categoryPie"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-content" id="stats-rank" style="display:none;">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>商品销售排行</h3>
+                <div style="display:flex;gap:8px;">
+                  <select class="select"><option>本月</option><option>上月</option><option>本季度</option></select>
+                  <select class="select"><option>按销售额</option><option>按销量</option></select>
+                </div>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>排名</th>
+                    <th>商品</th>
+                    <th>分类</th>
+                    <th>销量</th>
+                    <th>销售额</th>
+                    <th>毛利</th>
+                    <th>毛利率</th>
+                  </tr>
+                </thead>
+                <tbody id="rankTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="stats-content" id="stats-loss" style="display:none;">
+            <div class="stats-grid small">
+              <div class="stat-card small">
+                <div class="stat-icon red">⚠️</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="lossTotalAmount">¥4,280</div>
+                  <div class="stat-label">本月损耗金额</div>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon orange">📉</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="lossRate">1.11%</div>
+                  <div class="stat-label">损耗率</div>
+                  <div class="stat-trend down">↓ 0.3% 环比</div>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon blue">📦</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="lossTotalQty">28</div>
+                  <div class="stat-label">损耗商品数</div>
+                </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon green">🎯</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="lossTarget">≤2%</div>
+                  <div class="stat-label">目标损耗率</div>
                 </div>
               </div>
             </div>
 
-            <div class="pickup-card">
-              <div class="pickup-header">
-                <span class="pickup-status active">营业中</span>
-                <span class="pickup-actions">
-                  <button class="icon-btn">✏️</button>
-                  <button class="icon-btn">🗑️</button>
-                </span>
+            <div class="dashboard-grid">
+              <div class="panel">
+                <div class="panel-header"><h3>损耗原因分布</h3></div>
+                <div class="loss-reason-list" id="lossReasonBars"></div>
               </div>
-              <h3 class="pickup-name">幸福家园自提点</h3>
-              <p class="pickup-address">📍 幸福家园小区南门旁</p>
-              <div class="pickup-meta">
-                <span>🕐 08:30-21:00</span>
-                <span>📞 137****7003</span>
+              <div class="panel">
+                <div class="panel-header"><h3>高损耗商品预警</h3></div>
+                <div class="high-loss-list">
+                  <div class="high-loss-item">
+                    <img src="https://picsum.photos/id/292/44/44">
+                    <div class="high-loss-info">
+                      <div class="high-loss-name">有机西红柿</div>
+                      <div class="high-loss-rate">损耗率：4.2%</div>
+                    </div>
+                    <div class="high-loss-amount">-¥215</div>
+                  </div>
+                  <div class="high-loss-item">
+                    <img src="https://picsum.photos/id/580/44/44">
+                    <div class="high-loss-info">
+                      <div class="high-loss-name">新鲜草莓</div>
+                      <div class="high-loss-rate">损耗率：6.8%</div>
+                    </div>
+                    <div class="high-loss-amount">-¥512</div>
+                  </div>
+                  <div class="high-loss-item">
+                    <img src="https://picsum.photos/id/401/44/44">
+                    <div class="high-loss-info">
+                      <div class="high-loss-name">新鲜牛奶</div>
+                      <div class="high-loss-rate">损耗率：3.1%</div>
+                    </div>
+                    <div class="high-loss-amount">-¥156</div>
+                  </div>
+                </div>
               </div>
-              <div class="pickup-stats">
-                <div>
-                  <div class="stat-num">35</div>
-                  <div class="stat-label">今日订单</div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3>损耗明细记录</h3>
+                <button class="btn btn-primary btn-sm">+ 报损登记</button>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>报损单号</th>
+                    <th>商品</th>
+                    <th>报损数量</th>
+                    <th>报损金额</th>
+                    <th>损耗原因</th>
+                    <th>上报人</th>
+                    <th>上报时间</th>
+                  </tr>
+                </thead>
+                <tbody id="lossTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="stats-content" id="stats-user" style="display:none;">
+            <div class="stats-grid small">
+              <div class="stat-card small">
+                <div class="stat-icon blue">👥</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="userTotal">2,456</div>
+                  <div class="stat-label">累计用户</div>
                 </div>
-                <div>
-                  <div class="stat-num">28</div>
-                  <div class="stat-label">已完成</div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon green">🆕</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="userNew">186</div>
+                  <div class="stat-label">本月新增</div>
+                  <div class="stat-trend up">↑ 12.5% 环比</div>
                 </div>
-                <div>
-                  <div class="stat-num">5</div>
-                  <div class="stat-label">待自提</div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon orange">🔥</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="userActive">1,208</div>
+                  <div class="stat-label">活跃用户</div>
                 </div>
+              </div>
+              <div class="stat-card small">
+                <div class="stat-icon purple">💰</div>
+                <div class="stat-info">
+                  <div class="stat-value" id="userAvg">¥165</div>
+                  <div class="stat-label">客单价</div>
+                </div>
+              </div>
+            </div>
+            <div class="dashboard-grid">
+              <div class="panel">
+                <div class="panel-header"><h3>用户增长趋势</h3></div>
+                <div class="chart-placeholder">
+                  <div class="bar-chart user-growth">
+                    <div class="bar" style="height:20%"><span class="bar-value">85</span><span class="bar-label">1月</span></div>
+                    <div class="bar" style="height:28%"><span class="bar-value">124</span><span class="bar-label">2月</span></div>
+                    <div class="bar" style="height:35%"><span class="bar-value">156</span><span class="bar-label">3月</span></div>
+                    <div class="bar" style="height:32%"><span class="bar-value">142</span><span class="bar-label">4月</span></div>
+                    <div class="bar" style="height:45%"><span class="bar-value">201</span><span class="bar-label">5月</span></div>
+                    <div class="bar" style="height:52%"><span class="bar-value">232</span><span class="bar-label">6月</span></div>
+                    <div class="bar" style="height:42%"><span class="bar-value">186</span><span class="bar-label">7月</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header"><h3>消费用户 TOP5</h3></div>
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>排名</th>
+                      <th>用户</th>
+                      <th>电话</th>
+                      <th>订单数</th>
+                      <th>消费额</th>
+                      <th>最近消费</th>
+                    </tr>
+                  </thead>
+                  <tbody id="userRankBody"></tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -643,6 +958,302 @@
       </div>
     </main>
   </div>
+
+  <div class="modal" id="productModal">
+    <div class="modal-mask"></div>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="productModalTitle">新增商品</h3>
+        <button class="modal-close" data-close="productModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>商品名称 *</label>
+            <input type="text" class="input w100" id="pName" placeholder="请输入商品名称">
+          </div>
+          <div class="form-group">
+            <label>商品分类 *</label>
+            <select class="select w100" id="pCategory">
+              <option value="">请选择分类</option>
+              <option>时令蔬菜</option>
+              <option>新鲜水果</option>
+              <option>蛋奶豆品</option>
+              <option>肉禽蛋品</option>
+              <option>海鲜水产</option>
+              <option>粮油调味</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>进价(元) *</label>
+            <input type="number" class="input w100" id="pCostPrice" placeholder="0.00" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>售价(元) *</label>
+            <input type="number" class="input w100" id="pSalePrice" placeholder="0.00" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>库存数量 *</label>
+            <input type="number" class="input w100" id="pStock" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>单位 *</label>
+            <select class="select w100" id="pUnit">
+              <option>斤</option>
+              <option>个</option>
+              <option>盒</option>
+              <option>包</option>
+              <option>袋</option>
+              <option>瓶</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>商品状态</label>
+            <select class="select w100" id="pStatus">
+              <option value="on">立即上架</option>
+              <option value="off">暂不上架</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>预警库存</label>
+            <input type="number" class="input w100" id="pWarnStock" placeholder="低于该值将预警">
+          </div>
+          <div class="form-group full">
+            <label>商品图片</label>
+            <div class="upload-zone">
+              <div class="upload-placeholder">
+                <span class="upload-icon">📷</span>
+                <p>点击或拖拽上传商品图片</p>
+              </div>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>商品描述</label>
+            <textarea class="textarea w100" id="pDesc" rows="3" placeholder="请输入商品描述、产地、特点等"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="productModal">取消</button>
+        <button class="btn btn-primary" id="saveProductBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="pickupModal">
+    <div class="modal-mask"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="pickupModalTitle">新增自提点</h3>
+        <button class="modal-close" data-close="pickupModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>自提点名称 *</label>
+          <input type="text" class="input w100" id="pkName" placeholder="请输入自提点名称">
+        </div>
+        <div class="form-group">
+          <label>所在区域 *</label>
+          <input type="text" class="input w100" id="pkRegion" placeholder="如: 北京市朝阳区">
+        </div>
+        <div class="form-group">
+          <label>详细地址 *</label>
+          <input type="text" class="input w100" id="pkAddress" placeholder="请输入详细地址">
+        </div>
+        <div class="form-row">
+          <div class="form-group half">
+            <label>营业时间</label>
+            <input type="text" class="input w100" id="pkHours" placeholder="如: 08:00-20:00">
+          </div>
+          <div class="form-group half">
+            <label>联系电话 *</label>
+            <input type="text" class="input w100" id="pkPhone" placeholder="请输入联系电话">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group half">
+            <label>负责人</label>
+            <input type="text" class="input w100" id="pkManager" placeholder="负责人姓名">
+          </div>
+          <div class="form-group half">
+            <label>自提点状态</label>
+            <select class="select w100" id="pkStatus">
+              <option value="active">营业中</option>
+              <option value="inactive">已停业</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="pickupModal">取消</button>
+        <button class="btn btn-primary" id="savePickupBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="couponModal">
+    <div class="modal-mask"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>新建优惠券</h3>
+        <button class="modal-close" data-close="couponModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>优惠券名称 *</label>
+          <input type="text" class="input w100" placeholder="如: 新人专享10元券">
+        </div>
+        <div class="form-row">
+          <div class="form-group half">
+            <label>优惠券类型 *</label>
+            <select class="select w100">
+              <option>满减券</option>
+              <option>折扣券</option>
+              <option>无门槛券</option>
+              <option>新人券</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label>面额/折扣 *</label>
+            <input type="text" class="input w100" placeholder="如: 10 或 8.5折">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group half">
+            <label>使用门槛</label>
+            <input type="number" class="input w100" placeholder="最低消费金额">
+          </div>
+          <div class="form-group half">
+            <label>发放总量</label>
+            <input type="number" class="input w100" placeholder="总张数">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group half">
+            <label>生效时间 *</label>
+            <input type="datetime-local" class="input w100">
+          </div>
+          <div class="form-group half">
+            <label>失效时间 *</label>
+            <input type="datetime-local" class="input w100">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>适用范围</label>
+          <select class="select w100">
+            <option>全场通用</option>
+            <option>指定分类</option>
+            <option>指定商品</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="couponModal">取消</button>
+        <button class="btn btn-primary">创建优惠券</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="aftersaleDetailModal">
+    <div class="modal-mask"></div>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>售后详情</h3>
+        <button class="modal-close" data-close="aftersaleDetailModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="asdCurrentId">
+        <div class="asd-header">
+          <div style="display:flex;gap:24px;align-items:center;">
+            <div>
+              <div style="color:#94a3b8;font-size:12px;">售后单号</div>
+              <div id="asdId" style="font-family:monospace;font-weight:600;font-size:16px;"></div>
+            </div>
+            <div>
+              <div style="color:#94a3b8;font-size:12px;">售后类型</div>
+              <div><span id="asdType" class="status-badge picking" style="margin-top:4px;"></span></div>
+            </div>
+            <div style="margin-left:auto;">
+              <span id="asdStatus" class="status-badge ready" style="font-size:14px;padding:6px 16px;"></span>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 32px;margin:24px 0;padding:20px;background:#f8fafc;border-radius:12px;">
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">关联订单</div><div id="asdOrderNo" style="font-family:monospace;color:#2563eb;"></div></div>
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">售后商品</div><div id="asdProduct" style="font-weight:500;"></div></div>
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">申请人</div><div id="asdUser"></div></div>
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">退款金额</div><div id="asdAmount" style="color:#dc2626;font-weight:600;font-size:18px;"></div></div>
+        </div>
+        <div style="margin:20px 0;">
+          <div style="font-weight:600;margin-bottom:12px;">售后原因</div>
+          <div id="asdReason" style="padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;color:#9a3412;"></div>
+        </div>
+        <div style="margin:20px 0;">
+          <div style="font-weight:600;margin-bottom:12px;">详细描述</div>
+          <div id="asdDesc" style="color:#475569;line-height:1.6;"></div>
+        </div>
+        <div style="margin:20px 0;">
+          <div style="font-weight:600;margin-bottom:12px;">凭证图片</div>
+          <div id="asdEvidence" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
+        </div>
+        <div style="margin:20px 0;">
+          <div style="font-weight:600;margin-bottom:12px;">处理时间线</div>
+          <div id="asdTimeline" class="timeline"></div>
+        </div>
+      </div>
+      <div class="modal-footer" id="asdActionBtns">
+        <button class="btn btn-outline" data-close="aftersaleDetailModal">关闭</button>
+        <button class="btn btn-danger" id="asdRejectBtn">拒绝申请</button>
+        <button class="btn btn-success" id="asdAgreeBtn">同意申请</button>
+        <button class="btn btn-success" id="asdCompleteBtn" style="display:none;">完成处理</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="orderDetailModal">
+    <div class="modal-mask"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>订单详情</h3>
+        <button class="modal-close" data-close="orderDetailModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="color:#94a3b8;font-size:12px;">订单号</div>
+            <div id="odOrderNo" style="font-family:monospace;font-weight:600;font-size:16px;"></div>
+          </div>
+          <span id="odStatus" class="status-badge ready" style="font-size:14px;padding:6px 16px;"></span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;padding:16px;background:#f8fafc;border-radius:12px;margin-bottom:20px;">
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:3px;">下单用户</div><div id="odUser" style="font-weight:500;"></div></div>
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:3px;">联系电话</div><div id="odPhone"></div></div>
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:3px;">自提点</div><div id="odPickup"></div></div>
+          <div><div style="color:#94a3b8;font-size:12px;margin-bottom:3px;">自提时段</div><div id="odTime"></div></div>
+          <div style="grid-column:1/-1;"><div style="color:#94a3b8;font-size:12px;margin-bottom:3px;">下单时间</div><div id="odCreated" style="font-size:13px;color:#64748b;"></div></div>
+        </div>
+        <div style="margin:20px 0;">
+          <div style="font-weight:600;margin-bottom:12px;">商品清单</div>
+          <div id="odItems"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:20px;padding:16px 0;border-top:1px solid #f1f5f9;">
+          <div style="text-align:right;">
+            <div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">商品总数</div>
+            <div id="odQty" style="font-weight:600;"></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">订单金额</div>
+            <div id="odAmount" style="color:#dc2626;font-weight:600;font-size:20px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-close="orderDetailModal">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script src="app.js"></script>
 </body>
