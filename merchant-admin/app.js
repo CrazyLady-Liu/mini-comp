@@ -346,6 +346,7 @@
     MAX_SIZE: 5 * 1024 * 1024,
     ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
     ALLOWED_EXT: ['.jpg', '.jpeg', '.png', '.webp'],
+    UPLOAD_URL: '/api/upload',
 
     init() {
       this.fileInput = document.getElementById('productImageInput');
@@ -362,6 +363,12 @@
         if (delBtn) {
           const index = parseInt(delBtn.dataset.index);
           this.removeImage(index);
+          return;
+        }
+        const retryBtn = e.target.closest('.retry-btn');
+        if (retryBtn) {
+          const index = parseInt(retryBtn.dataset.index);
+          this.retryUpload(index);
         }
       });
 
@@ -380,7 +387,7 @@
         }
       }
       if (file.size > this.MAX_SIZE) {
-        return { valid: false, message: '图片大小不能超过 5M' };
+        return { valid: false, message: `图片「${file.name}」大小不能超过 5M` };
       }
       return { valid: true };
     },
@@ -389,7 +396,8 @@
       const files = Array.from(e.target.files);
       if (!files.length) return;
 
-      const remainingSlots = this.MAX_IMAGES - AppState.productImages.length;
+      const uploadedCount = AppState.productImages.filter(img => img.status !== 'uploading').length;
+      const remainingSlots = this.MAX_IMAGES - uploadedCount;
       if (remainingSlots <= 0) {
         Utils.showToast(`最多只能上传 ${this.MAX_IMAGES} 张图片`, 'error');
         e.target.value = '';
@@ -397,40 +405,113 @@
       }
 
       const filesToProcess = files.slice(0, remainingSlots);
-      let processedCount = 0;
-      let hasError = false;
 
       filesToProcess.forEach(file => {
         const validation = this.validateFile(file);
         if (!validation.valid) {
           Utils.showToast(validation.message, 'error');
-          hasError = true;
           return;
         }
-
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const imageData = {
-            id: Date.now() + Math.random(),
-            url: ev.target.result,
-            name: file.name,
-            size: file.size,
-            type: file.type
-          };
-          AppState.productImages.push(imageData);
-          processedCount++;
-          if (processedCount === filesToProcess.length) {
-            this.render();
-            this.updateAddBtnVisibility();
-          }
-        };
-        reader.readAsDataURL(file);
+        this.uploadImage(file);
       });
 
       e.target.value = '';
-      if (!hasError && files.length > remainingSlots) {
-        Utils.showToast(`已超过 ${this.MAX_IMAGES} 张，只保留前 ${remainingSlots} 张`, 'info');
+      if (files.length > remainingSlots) {
+        Utils.showToast(`已超过 ${this.MAX_IMAGES} 张，只处理前 ${remainingSlots} 张`, 'info');
       }
+    },
+
+    uploadImage(file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const previewUrl = ev.target.result;
+        const imageData = {
+          id: Date.now() + Math.random(),
+          file: file,
+          previewUrl: previewUrl,
+          url: '',
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          status: 'uploading',
+          errorMessage: ''
+        };
+        AppState.productImages.push(imageData);
+        this.render();
+        this.updateAddBtnVisibility();
+
+        this.mockUpload(file).then(result => {
+          const idx = AppState.productImages.findIndex(img => img.id === imageData.id);
+          if (idx === -1) return;
+
+          if (result.success) {
+            AppState.productImages[idx].status = 'success';
+            AppState.productImages[idx].url = result.url;
+          } else {
+            AppState.productImages[idx].status = 'error';
+            AppState.productImages[idx].errorMessage = result.message;
+            Utils.showToast(`图片「${file.name}」上传失败：${result.message}`, 'error');
+          }
+          this.render();
+          this.updateAddBtnVisibility();
+        });
+      };
+      reader.readAsDataURL(file);
+    },
+
+    mockUpload(file) {
+      return new Promise((resolve) => {
+        const delay = 1000 + Math.random() * 1500;
+        setTimeout(() => {
+          const success = Math.random() > 0.2;
+          if (success) {
+            const randomId = Math.floor(Math.random() * 1000);
+            resolve({
+              success: true,
+              url: `https://picsum.photos/id/${randomId}/400/400`,
+              message: '上传成功'
+            });
+          } else {
+            const errors = [
+              '服务器连接超时，请重试',
+              '图片上传接口异常',
+              '网络波动，请稍后再试',
+              '图片格式校验失败'
+            ];
+            const errorMsg = errors[Math.floor(Math.random() * errors.length)];
+            resolve({
+              success: false,
+              url: '',
+              message: errorMsg
+            });
+          }
+        }, delay);
+      });
+    },
+
+    retryUpload(index) {
+      const img = AppState.productImages[index];
+      if (!img || !img.file) return;
+
+      img.status = 'uploading';
+      img.errorMessage = '';
+      this.render();
+
+      this.mockUpload(img.file).then(result => {
+        const idx = AppState.productImages.findIndex(i => i.id === img.id);
+        if (idx === -1) return;
+
+        if (result.success) {
+          AppState.productImages[idx].status = 'success';
+          AppState.productImages[idx].url = result.url;
+          Utils.showToast('图片重新上传成功', 'success');
+        } else {
+          AppState.productImages[idx].status = 'error';
+          AppState.productImages[idx].errorMessage = result.message;
+          Utils.showToast(`上传失败：${result.message}`, 'error');
+        }
+        this.render();
+      });
     },
 
     removeImage(index) {
@@ -442,6 +523,12 @@
     handleDragStart(e) {
       const item = e.target.closest('.image-item');
       if (!item) return;
+
+      const imgData = AppState.productImages[parseInt(item.dataset.index)];
+      if (!imgData || imgData.status !== 'success') {
+        e.preventDefault();
+        return;
+      }
 
       this.draggedIndex = parseInt(item.dataset.index);
       item.classList.add('dragging');
@@ -457,8 +544,15 @@
 
     handleDragOver(e) {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
       const item = e.target.closest('.image-item');
+      const imgData = item ? AppState.productImages[parseInt(item.dataset.index)] : null;
+
+      if (!imgData || imgData.status !== 'success') {
+        e.dataTransfer.dropEffect = 'none';
+        return;
+      }
+
+      e.dataTransfer.dropEffect = 'move';
       document.querySelectorAll('.image-item').forEach(el => el.classList.remove('drag-over'));
       if (item) item.classList.add('drag-over');
     },
@@ -476,6 +570,9 @@
       if (!targetItem || this.draggedIndex === undefined) return;
 
       const targetIndex = parseInt(targetItem.dataset.index);
+      const targetImg = AppState.productImages[targetIndex];
+      if (!targetImg || targetImg.status !== 'success') return;
+
       if (this.draggedIndex === targetIndex) return;
 
       const images = AppState.productImages;
@@ -487,7 +584,8 @@
     },
 
     updateAddBtnVisibility() {
-      if (AppState.productImages.length >= this.MAX_IMAGES) {
+      const successCount = AppState.productImages.filter(img => img.status === 'success').length;
+      if (successCount >= this.MAX_IMAGES) {
         this.addBtn.classList.add('hidden');
       } else {
         this.addBtn.classList.remove('hidden');
@@ -496,14 +594,49 @@
 
     render() {
       const images = AppState.productImages;
-      this.listEl.innerHTML = images.map((img, index) => `
-        <div class="image-item" draggable="true" data-index="${index}">
-          ${index === 0 ? '<span class="main-tag">主图</span>' : ''}
-          <img src="${img.url}" alt="${img.name || '商品图片'}">
-          <button class="delete-btn" data-index="${index}" title="删除">×</button>
-          <span class="drag-handle">拖动排序</span>
-        </div>
-      `).join('');
+      this.listEl.innerHTML = images.map((img, index) => {
+        const isSuccess = img.status === 'success';
+        const isUploading = img.status === 'uploading';
+        const isError = img.status === 'error';
+        const displayUrl = img.url || img.previewUrl;
+        const isMain = isSuccess && index === 0;
+
+        let statusClass = '';
+        let statusContent = '';
+
+        if (isUploading) {
+          statusClass = 'uploading';
+          statusContent = `
+            <div class="uploading-mask">
+              <div class="spinner"></div>
+              <span class="uploading-text">上传中...</span>
+            </div>
+          `;
+        } else if (isError) {
+          statusClass = 'error';
+          statusContent = `
+            <div class="error-mask">
+              <span class="error-icon">!</span>
+              <span class="error-text">上传失败</span>
+              <button class="retry-btn" data-index="${index}">重新上传</button>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="image-item ${statusClass} ${isSuccess ? 'uploaded' : ''}" 
+               draggable="${isSuccess}" 
+               data-index="${index}"
+               title="${img.errorMessage || ''}">
+            ${isMain ? '<span class="main-tag">主图</span>' : ''}
+            ${isSuccess ? '<span class="success-tag">✓</span>' : ''}
+            <img src="${displayUrl}" alt="${img.name || '商品图片'}">
+            <button class="delete-btn" data-index="${index}" title="删除">×</button>
+            ${isSuccess ? '<span class="drag-handle">拖动排序</span>' : ''}
+            ${statusContent}
+          </div>
+        `;
+      }).join('');
     },
 
     reset() {
@@ -516,24 +649,39 @@
       AppState.productImages = imageUrls.map((url, index) => ({
         id: Date.now() + index,
         url: url,
+        previewUrl: url,
         name: `图片${index + 1}`,
-        isExisting: true
+        isExisting: true,
+        status: 'success',
+        errorMessage: ''
       }));
       this.render();
       this.updateAddBtnVisibility();
     },
 
     getMainImage() {
-      return AppState.productImages[0]?.url || '';
+      const successImages = AppState.productImages.filter(img => img.status === 'success');
+      return successImages[0]?.url || '';
     },
 
     getAllImages() {
-      return AppState.productImages.map(img => img.url);
+      return AppState.productImages
+        .filter(img => img.status === 'success')
+        .map(img => img.url);
     },
 
     validate() {
-      if (AppState.productImages.length === 0) {
+      const successCount = AppState.productImages.filter(img => img.status === 'success').length;
+      if (successCount === 0) {
         return { valid: false, message: '请至少上传 1 张商品主图' };
+      }
+      const uploadingCount = AppState.productImages.filter(img => img.status === 'uploading').length;
+      if (uploadingCount > 0) {
+        return { valid: false, message: '图片正在上传中，请稍候再试' };
+      }
+      const errorCount = AppState.productImages.filter(img => img.status === 'error').length;
+      if (errorCount > 0) {
+        return { valid: false, message: `有 ${errorCount} 张图片上传失败，请删除或重新上传` };
       }
       return { valid: true };
     }

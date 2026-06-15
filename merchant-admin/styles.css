@@ -2361,6 +2361,112 @@ body {
   color: #22c55e;
 }
 
+.image-item.uploading {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.image-item.uploading .uploading-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.image-item.uploading .spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e2e8f0;
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 6px;
+}
+
+.image-item.uploading .uploading-text {
+  font-size: 10px;
+  color: #64748b;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.image-item.error {
+  border-color: #ef4444;
+}
+
+.image-item.error .error-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(239, 68, 68, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  backdrop-filter: blur(1px);
+}
+
+.image-item.error .error-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.image-item.error .error-text {
+  font-size: 10px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.image-item.error .retry-btn {
+  margin-top: 6px;
+  padding: 3px 8px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.image-item.error .retry-btn:hover {
+  background: #dc2626;
+}
+
+.image-item .success-tag {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  background: #22c55e;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.image-item.uploaded .success-tag {
+  opacity: 1;
+}
+
 .goods-count-badge {
   display: inline-flex;
   align-items: center;
