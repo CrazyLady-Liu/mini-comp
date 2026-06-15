@@ -348,6 +348,54 @@
     ALLOWED_EXT: ['.jpg', '.jpeg', '.png', '.webp'],
     UPLOAD_URL: '/api/upload',
 
+    _uid: 0,
+
+    genId() {
+      return 'img_' + (++this._uid) + '_' + Date.now().toString(36);
+    },
+
+    createItem(file, previewUrl) {
+      return {
+        uid: this.genId(),
+        file: file || null,
+        localPreview: previewUrl || '',
+        remoteUrl: '',
+        fileName: file ? file.name : '',
+        fileSize: file ? file.size : 0,
+        fileType: file ? file.type : '',
+        status: 'uploading',
+        errorMsg: ''
+      };
+    },
+
+    createExistingItem(url, index) {
+      return {
+        uid: this.genId(),
+        file: null,
+        localPreview: '',
+        remoteUrl: url,
+        fileName: '图片' + (index + 1),
+        fileSize: 0,
+        fileType: '',
+        status: 'success',
+        errorMsg: ''
+      };
+    },
+
+    findById(uid) {
+      return AppState.productImages.find(img => img.uid === uid) || null;
+    },
+
+    findIndexByUid(uid) {
+      return AppState.productImages.findIndex(img => img.uid === uid);
+    },
+
+    getDisplayUrl(img) {
+      if (img.status === 'success' && img.remoteUrl) return img.remoteUrl;
+      if (img.localPreview) return img.localPreview;
+      return img.remoteUrl || '';
+    },
+
     init() {
       this.fileInput = document.getElementById('productImageInput');
       this.listEl = document.getElementById('productImageList');
@@ -361,14 +409,12 @@
       this.listEl.addEventListener('click', (e) => {
         const delBtn = e.target.closest('.delete-btn');
         if (delBtn) {
-          const index = parseInt(delBtn.dataset.index);
-          this.removeImage(index);
+          this.removeImage(delBtn.dataset.uid);
           return;
         }
         const retryBtn = e.target.closest('.retry-btn');
         if (retryBtn) {
-          const index = parseInt(retryBtn.dataset.index);
-          this.retryUpload(index);
+          this.retryUpload(retryBtn.dataset.uid);
         }
       });
 
@@ -396,67 +442,94 @@
       const files = Array.from(e.target.files);
       if (!files.length) return;
 
-      const uploadedCount = AppState.productImages.filter(img => img.status !== 'uploading').length;
-      const remainingSlots = this.MAX_IMAGES - uploadedCount;
-      if (remainingSlots <= 0) {
+      const nonUploading = AppState.productImages.filter(img => img.status !== 'uploading').length;
+      const remaining = this.MAX_IMAGES - nonUploading;
+      if (remaining <= 0) {
         Utils.showToast(`最多只能上传 ${this.MAX_IMAGES} 张图片`, 'error');
         e.target.value = '';
         return;
       }
 
-      const filesToProcess = files.slice(0, remainingSlots);
-
-      filesToProcess.forEach(file => {
-        const validation = this.validateFile(file);
-        if (!validation.valid) {
-          Utils.showToast(validation.message, 'error');
+      const toProcess = files.slice(0, remaining);
+      toProcess.forEach(file => {
+        const v = this.validateFile(file);
+        if (!v.valid) {
+          Utils.showToast(v.message, 'error');
           return;
         }
-        this.uploadImage(file);
+        this.startUpload(file);
       });
 
       e.target.value = '';
-      if (files.length > remainingSlots) {
-        Utils.showToast(`已超过 ${this.MAX_IMAGES} 张，只处理前 ${remainingSlots} 张`, 'info');
+      if (files.length > remaining) {
+        Utils.showToast(`已超过 ${this.MAX_IMAGES} 张，只处理前 ${remaining} 张`, 'info');
       }
     },
 
-    uploadImage(file) {
+    startUpload(file) {
       const reader = new FileReader();
       reader.onload = (ev) => {
-        const previewUrl = ev.target.result;
-        const imageData = {
-          id: Date.now() + Math.random(),
-          file: file,
-          previewUrl: previewUrl,
-          url: '',
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          status: 'uploading',
-          errorMessage: ''
-        };
-        AppState.productImages.push(imageData);
+        const item = this.createItem(file, ev.target.result);
+        AppState.productImages.push(item);
         this.render();
         this.updateAddBtnVisibility();
-
-        this.mockUpload(file).then(result => {
-          const idx = AppState.productImages.findIndex(img => img.id === imageData.id);
-          if (idx === -1) return;
-
-          if (result.success) {
-            AppState.productImages[idx].status = 'success';
-            AppState.productImages[idx].url = result.url;
-          } else {
-            AppState.productImages[idx].status = 'error';
-            AppState.productImages[idx].errorMessage = result.message;
-            Utils.showToast(`图片「${file.name}」上传失败：${result.message}`, 'error');
-          }
-          this.render();
-          this.updateAddBtnVisibility();
-        });
+        this.doUpload(item.uid);
       };
       reader.readAsDataURL(file);
+    },
+
+    doUpload(uid) {
+      const item = this.findById(uid);
+      if (!item || !item.file) return;
+
+      item.status = 'uploading';
+      item.errorMsg = '';
+      this.render();
+
+      this.mockUpload(item.file).then(result => {
+        const current = this.findById(uid);
+        if (!current) return;
+
+        if (result.success) {
+          current.status = 'success';
+          current.remoteUrl = result.url;
+        } else {
+          current.status = 'error';
+          current.errorMsg = result.message;
+          Utils.showToast(`图片「${current.fileName}」上传失败：${result.message}`, 'error');
+        }
+        this.render();
+        this.updateAddBtnVisibility();
+      });
+    },
+
+    retryUpload(uid) {
+      const item = this.findById(uid);
+      if (!item || !item.file) {
+        Utils.showToast('原始文件信息已丢失，请删除后重新选择图片', 'error');
+        return;
+      }
+
+      item.status = 'uploading';
+      item.errorMsg = '';
+      this.render();
+
+      this.mockUpload(item.file).then(result => {
+        const current = this.findById(uid);
+        if (!current) return;
+
+        if (result.success) {
+          current.status = 'success';
+          current.remoteUrl = result.url;
+          Utils.showToast('图片重新上传成功', 'success');
+        } else {
+          current.status = 'error';
+          current.errorMsg = result.message;
+          Utils.showToast(`上传失败：${result.message}`, 'error');
+        }
+        this.render();
+        this.updateAddBtnVisibility();
+      });
     },
 
     mockUpload(file) {
@@ -465,177 +538,127 @@
         setTimeout(() => {
           const success = Math.random() > 0.2;
           if (success) {
-            const randomId = Math.floor(Math.random() * 1000);
-            resolve({
-              success: true,
-              url: `https://picsum.photos/id/${randomId}/400/400`,
-              message: '上传成功'
-            });
+            const id = Math.floor(Math.random() * 1000);
+            resolve({ success: true, url: `https://picsum.photos/id/${id}/400/400`, message: '上传成功' });
           } else {
-            const errors = [
-              '服务器连接超时，请重试',
-              '图片上传接口异常',
-              '网络波动，请稍后再试',
-              '图片格式校验失败'
-            ];
-            const errorMsg = errors[Math.floor(Math.random() * errors.length)];
-            resolve({
-              success: false,
-              url: '',
-              message: errorMsg
-            });
+            const msgs = ['服务器连接超时，请重试', '图片上传接口异常', '网络波动，请稍后再试', '图片格式校验失败'];
+            resolve({ success: false, url: '', message: msgs[Math.floor(Math.random() * msgs.length)] });
           }
         }, delay);
       });
     },
 
-    retryUpload(index) {
-      const img = AppState.productImages[index];
-      if (!img || !img.file) return;
-
-      img.status = 'uploading';
-      img.errorMessage = '';
-      this.render();
-
-      this.mockUpload(img.file).then(result => {
-        const idx = AppState.productImages.findIndex(i => i.id === img.id);
-        if (idx === -1) return;
-
-        if (result.success) {
-          AppState.productImages[idx].status = 'success';
-          AppState.productImages[idx].url = result.url;
-          Utils.showToast('图片重新上传成功', 'success');
-        } else {
-          AppState.productImages[idx].status = 'error';
-          AppState.productImages[idx].errorMessage = result.message;
-          Utils.showToast(`上传失败：${result.message}`, 'error');
-        }
-        this.render();
-      });
-    },
-
-    removeImage(index) {
-      AppState.productImages.splice(index, 1);
+    removeImage(uid) {
+      const idx = this.findIndexByUid(uid);
+      if (idx === -1) return;
+      AppState.productImages.splice(idx, 1);
       this.render();
       this.updateAddBtnVisibility();
     },
 
     handleDragStart(e) {
-      const item = e.target.closest('.image-item');
-      if (!item) return;
+      const el = e.target.closest('.image-item');
+      if (!el) return;
 
-      const imgData = AppState.productImages[parseInt(item.dataset.index)];
-      if (!imgData || imgData.status !== 'success') {
+      const uid = el.dataset.uid;
+      const item = this.findById(uid);
+      if (!item || item.status !== 'success') {
         e.preventDefault();
         return;
       }
 
-      this.draggedIndex = parseInt(item.dataset.index);
-      item.classList.add('dragging');
+      this._dragUid = uid;
+      el.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', this.draggedIndex);
+      e.dataTransfer.setData('text/plain', uid);
     },
 
     handleDragEnd(e) {
-      const item = e.target.closest('.image-item');
-      if (item) item.classList.remove('dragging');
-      document.querySelectorAll('.image-item').forEach(el => el.classList.remove('drag-over'));
+      const el = e.target.closest('.image-item');
+      if (el) el.classList.remove('dragging');
+      this.listEl.querySelectorAll('.image-item').forEach(n => n.classList.remove('drag-over'));
+      this._dragUid = undefined;
     },
 
     handleDragOver(e) {
       e.preventDefault();
-      const item = e.target.closest('.image-item');
-      const imgData = item ? AppState.productImages[parseInt(item.dataset.index)] : null;
+      const el = e.target.closest('.image-item');
+      const item = el ? this.findById(el.dataset.uid) : null;
 
-      if (!imgData || imgData.status !== 'success') {
+      if (!item || item.status !== 'success') {
         e.dataTransfer.dropEffect = 'none';
         return;
       }
 
       e.dataTransfer.dropEffect = 'move';
-      document.querySelectorAll('.image-item').forEach(el => el.classList.remove('drag-over'));
-      if (item) item.classList.add('drag-over');
+      this.listEl.querySelectorAll('.image-item').forEach(n => n.classList.remove('drag-over'));
+      if (el) el.classList.add('drag-over');
     },
 
     handleDragLeave(e) {
-      const item = e.target.closest('.image-item');
-      if (item && !item.contains(e.relatedTarget)) {
-        item.classList.remove('drag-over');
+      const el = e.target.closest('.image-item');
+      if (el && !el.contains(e.relatedTarget)) {
+        el.classList.remove('drag-over');
       }
     },
 
     handleDrop(e) {
       e.preventDefault();
-      const targetItem = e.target.closest('.image-item');
-      if (!targetItem || this.draggedIndex === undefined) return;
+      const targetEl = e.target.closest('.image-item');
+      if (!targetEl || this._dragUid === undefined) return;
 
-      const targetIndex = parseInt(targetItem.dataset.index);
-      const targetImg = AppState.productImages[targetIndex];
-      if (!targetImg || targetImg.status !== 'success') return;
+      const targetUid = targetEl.dataset.uid;
+      const targetItem = this.findById(targetUid);
+      if (!targetItem || targetItem.status !== 'success') return;
 
-      if (this.draggedIndex === targetIndex) return;
+      if (this._dragUid === targetUid) return;
 
-      const images = AppState.productImages;
-      const [draggedItem] = images.splice(this.draggedIndex, 1);
-      images.splice(targetIndex, 0, draggedItem);
+      const fromIdx = this.findIndexByUid(this._dragUid);
+      const toIdx = this.findIndexByUid(targetUid);
+      if (fromIdx === -1 || toIdx === -1) return;
+
+      const [moved] = AppState.productImages.splice(fromIdx, 1);
+      AppState.productImages.splice(toIdx, 0, moved);
 
       this.render();
-      this.draggedIndex = undefined;
+      this._dragUid = undefined;
     },
 
     updateAddBtnVisibility() {
-      const successCount = AppState.productImages.filter(img => img.status === 'success').length;
-      if (successCount >= this.MAX_IMAGES) {
-        this.addBtn.classList.add('hidden');
-      } else {
-        this.addBtn.classList.remove('hidden');
-      }
+      const count = AppState.productImages.filter(img => img.status === 'success').length;
+      this.addBtn.classList.toggle('hidden', count >= this.MAX_IMAGES);
     },
 
     render() {
-      const images = AppState.productImages;
-      this.listEl.innerHTML = images.map((img, index) => {
-        const isSuccess = img.status === 'success';
+      const list = AppState.productImages;
+      this.listEl.innerHTML = list.map((img, index) => {
         const isUploading = img.status === 'uploading';
+        const isSuccess = img.status === 'success';
         const isError = img.status === 'error';
-        const displayUrl = img.url || img.previewUrl;
-        const isMain = isSuccess && index === 0;
+        const src = this.getDisplayUrl(img);
+        const isMain = isSuccess && this.findIndexByUid(img.uid) === 0;
 
-        let statusClass = '';
-        let statusContent = '';
+        let cls = 'image-item';
+        let overlay = '';
 
         if (isUploading) {
-          statusClass = 'uploading';
-          statusContent = `
-            <div class="uploading-mask">
-              <div class="spinner"></div>
-              <span class="uploading-text">上传中...</span>
-            </div>
-          `;
+          cls += ' uploading';
+          overlay = `<div class="uploading-mask"><div class="spinner"></div><span class="uploading-text">上传中...</span></div>`;
         } else if (isError) {
-          statusClass = 'error';
-          statusContent = `
-            <div class="error-mask">
-              <span class="error-icon">!</span>
-              <span class="error-text">上传失败</span>
-              <button class="retry-btn" data-index="${index}">重新上传</button>
-            </div>
-          `;
+          cls += ' error';
+          overlay = `<div class="error-mask"><span class="error-icon">!</span><span class="error-text">上传失败</span><button class="retry-btn" data-uid="${img.uid}">重新上传</button></div>`;
         }
 
-        return `
-          <div class="image-item ${statusClass} ${isSuccess ? 'uploaded' : ''}" 
-               draggable="${isSuccess}" 
-               data-index="${index}"
-               title="${img.errorMessage || ''}">
-            ${isMain ? '<span class="main-tag">主图</span>' : ''}
-            ${isSuccess ? '<span class="success-tag">✓</span>' : ''}
-            <img src="${displayUrl}" alt="${img.name || '商品图片'}">
-            <button class="delete-btn" data-index="${index}" title="删除">×</button>
-            ${isSuccess ? '<span class="drag-handle">拖动排序</span>' : ''}
-            ${statusContent}
-          </div>
-        `;
+        if (isSuccess) cls += ' uploaded';
+
+        return `<div class="${cls}" draggable="${isSuccess}" data-uid="${img.uid}" data-index="${index}" title="${img.errorMsg || ''}">
+          ${isMain ? '<span class="main-tag">主图</span>' : ''}
+          ${isSuccess ? '<span class="success-tag">✓</span>' : ''}
+          <img src="${src}" alt="${img.fileName || '商品图片'}">
+          <button class="delete-btn" data-uid="${img.uid}" title="删除">×</button>
+          ${isSuccess ? '<span class="drag-handle">拖动排序</span>' : ''}
+          ${overlay}
+        </div>`;
       }).join('');
     },
 
@@ -645,43 +668,37 @@
       this.updateAddBtnVisibility();
     },
 
-    setImages(imageUrls) {
-      AppState.productImages = imageUrls.map((url, index) => ({
-        id: Date.now() + index,
-        url: url,
-        previewUrl: url,
-        name: `图片${index + 1}`,
-        isExisting: true,
-        status: 'success',
-        errorMessage: ''
-      }));
+    setImages(urls) {
+      AppState.productImages = urls.map((url, i) => this.createExistingItem(url, i));
       this.render();
       this.updateAddBtnVisibility();
     },
 
     getMainImage() {
-      const successImages = AppState.productImages.filter(img => img.status === 'success');
-      return successImages[0]?.url || '';
+      const first = AppState.productImages.find(img => img.status === 'success');
+      return first ? first.remoteUrl : '';
     },
 
     getAllImages() {
-      return AppState.productImages
-        .filter(img => img.status === 'success')
-        .map(img => img.url);
+      return AppState.productImages.filter(img => img.status === 'success').map(img => img.remoteUrl);
     },
 
     validate() {
-      const successCount = AppState.productImages.filter(img => img.status === 'success').length;
-      if (successCount === 0) {
+      const success = AppState.productImages.filter(img => img.status === 'success').length;
+      const uploading = AppState.productImages.filter(img => img.status === 'uploading').length;
+      const errors = AppState.productImages.filter(img => img.status === 'error').length;
+
+      if (success === 0 && errors === 0 && uploading === 0) {
         return { valid: false, message: '请至少上传 1 张商品主图' };
       }
-      const uploadingCount = AppState.productImages.filter(img => img.status === 'uploading').length;
-      if (uploadingCount > 0) {
+      if (success === 0 && errors > 0) {
+        return { valid: false, message: '请至少上传 1 张商品主图' };
+      }
+      if (uploading > 0) {
         return { valid: false, message: '图片正在上传中，请稍候再试' };
       }
-      const errorCount = AppState.productImages.filter(img => img.status === 'error').length;
-      if (errorCount > 0) {
-        return { valid: false, message: `有 ${errorCount} 张图片上传失败，请删除或重新上传` };
+      if (errors > 0) {
+        return { valid: false, message: `有 ${errors} 张图片上传失败，请删除或重新上传` };
       }
       return { valid: true };
     }
