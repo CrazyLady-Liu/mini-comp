@@ -527,8 +527,134 @@ body {
   to { transform: rotate(360deg); }
 }
 
-.loader-text {
-  font-size: 13px;
+.business-briefing {
+  margin-top: 24px;
+}
+
+.briefing-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.briefing-toolbar .select {
+  width: 120px;
+}
+
+.briefing-toolbar .btn span {
+  margin-right: 6px;
+}
+
+.briefing-content {
+  padding: 24px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 50%, #fef3c7 100%);
+  border-radius: 12px;
+  border: 1px solid #dcfce7;
+  min-height: 120px;
+}
+
+.briefing-loading {
+  text-align: center;
+  color: #94a3b8;
+  padding: 30px;
+  font-size: 14px;
+}
+
+.briefing-summary {
+  font-size: 15px;
+  line-height: 2;
+  color: #334155;
+}
+
+.briefing-summary .highlight-revenue {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.briefing-summary .highlight-up {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.briefing-summary .highlight-down {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.briefing-summary .highlight-category {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.briefing-summary .highlight-peak {
+  color: #9333ea;
+  font-weight: 600;
+}
+
+.briefing-summary .highlight-warn {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.briefing-meta {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #bbf7d0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.briefing-meta .badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.export-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(30, 41, 59, 0.95);
+  color: #fff;
+  padding: 24px 40px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.export-loading.show {
+  opacity: 1;
+}
+
+.export-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: export-spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes export-spin {
+  to { transform: rotate(360deg); }
+}
+
+.export-loading-text {
+  font-size: 14px;
   color: #e2e8f0;
   font-weight: 500;
 }

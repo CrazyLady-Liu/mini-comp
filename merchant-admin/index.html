@@ -282,6 +282,28 @@
               <div class="stock-warn-list" id="stockWarnList"></div>
             </div>
           </div>
+
+          <div class="panel business-briefing">
+            <div class="panel-header">
+              <h3>📋 经营简报</h3>
+              <div class="briefing-toolbar">
+                <select class="select" id="briefingPeriod">
+                  <option value="7">近 7 日</option>
+                  <option value="30">近 30 日</option>
+                  <option value="90">近 90 日</option>
+                </select>
+                <button class="btn btn-outline" id="btnRefreshBriefing">
+                  <span>🔄</span> 刷新简报
+                </button>
+                <button class="btn btn-primary" id="btnExportExcel">
+                  <span>📥</span> 导出 Excel
+                </button>
+              </div>
+            </div>
+            <div class="briefing-content" id="briefingContent">
+              <div class="briefing-loading">正在生成经营简报...</div>
+            </div>
+          </div>
         </div>
 
         <div id="page-preorder" class="page">
@@ -1325,6 +1347,7 @@
     <span class="export-loading-text">正在生成 Excel 文件...</span>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

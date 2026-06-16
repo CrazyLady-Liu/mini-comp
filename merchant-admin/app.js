@@ -164,6 +164,43 @@
       todayNewCustomers: 23,
       yesterdayNewCustomers: 20
     },
+    dailyStats: [
+      { date: '2026-06-10', revenue: 5800, orders: 72, loss: 156.8, newCust: 12 },
+      { date: '2026-06-11', revenue: 6120, orders: 76, loss: 178.2, newCust: 15 },
+      { date: '2026-06-12', revenue: 6340, orders: 79, loss: 145.5, newCust: 18 },
+      { date: '2026-06-13', revenue: 7200, orders: 88, loss: 198.6, newCust: 22 },
+      { date: '2026-06-14', revenue: 7860, orders: 96, loss: 167.3, newCust: 25 },
+      { date: '2026-06-15', revenue: 11180, orders: 144, loss: 189.4, newCust: 20 },
+      { date: '2026-06-16', revenue: 12580, orders: 156, loss: 201.38, newCust: 23 }
+    ],
+    lastWeekDailyStats: [
+      { date: '2026-06-03', revenue: 4980, orders: 62, loss: 134.2, newCust: 10 },
+      { date: '2026-06-04', revenue: 5120, orders: 64, loss: 145.8, newCust: 12 },
+      { date: '2026-06-05', revenue: 5340, orders: 67, loss: 125.5, newCust: 14 },
+      { date: '2026-06-06', revenue: 6080, orders: 75, loss: 168.3, newCust: 17 },
+      { date: '2026-06-07', revenue: 6560, orders: 81, loss: 142.1, newCust: 20 },
+      { date: '2026-06-08', revenue: 9120, orders: 118, loss: 156.7, newCust: 16 },
+      { date: '2026-06-09', revenue: 9900, orders: 124, loss: 172.5, newCust: 19 }
+    ],
+    categorySales: [
+      { category: '水果类', revenue: 18102, pct: 42, orders: 268, icon: '🍎' },
+      { category: '蔬菜类', revenue: 11186, pct: 26, orders: 312, icon: '🥬' },
+      { category: '肉禽蛋', revenue: 7758, pct: 18, orders: 156, icon: '🥩' },
+      { category: '乳制品', revenue: 4310, pct: 10, orders: 124, icon: '🥛' },
+      { category: '粮油调味', revenue: 1724, pct: 4, orders: 68, icon: '🧂' }
+    ],
+    hourlyStats: [
+      { hour: '00-06', orders: 12, pct: 2 },
+      { hour: '06-08', orders: 48, pct: 7 },
+      { hour: '08-10', orders: 86, pct: 13 },
+      { hour: '10-12', orders: 72, pct: 11 },
+      { hour: '12-14', orders: 58, pct: 9 },
+      { hour: '14-16', orders: 64, pct: 10 },
+      { hour: '16-18', orders: 78, pct: 12 },
+      { hour: '18-20', orders: 108, pct: 17 },
+      { hour: '20-22', orders: 112, pct: 18 },
+      { hour: '22-24', orders: 12, pct: 1 }
+    ],
     lossRecords: [
       { id: 'BS20240607001', product: '有机西红柿', qty: 12, amount: 71.88, reason: '自然腐烂', reporter: '刘大姐', time: '2024-06-07 19:30' },
       { id: 'BS20240607002', product: '新鲜草莓', qty: 5, amount: 129.5, reason: '顾客损坏', reporter: '王大哥', time: '2024-06-07 15:20' },
@@ -295,6 +332,162 @@
       this.renderPendingOrders();
       this.renderStockWarn();
       this.bindCardEvents();
+      this.bindBriefingEvents();
+      this.renderBusinessBriefing(7);
+    },
+    bindBriefingEvents() {
+      var self = this;
+      var periodSel = document.getElementById('briefingPeriod');
+      var refreshBtn = document.getElementById('btnRefreshBriefing');
+      var exportBtn = document.getElementById('btnExportExcel');
+      if (periodSel) {
+        periodSel.addEventListener('change', function() {
+          var period = parseInt(periodSel.value, 10);
+          self.renderBusinessBriefing(period);
+        });
+      }
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+          var period = parseInt((periodSel ? periodSel.value : '7'), 10);
+          self.renderBusinessBriefing(period);
+        });
+      }
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+          var period = parseInt((periodSel ? periodSel.value : '7'), 10);
+          self.exportExcel(period);
+        });
+      }
+    },
+    renderBusinessBriefing(period) {
+      var self = this;
+      var contentEl = document.getElementById('briefingContent');
+      if (!contentEl) return;
+      contentEl.innerHTML = '<div class="briefing-loading">正在生成经营简报...</div>';
+      setTimeout(function() {
+        var data = self._generateBriefingData(period);
+        var upCls = data.revenueChange >= 0 ? 'highlight-up' : 'highlight-down';
+        var upArr = data.revenueChange >= 0 ? '↑' : '↓';
+        var stockWarnCount = MockData.products.filter(function(p) {
+          return p.status !== 'off' && (p.stock === 0 || p.stock <= p.warnStock);
+        }).length;
+        var periodText = '近 ' + period + ' 日';
+        var html = '<div class="briefing-summary">';
+        html += periodText + '总营收 <span class="highlight-revenue">' + Utils.formatMoney(data.totalRevenue) + '</span>，';
+        html += '环比上周' + (data.revenueChange >= 0 ? '上涨' : '下跌') + ' <span class="' + upCls + '">' + upArr + ' ' + Math.abs(data.revenueChange).toFixed(1) + '%</span>；';
+        html += '<br><span class="highlight-category">' + data.topCategory.category + '</span> 营收占比最高 <span class="highlight-category">' + data.topCategory.pct + '%</span>；';
+        html += '<br>每日 <span class="highlight-peak">' + data.peakHour + '</span> 为下单高峰；';
+        html += '<br>当前共有 <span class="highlight-warn">' + stockWarnCount + '</span> 款商品库存低于预警值，建议及时补货。';
+        html += '</div>';
+        html += '<div class="briefing-meta">';
+        html += '<span>📊 统计周期：' + data.startDate + ' 至 ' + data.endDate + '</span>';
+        html += '<span class="badge">AI 智能分析</span>';
+        html += '</div>';
+        contentEl.innerHTML = html;
+      }, 400);
+    },
+    _generateBriefingData(period) {
+      var dailyStats = MockData.dailyStats;
+      var lastWeek = MockData.lastWeekDailyStats;
+      var categorySales = MockData.categorySales;
+      var hourlyStats = MockData.hourlyStats;
+      var days = dailyStats.slice(-period);
+      var lastDays = lastWeek.slice(-period);
+      var totalRevenue = days.reduce(function(s, d) { return s + d.revenue; }, 0);
+      var lastTotalRevenue = lastDays.reduce(function(s, d) { return s + d.revenue; }, 0);
+      var revenueChange = lastTotalRevenue > 0 ? ((totalRevenue - lastTotalRevenue) / lastTotalRevenue * 100) : 0;
+      var topCategory = categorySales.reduce(function(prev, curr) {
+        return (prev.pct || 0) > (curr.pct || 0) ? prev : curr;
+      }, { category: '水果类', pct: 42 });
+      var peakHour = hourlyStats.reduce(function(prev, curr) {
+        return (prev.orders || 0) > (curr.orders || 0) ? prev : curr;
+      }, { hour: '18-22', orders: 220 }).hour;
+      return {
+        totalRevenue: totalRevenue,
+        lastTotalRevenue: lastTotalRevenue,
+        revenueChange: revenueChange,
+        topCategory: topCategory,
+        peakHour: peakHour,
+        startDate: days[0].date,
+        endDate: days[days.length - 1].date
+      };
+    },
+    exportExcel(period) {
+      var self = this;
+      var loading = document.getElementById('exportLoading');
+      if (loading) loading.classList.add('show');
+      setTimeout(function() {
+        try {
+          self._doExportExcel(period);
+        } catch (e) {
+          console.error('导出失败:', e);
+          Utils.showToast('导出失败，请重试');
+        } finally {
+          if (loading) loading.classList.remove('show');
+        }
+      }, 600);
+    },
+    _doExportExcel(period) {
+      if (typeof XLSX === 'undefined') {
+        Utils.showToast('Excel 导出库未加载，请刷新页面');
+        return;
+      }
+      var dailyStats = MockData.dailyStats.slice(-period);
+      var categorySales = JSON.parse(JSON.stringify(MockData.categorySales));
+      var hourlyStats = JSON.parse(JSON.stringify(MockData.hourlyStats));
+      var lossRecords = MockData.lossRecords.slice().sort(function(a, b) {
+        return new Date(b.time) - new Date(a.time);
+      }).slice(0, Math.min(20, MockData.lossRecords.length));
+      var topProducts = JSON.parse(JSON.stringify(MockData.products))
+        .filter(function(p) { return p.status === 'on'; })
+        .sort(function(a, b) { return b.sold - a.sold; })
+        .slice(0, 10);
+      var wb = XLSX.utils.book_new();
+      var dailyData = [['日期', '营业额(元)', '订单数', '损耗金额(元)', '新增客户']];
+      var totalRev = 0, totalOrders = 0, totalLoss = 0, totalNew = 0;
+      dailyStats.forEach(function(d) {
+        dailyData.push([d.date, d.revenue, d.orders, d.loss, d.newCust]);
+        totalRev += d.revenue; totalOrders += d.orders; totalLoss += d.loss; totalNew += d.newCust;
+      });
+      dailyData.push(['合计', totalRev, totalOrders, totalLoss.toFixed(2), totalNew]);
+      var ws1 = XLSX.utils.aoa_to_sheet(dailyData);
+      ws1['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 15 }, { wch: 12 }];
+      XLSX.utils.book_append_sheet(wb, ws1, '每日营收');
+      var catData = [['分类', '营收(元)', '占比(%)', '订单数', '代表商品']];
+      categorySales.forEach(function(c) {
+        catData.push([c.category, c.revenue, c.pct, c.orders, c.icon || '']);
+      });
+      var ws2 = XLSX.utils.aoa_to_sheet(catData);
+      ws2['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 10 }, { wch: 12 }];
+      XLSX.utils.book_append_sheet(wb, ws2, '分类销量');
+      var hourData = [['时段', '订单数', '占比(%)']];
+      hourlyStats.forEach(function(h) {
+        hourData.push([h.hour, h.orders, h.pct]);
+      });
+      var ws3 = XLSX.utils.aoa_to_sheet(hourData);
+      ws3['!cols'] = [{ wch: 10 }, { wch: 10 }, { wch: 10 }];
+      XLSX.utils.book_append_sheet(wb, ws3, '时段销量');
+      var lossData = [['损耗单号', '商品', '数量', '金额(元)', '原因', '上报人', '上报时间']];
+      lossRecords.forEach(function(l) {
+        lossData.push([l.id, l.product, l.qty, l.amount, l.reason, l.reporter, l.time]);
+      });
+      var ws4 = XLSX.utils.aoa_to_sheet(lossData);
+      ws4['!cols'] = [{ wch: 18 }, { wch: 14 }, { wch: 8 }, { wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 20 }];
+      XLSX.utils.book_append_sheet(wb, ws4, '损耗记录');
+      var topData = [['排名', '商品名称', '分类', '售价(元)', '销量', '销售额(元)', '库存']];
+      topProducts.forEach(function(p, i) {
+        topData.push([i + 1, p.name, p.category, p.price, p.sold, (p.price * p.sold).toFixed(2), p.stock + p.unit]);
+      });
+      var ws5 = XLSX.utils.aoa_to_sheet(topData);
+      ws5['!cols'] = [{ wch: 8 }, { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 8 }, { wch: 14 }, { wch: 10 }];
+      XLSX.utils.book_append_sheet(wb, ws5, '热销商品TOP10');
+      var today = new Date();
+      var y = today.getFullYear();
+      var m = String(today.getMonth() + 1).padStart(2, '0');
+      var d = String(today.getDate()).padStart(2, '0');
+      var fileName = '经营报表_' + y + m + d + '_近' + period + '日.xlsx';
+      XLSX.writeFile(wb, fileName);
+      Utils.showToast('导出成功：' + fileName);
     },
     bindCardEvents() {
       var self = this;
