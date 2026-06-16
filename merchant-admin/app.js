@@ -148,6 +148,18 @@
       { id: 'AS20240606017', orderNo: 'PO20240606003', type: 'refund', typeText: '仅退款', product: '新鲜草莓', user: '郑**', phone: '130****5678', amount: 51.8, reason: '商品重量不足', status: 'rejected', statusText: '已拒绝', createdAt: '2024-06-06 17:00', evidence: ['https://picsum.photos/id/580/200/200'], desc: '2斤草莓连盒子才1.8斤。' },
       { id: 'AS20240606016', orderNo: 'PO20240606002', type: 'refund', typeText: '仅退款', product: '有机西兰花', user: '王**', phone: '138****9090', amount: 17.98, reason: '配送超时', status: 'pending', statusText: '待处理', createdAt: '2024-06-06 15:30', evidence: [], desc: '预约时间是上午，下午才送到，已经不需要了。' }
     ],
+    dashboardMetrics: {
+      todayRevenue: 12580,
+      yesterdayRevenue: 11180,
+      todayOrders: 156,
+      yesterdayOrders: 144,
+      todayGrossProfit: 5032,
+      yesterdayGrossProfit: 4650,
+      todayLossAmount: 201.38,
+      lossThreshold: 200,
+      todayNewCustomers: 23,
+      yesterdayNewCustomers: 20
+    },
     lossRecords: [
       { id: 'BS20240607001', product: '有机西红柿', qty: 12, amount: 71.88, reason: '自然腐烂', reporter: '刘大姐', time: '2024-06-07 19:30' },
       { id: 'BS20240607002', product: '新鲜草莓', qty: 5, amount: 129.5, reason: '顾客损坏', reporter: '王大哥', time: '2024-06-07 15:20' },
@@ -273,10 +285,78 @@
 
   const Dashboard = {
     init() {
+      this.renderMetricCards();
       this.renderTrend();
       this.renderTopProducts();
       this.renderPendingOrders();
       this.renderStockWarn();
+    },
+    renderMetricCards() {
+      var m = MockData.dashboardMetrics;
+      var onSaleProducts = MockData.products.filter(function(p) { return p.status === 'on'; });
+      var onSaleCount = onSaleProducts.length;
+      var stockWarnCount = onSaleProducts.filter(function(p) { return p.stock <= p.warnStock; }).length;
+      var pendingAftersale = MockData.aftersales.filter(function(a) { return a.status === 'pending'; }).length;
+      var avgOrder = m.todayOrders > 0 ? (m.todayRevenue / m.todayOrders) : 0;
+      var yesterdayAvgOrder = m.yesterdayOrders > 0 ? (m.yesterdayRevenue / m.yesterdayOrders) : 0;
+
+      var grossProfitPct = m.yesterdayGrossProfit > 0 ? ((m.todayGrossProfit - m.yesterdayGrossProfit) / m.yesterdayGrossProfit * 100) : 0;
+      var gpEl = document.getElementById('mcGrossProfit');
+      var gpTrendEl = document.getElementById('mcGrossProfitTrend');
+      if (gpEl) gpEl.textContent = Utils.formatMoney(m.todayGrossProfit).replace('¥', '¥');
+      if (gpTrendEl) {
+        var gpUp = grossProfitPct >= 0;
+        gpTrendEl.textContent = (gpUp ? '↑ ' : '↓ ') + Math.abs(grossProfitPct).toFixed(1) + '% 较昨日';
+        gpTrendEl.className = 'metric-trend ' + (gpUp ? 'up' : 'down');
+      }
+
+      var avgPct = yesterdayAvgOrder > 0 ? ((avgOrder - yesterdayAvgOrder) / yesterdayAvgOrder * 100) : 0;
+      var avgEl = document.getElementById('mcAvgOrder');
+      var avgTrendEl = document.getElementById('mcAvgOrderTrend');
+      if (avgEl) avgEl.textContent = Utils.formatMoney(avgOrder);
+      if (avgTrendEl) {
+        var avgUp = avgPct >= 0;
+        avgTrendEl.textContent = (avgUp ? '↑ ' : '↓ ') + Math.abs(avgPct).toFixed(1) + '% 较昨日';
+        avgTrendEl.className = 'metric-trend ' + (avgUp ? 'up' : 'down');
+      }
+
+      var lossEl = document.getElementById('mcLossAmount');
+      var lossCard = document.getElementById('metricLossAmount');
+      var lossThresholdEl = document.getElementById('mcLossThreshold');
+      if (lossEl) lossEl.textContent = Utils.formatMoney(m.todayLossAmount);
+      if (lossCard && m.todayLossAmount > m.lossThreshold) {
+        lossCard.classList.add('threshold-alert');
+      }
+      if (lossThresholdEl) {
+        if (m.todayLossAmount > m.lossThreshold) {
+          lossThresholdEl.textContent = '超出预警阈值 ¥' + m.lossThreshold;
+          lossThresholdEl.className = 'metric-sub-text danger';
+        } else {
+          lossThresholdEl.textContent = '预警阈值 ¥' + m.lossThreshold;
+          lossThresholdEl.className = 'metric-sub-text';
+        }
+      }
+
+      var onSaleEl = document.getElementById('mcOnSaleCount');
+      var stockWarnEl = document.getElementById('mcStockWarnCount');
+      if (onSaleEl) onSaleEl.textContent = onSaleCount;
+      if (stockWarnEl) {
+        stockWarnEl.textContent = '库存预警商品 ' + stockWarnCount + ' 件';
+        stockWarnEl.className = stockWarnCount > 0 ? 'metric-sub-text warn' : 'metric-sub-text';
+      }
+
+      var newCustPct = m.yesterdayNewCustomers > 0 ? ((m.todayNewCustomers - m.yesterdayNewCustomers) / m.yesterdayNewCustomers * 100) : 0;
+      var newCustEl = document.getElementById('mcNewCustomers');
+      var newCustTrendEl = document.getElementById('mcNewCustomersTrend');
+      if (newCustEl) newCustEl.textContent = m.todayNewCustomers;
+      if (newCustTrendEl) {
+        var ncUp = newCustPct >= 0;
+        newCustTrendEl.textContent = (ncUp ? '↑ ' : '↓ ') + Math.abs(newCustPct).toFixed(1) + '% 较昨日';
+        newCustTrendEl.className = 'metric-trend ' + (ncUp ? 'up' : 'down');
+      }
+
+      var pendingEl = document.getElementById('mcPendingAftersale');
+      if (pendingEl) pendingEl.textContent = pendingAftersale;
     },
     renderTrend() {
       const chart = document.getElementById('trendChart');
