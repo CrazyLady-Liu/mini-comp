@@ -446,8 +446,16 @@
       var dailyData = [['日期', '营业额(元)', '订单数', '损耗金额(元)', '新增客户']];
       var totalRev = 0, totalOrders = 0, totalLoss = 0, totalNew = 0;
       dailyStats.forEach(function(d) {
-        dailyData.push([d.date, d.revenue, d.orders, d.loss, d.newCust]);
-        totalRev += d.revenue; totalOrders += d.orders; totalLoss += d.loss; totalNew += d.newCust;
+        var r = parseFloat(d.revenue);
+        if (isNaN(r) || !isFinite(r) || r < 0) r = 0;
+        var o = parseInt(d.orders, 10);
+        if (isNaN(o) || !isFinite(o) || o < 0) o = 0;
+        var l = parseFloat(d.loss);
+        if (isNaN(l) || !isFinite(l) || l < 0) l = 0;
+        var n = parseInt(d.newCust, 10);
+        if (isNaN(n) || !isFinite(n) || n < 0) n = 0;
+        dailyData.push([d.date, r, o, l.toFixed(2), n]);
+        totalRev += r; totalOrders += o; totalLoss += l; totalNew += n;
       });
       dailyData.push(['合计', totalRev, totalOrders, totalLoss.toFixed(2), totalNew]);
       var ws1 = XLSX.utils.aoa_to_sheet(dailyData);
@@ -455,28 +463,47 @@
       XLSX.utils.book_append_sheet(wb, ws1, '每日营收');
       var catData = [['分类', '营收(元)', '占比(%)', '订单数', '代表商品']];
       categorySales.forEach(function(c) {
-        catData.push([c.category, c.revenue, c.pct, c.orders, c.icon || '']);
+        var cr = parseFloat(c.revenue);
+        if (isNaN(cr) || !isFinite(cr) || cr < 0) cr = 0;
+        var cp = parseFloat(c.pct);
+        if (isNaN(cp) || !isFinite(cp) || cp < 0) cp = 0;
+        var co = parseInt(c.orders, 10);
+        if (isNaN(co) || !isFinite(co) || co < 0) co = 0;
+        catData.push([c.category, cr, cp, co, c.icon || '']);
       });
       var ws2 = XLSX.utils.aoa_to_sheet(catData);
       ws2['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 10 }, { wch: 12 }];
       XLSX.utils.book_append_sheet(wb, ws2, '分类销量');
       var hourData = [['时段', '订单数', '占比(%)']];
       hourlyStats.forEach(function(h) {
-        hourData.push([h.hour, h.orders, h.pct]);
+        var ho = parseInt(h.orders, 10);
+        if (isNaN(ho) || !isFinite(ho) || ho < 0) ho = 0;
+        var hp = parseFloat(h.pct);
+        if (isNaN(hp) || !isFinite(hp) || hp < 0) hp = 0;
+        hourData.push([h.hour, ho, hp]);
       });
       var ws3 = XLSX.utils.aoa_to_sheet(hourData);
       ws3['!cols'] = [{ wch: 10 }, { wch: 10 }, { wch: 10 }];
       XLSX.utils.book_append_sheet(wb, ws3, '时段销量');
       var lossData = [['损耗单号', '商品', '数量', '金额(元)', '原因', '上报人', '上报时间']];
       lossRecords.forEach(function(l) {
-        lossData.push([l.id, l.product, l.qty, l.amount, l.reason, l.reporter, l.time]);
+        var lq = parseInt(l.qty, 10);
+        if (isNaN(lq) || !isFinite(lq) || lq < 0) lq = 0;
+        var la = parseFloat(l.amount);
+        if (isNaN(la) || !isFinite(la) || la < 0) la = 0;
+        lossData.push([l.id, l.product, lq, la.toFixed(2), l.reason, l.reporter, l.time]);
       });
       var ws4 = XLSX.utils.aoa_to_sheet(lossData);
       ws4['!cols'] = [{ wch: 18 }, { wch: 14 }, { wch: 8 }, { wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 20 }];
       XLSX.utils.book_append_sheet(wb, ws4, '损耗记录');
       var topData = [['排名', '商品名称', '分类', '售价(元)', '销量', '销售额(元)', '库存']];
       topProducts.forEach(function(p, i) {
-        topData.push([i + 1, p.name, p.category, p.price, p.sold, (p.price * p.sold).toFixed(2), p.stock + p.unit]);
+        var price = parseFloat(p.price);
+        if (isNaN(price) || typeof price !== 'number' || !isFinite(price) || price < 0) price = 0;
+        var sold = parseInt(p.sold, 10);
+        if (isNaN(sold) || typeof sold !== 'number' || !isFinite(sold) || sold < 0) sold = 0;
+        var saleAmount = (price * sold).toFixed(2);
+        topData.push([i + 1, p.name, p.category, price, sold, saleAmount, p.stock + p.unit]);
       });
       var ws5 = XLSX.utils.aoa_to_sheet(topData);
       ws5['!cols'] = [{ wch: 8 }, { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 8 }, { wch: 14 }, { wch: 10 }];
