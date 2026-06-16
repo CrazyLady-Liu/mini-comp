@@ -208,7 +208,70 @@
       { id: 'BS20240606007', product: '精选五花肉', qty: 3, amount: 86.7, reason: '冷链异常', reporter: '刘大姐', time: '2024-06-06 10:30' },
       { id: 'BS20240606006', product: '红富士苹果', qty: 20, amount: 139.8, reason: '自然腐烂', reporter: '王大哥', time: '2024-06-06 09:15' },
       { id: 'BS20240605012', product: '新鲜黄瓜', qty: 30, amount: 119.7, reason: '运输损耗', reporter: '张阿姨', time: '2024-06-05 20:45' }
-    ]
+    ],
+    _generateThirtyDayStats: function() {
+      var stats = [];
+      var baseDate = new Date('2026-06-16');
+      for (var i = 29; i >= 0; i--) {
+        var d = new Date(baseDate);
+        d.setDate(d.getDate() - i);
+        var dateStr = d.toISOString().slice(0, 10);
+        var dayOfWeek = d.getDay();
+        var isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        var baseRevenue = 5000 + Math.random() * 4000;
+        if (isWeekend) baseRevenue *= 1.3;
+        var revenue = Math.round(baseRevenue + Math.sin(i / 3) * 1500);
+        var orders = Math.round(revenue / 75 + Math.random() * 20);
+        var loss = parseFloat((revenue * 0.02 + Math.random() * 50).toFixed(2));
+        var newCust = Math.round(8 + Math.random() * 20);
+        stats.push({ date: dateStr, revenue: revenue, orders: orders, loss: loss, newCust: newCust });
+      }
+      return stats;
+    },
+    _thirtyDayStats: null,
+    getThirtyDayStats: function() {
+      if (!this._thirtyDayStats) {
+        this._thirtyDayStats = this._generateThirtyDayStats();
+      }
+      return this._thirtyDayStats;
+    },
+    getPeriodStats: function(days) {
+      if (days > 30) {
+        var baseDate = new Date('2026-06-16');
+        var stats = [];
+        for (var i = days - 1; i >= 0; i--) {
+          var d = new Date(baseDate);
+          d.setDate(d.getDate() - i);
+          var dateStr = d.toISOString().slice(0, 10);
+          stats.push({ date: dateStr, revenue: 0, orders: 0, loss: 0, newCust: 0 });
+        }
+        return stats;
+      }
+      if (days <= 7) return this.dailyStats.slice(-days);
+      var thirty = this.getThirtyDayStats();
+      return thirty.slice(-days);
+    },
+    getPrevPeriodStats: function(days) {
+      if (days > 30) {
+        var baseDate = new Date('2026-06-16');
+        var stats = [];
+        for (var i = days * 2 - 1; i >= days; i--) {
+          var d = new Date(baseDate);
+          d.setDate(d.getDate() - i);
+          var dateStr = d.toISOString().slice(0, 10);
+          stats.push({ date: dateStr, revenue: 0, orders: 0, loss: 0, newCust: 0 });
+        }
+        return stats;
+      }
+      if (days <= 7) {
+        var lw = this.lastWeekDailyStats.slice(-days);
+        return lw;
+      }
+      var thirty = this.getThirtyDayStats();
+      var start = Math.max(0, thirty.length - days * 2);
+      var end = Math.max(0, thirty.length - days);
+      return thirty.slice(start, end);
+    }
   };
 
   const AppState = {
@@ -325,15 +388,78 @@
   };
 
   const Dashboard = {
+    currentPeriod: 7,
+    isLoading: false,
     init() {
-      this.renderMetricCards();
-      this.renderTrend();
-      this.renderTopProducts();
+      this.bindTrendEvents();
+      this.refreshAll(this.currentPeriod);
       this.renderPendingOrders();
-      this.renderStockWarn();
       this.bindCardEvents();
       this.bindBriefingEvents();
       this.renderBusinessBriefing(7);
+    },
+    bindTrendEvents() {
+      var self = this;
+      var trendSel = document.getElementById('trendSelect');
+      if (trendSel) {
+        trendSel.addEventListener('change', function() {
+          if (self.isLoading) return;
+          var period = parseInt(trendSel.value, 10);
+          if (period !== self.currentPeriod) {
+            self.refreshAll(period);
+          }
+        });
+      }
+    },
+    setLoadingState(loading) {
+      this.isLoading = loading;
+      var trendSel = document.getElementById('trendSelect');
+      if (trendSel) trendSel.disabled = loading;
+
+      var statCards = document.querySelectorAll('.stats-grid .stat-card');
+      statCards.forEach(function(c) {
+        c.classList.toggle('skeleton-loading', loading);
+      });
+      var metricCards = document.querySelectorAll('.metric-cards .metric-card');
+      metricCards.forEach(function(c) {
+        c.classList.toggle('skeleton-loading', loading);
+      });
+      var topProductsEl = document.getElementById('topProducts');
+      if (topProductsEl) {
+        topProductsEl.parentElement.classList.toggle('skeleton-loading', loading);
+        topProductsEl.classList.toggle('skeleton-loading', loading);
+      }
+      var stockWarnEl = document.getElementById('stockWarnList');
+      if (stockWarnEl) {
+        stockWarnEl.parentElement.classList.toggle('skeleton-loading', loading);
+        stockWarnEl.classList.toggle('skeleton-loading', loading);
+      }
+    },
+    refreshAll(period) {
+      var self = this;
+      this.currentPeriod = period;
+      this.setLoadingState(true);
+      this.renderTrendSkeleton(period);
+
+      setTimeout(function() {
+        self.renderMetricCards(period);
+        self.renderTrend(period);
+        self.renderTopProducts(period);
+        self.renderStockWarn(period);
+        self.setLoadingState(false);
+      }, 600);
+    },
+    renderTrendSkeleton(period) {
+      var chart = document.getElementById('trendChart');
+      if (!chart) return;
+      var count = period;
+      var heights = [];
+      for (var i = 0; i < count; i++) {
+        heights.push(30 + Math.random() * 60);
+      }
+      chart.innerHTML = '<div class="chart-skeleton">' + heights.map(function(h) {
+        return '<div class="skeleton-bar" style="height:' + h + '%"></div>';
+      }).join('') + '</div>';
     },
     bindBriefingEvents() {
       var self = this;
@@ -387,12 +513,10 @@
       }, 400);
     },
     _generateBriefingData(period) {
-      var dailyStats = MockData.dailyStats;
-      var lastWeek = MockData.lastWeekDailyStats;
+      var days = MockData.getPeriodStats(period);
+      var lastDays = MockData.getPrevPeriodStats(period);
       var categorySales = MockData.categorySales;
       var hourlyStats = MockData.hourlyStats;
-      var days = dailyStats.slice(-period);
-      var lastDays = lastWeek.slice(-period);
       var totalRevenue = days.reduce(function(s, d) { return s + d.revenue; }, 0);
       var lastTotalRevenue = lastDays.reduce(function(s, d) { return s + d.revenue; }, 0);
       var revenueChange = lastTotalRevenue > 0 ? ((totalRevenue - lastTotalRevenue) / lastTotalRevenue * 100) : 0;
@@ -432,7 +556,7 @@
         Utils.showToast('Excel 导出库未加载，请刷新页面');
         return;
       }
-      var dailyStats = MockData.dailyStats.slice(-period);
+      var dailyStats = MockData.getPeriodStats(period);
       var categorySales = JSON.parse(JSON.stringify(MockData.categorySales));
       var hourlyStats = JSON.parse(JSON.stringify(MockData.hourlyStats));
       var lossRecords = MockData.lossRecords.slice().sort(function(a, b) {
@@ -599,90 +723,153 @@
         tooltip.style.left = left + 'px';
       }
     },
-    renderMetricCards() {
-      var m = MockData.dashboardMetrics;
+    _computePeriodMetrics(period) {
+      var days = MockData.getPeriodStats(period);
+      var prevDays = MockData.getPrevPeriodStats(period);
+      var sum = function(arr, key) { return arr.reduce(function(s, d) { return s + (d[key] || 0); }, 0); };
+      var totalRevenue = sum(days, 'revenue');
+      var prevRevenue = sum(prevDays, 'revenue');
+      var totalOrders = sum(days, 'orders');
+      var prevOrders = sum(prevDays, 'orders');
+      var totalLoss = sum(days, 'loss');
+      var totalNewCust = sum(days, 'newCust');
+      var prevNewCust = sum(prevDays, 'newCust');
+      var avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+      var prevAvgOrder = prevOrders > 0 ? prevRevenue / prevOrders : 0;
+      var grossProfitRate = 0.4;
+      var grossProfit = totalRevenue * grossProfitRate;
+      var prevGrossProfit = prevRevenue * grossProfitRate;
+      return {
+        totalRevenue: totalRevenue,
+        prevRevenue: prevRevenue,
+        totalOrders: totalOrders,
+        prevOrders: prevOrders,
+        totalLoss: totalLoss,
+        totalNewCust: totalNewCust,
+        prevNewCust: prevNewCust,
+        avgOrder: avgOrder,
+        prevAvgOrder: prevAvgOrder,
+        grossProfit: grossProfit,
+        prevGrossProfit: prevGrossProfit,
+        hasData: totalOrders > 0,
+        lossThreshold: MockData.dashboardMetrics.lossThreshold * (period / 7),
+        pendingVerify: Math.round(MockData.dashboardMetrics.todayPendingVerify * (period / 7 * 0.3 + 0.7)),
+        prevPendingVerify: Math.round(MockData.dashboardMetrics.yesterdayPendingVerify * (period / 7 * 0.3 + 0.7)),
+        preorderCount: Math.round(MockData.dashboardMetrics.todayPreorderCount * (period / 7 * 0.3 + 0.7)),
+        prevPreorderCount: Math.round(MockData.dashboardMetrics.yesterdayPreorderCount * (period / 7 * 0.3 + 0.7))
+      };
+    },
+    _renderTrend(el, periodLabel, cur, prev, up, hasData) {
+      var trendEl = el.parentElement.querySelector('.stat-trend') || el.parentElement.querySelector('.metric-trend');
+      if (!trendEl) return;
+      if (hasData === false) {
+        trendEl.textContent = '暂无数据';
+        trendEl.className = (trendEl.classList.contains('metric-trend') ? 'metric-trend ' : 'stat-trend ') + '';
+        trendEl.style.color = '#94a3b8';
+        return;
+      }
+      trendEl.style.color = '';
+      var pct = prev > 0 ? ((cur - prev) / prev * 100) : 0;
+      var isUp = pct >= 0;
+      if (up !== undefined) isUp = up;
+      trendEl.textContent = (isUp ? '↑ ' : '↓ ') + Math.abs(pct).toFixed(1) + '% 较上周期';
+      trendEl.className = (trendEl.classList.contains('metric-trend') ? 'metric-trend ' : 'stat-trend ') + (isUp ? 'up' : 'down');
+    },
+    renderMetricCards(period) {
+      var m = this._computePeriodMetrics(period);
       var self = this;
+      var periodLabel = period + '日';
+      var hasData = m.hasData;
 
       var revEl = document.getElementById('statTodayRevenue');
-      var revTrendEl = revEl ? revEl.parentElement.querySelector('.stat-trend') : null;
-      if (revEl) revEl.textContent = Utils.formatMoney(m.todayRevenue);
-      if (revTrendEl) {
-        var revPct = m.yesterdayRevenue > 0 ? ((m.todayRevenue - m.yesterdayRevenue) / m.yesterdayRevenue * 100) : 0;
-        var revUp = revPct >= 0;
-        revTrendEl.textContent = (revUp ? '↑ ' : '↓ ') + Math.abs(revPct).toFixed(1) + '% 较昨日';
-        revTrendEl.className = 'stat-trend ' + (revUp ? 'up' : 'down');
+      if (revEl) {
+        revEl.textContent = hasData ? Utils.formatMoney(m.totalRevenue) : '¥0';
+        revEl.parentElement.querySelector('.stat-label').textContent = periodLabel + '营业额';
       }
+      self._renderTrend(revEl, periodLabel, m.totalRevenue, m.prevRevenue, undefined, hasData);
 
       var ordersEl = document.getElementById('statTodayOrders');
-      var ordersTrendEl = ordersEl ? ordersEl.parentElement.querySelector('.stat-trend') : null;
-      if (ordersEl) ordersEl.textContent = m.todayOrders;
-      if (ordersTrendEl) {
-        var ordPct = m.yesterdayOrders > 0 ? ((m.todayOrders - m.yesterdayOrders) / m.yesterdayOrders * 100) : 0;
-        var ordUp = ordPct >= 0;
-        ordersTrendEl.textContent = (ordUp ? '↑ ' : '↓ ') + Math.abs(ordPct).toFixed(1) + '% 较昨日';
-        ordersTrendEl.className = 'stat-trend ' + (ordUp ? 'up' : 'down');
+      if (ordersEl) {
+        ordersEl.textContent = hasData ? m.totalOrders : '0';
+        ordersEl.parentElement.querySelector('.stat-label').textContent = periodLabel + '订单数';
       }
+      self._renderTrend(ordersEl, periodLabel, m.totalOrders, m.prevOrders, undefined, hasData);
 
       var preEl = document.getElementById('statPreorderCount');
-      var preTrendEl = preEl ? preEl.parentElement.querySelector('.stat-trend') : null;
-      if (preEl) preEl.textContent = m.todayPreorderCount;
-      if (preTrendEl) {
-        var prePct = m.yesterdayPreorderCount > 0 ? ((m.todayPreorderCount - m.yesterdayPreorderCount) / m.yesterdayPreorderCount * 100) : 0;
-        var preUp = prePct >= 0;
-        preTrendEl.textContent = (preUp ? '↑ ' : '↓ ') + Math.abs(prePct).toFixed(1) + '% 较昨日';
-        preTrendEl.className = 'stat-trend ' + (preUp ? 'up' : 'down');
+      if (preEl) {
+        preEl.textContent = hasData ? m.preorderCount : '0';
+        preEl.parentElement.querySelector('.stat-label').textContent = periodLabel + '预售订单';
       }
+      self._renderTrend(preEl, periodLabel, m.preorderCount, m.prevPreorderCount, undefined, hasData);
 
       var verifyEl = document.getElementById('statPendingVerify');
-      var verifyTrendEl = verifyEl ? verifyEl.parentElement.querySelector('.stat-trend') : null;
-      if (verifyEl) verifyEl.textContent = m.todayPendingVerify;
-      if (verifyTrendEl) {
-        var verPct = m.yesterdayPendingVerify > 0 ? ((m.todayPendingVerify - m.yesterdayPendingVerify) / m.yesterdayPendingVerify * 100) : 0;
-        var verUp = verPct >= 0;
-        verifyTrendEl.textContent = (verUp ? '↑ ' : '↓ ') + Math.abs(verPct).toFixed(1) + '% 较昨日';
-        verifyTrendEl.className = 'stat-trend ' + (verUp ? 'up' : 'down');
+      if (verifyEl) {
+        verifyEl.textContent = hasData ? m.pendingVerify : '0';
+        verifyEl.parentElement.querySelector('.stat-label').textContent = periodLabel + '待核销';
       }
+      self._renderTrend(verifyEl, periodLabel, m.pendingVerify, m.prevPendingVerify, m.pendingVerify <= m.prevPendingVerify, hasData);
 
       var onSaleProducts = MockData.products.filter(function(p) { return p.status === 'on'; });
       var onSaleCount = onSaleProducts.length;
       var stockWarnCount = onSaleProducts.filter(function(p) { return p.stock <= p.warnStock; }).length;
       var pendingAftersale = MockData.aftersales.filter(function(a) { return a.status === 'pending'; }).length;
-      var avgOrder = m.todayOrders > 0 ? (m.todayRevenue / m.todayOrders) : 0;
-      var yesterdayAvgOrder = m.yesterdayOrders > 0 ? (m.yesterdayRevenue / m.yesterdayOrders) : 0;
 
-      var grossProfitPct = m.yesterdayGrossProfit > 0 ? ((m.todayGrossProfit - m.yesterdayGrossProfit) / m.yesterdayGrossProfit * 100) : 0;
       var gpEl = document.getElementById('mcGrossProfit');
       var gpTrendEl = document.getElementById('mcGrossProfitTrend');
-      if (gpEl) gpEl.textContent = Utils.formatMoney(m.todayGrossProfit).replace('¥', '¥');
+      var gpCardHeader = gpEl ? gpEl.closest('.metric-card').querySelector('.metric-title') : null;
+      if (gpCardHeader) gpCardHeader.textContent = periodLabel + '毛利';
+      if (gpEl) gpEl.textContent = hasData ? Utils.formatMoney(m.grossProfit) : '¥0';
       if (gpTrendEl) {
-        var gpUp = grossProfitPct >= 0;
-        gpTrendEl.textContent = (gpUp ? '↑ ' : '↓ ') + Math.abs(grossProfitPct).toFixed(1) + '% 较昨日';
-        gpTrendEl.className = 'metric-trend ' + (gpUp ? 'up' : 'down');
+        if (!hasData) {
+          gpTrendEl.textContent = '暂无数据';
+          gpTrendEl.className = 'metric-trend';
+          gpTrendEl.style.color = '#94a3b8';
+        } else {
+          gpTrendEl.style.color = '';
+          var gpPct = m.prevGrossProfit > 0 ? ((m.grossProfit - m.prevGrossProfit) / m.prevGrossProfit * 100) : 0;
+          var gpUp = gpPct >= 0;
+          gpTrendEl.textContent = (gpUp ? '↑ ' : '↓ ') + Math.abs(gpPct).toFixed(1) + '% 较上周期';
+          gpTrendEl.className = 'metric-trend ' + (gpUp ? 'up' : 'down');
+        }
       }
 
-      var avgPct = yesterdayAvgOrder > 0 ? ((avgOrder - yesterdayAvgOrder) / yesterdayAvgOrder * 100) : 0;
       var avgEl = document.getElementById('mcAvgOrder');
       var avgTrendEl = document.getElementById('mcAvgOrderTrend');
-      if (avgEl) avgEl.textContent = Utils.formatMoney(avgOrder);
+      var avgCardHeader = avgEl ? avgEl.closest('.metric-card').querySelector('.metric-title') : null;
+      if (avgCardHeader) avgCardHeader.textContent = periodLabel + '客单价';
+      if (avgEl) avgEl.textContent = hasData ? Utils.formatMoney(m.avgOrder) : '¥0';
       if (avgTrendEl) {
-        var avgUp = avgPct >= 0;
-        avgTrendEl.textContent = (avgUp ? '↑ ' : '↓ ') + Math.abs(avgPct).toFixed(1) + '% 较昨日';
-        avgTrendEl.className = 'metric-trend ' + (avgUp ? 'up' : 'down');
+        if (!hasData) {
+          avgTrendEl.textContent = '暂无数据';
+          avgTrendEl.className = 'metric-trend';
+          avgTrendEl.style.color = '#94a3b8';
+        } else {
+          avgTrendEl.style.color = '';
+          var avgPct = m.prevAvgOrder > 0 ? ((m.avgOrder - m.prevAvgOrder) / m.prevAvgOrder * 100) : 0;
+          var avgUp = avgPct >= 0;
+          avgTrendEl.textContent = (avgUp ? '↑ ' : '↓ ') + Math.abs(avgPct).toFixed(1) + '% 较上周期';
+          avgTrendEl.className = 'metric-trend ' + (avgUp ? 'up' : 'down');
+        }
       }
 
       var lossEl = document.getElementById('mcLossAmount');
       var lossCard = document.getElementById('metricLossAmount');
       var lossThresholdEl = document.getElementById('mcLossThreshold');
-      if (lossEl) lossEl.textContent = Utils.formatMoney(m.todayLossAmount);
-      if (lossCard && m.todayLossAmount > m.lossThreshold) {
-        lossCard.classList.add('threshold-alert');
+      var lossCardHeader = lossEl ? lossEl.closest('.metric-card').querySelector('.metric-title') : null;
+      if (lossCardHeader) lossCardHeader.textContent = periodLabel + '损耗金额';
+      if (lossEl) lossEl.textContent = hasData ? Utils.formatMoney(m.totalLoss) : '¥0.00';
+      if (lossCard) {
+        lossCard.classList.toggle('threshold-alert', m.totalLoss > m.lossThreshold);
       }
       if (lossThresholdEl) {
-        if (m.todayLossAmount > m.lossThreshold) {
-          lossThresholdEl.textContent = '超出预警阈值 ¥' + m.lossThreshold;
+        if (!hasData) {
+          lossThresholdEl.textContent = '当前周期暂无损耗数据';
+          lossThresholdEl.className = 'metric-sub-text';
+        } else if (m.totalLoss > m.lossThreshold) {
+          lossThresholdEl.textContent = '超出预警阈值 ¥' + m.lossThreshold.toFixed(0);
           lossThresholdEl.className = 'metric-sub-text danger';
         } else {
-          lossThresholdEl.textContent = '预警阈值 ¥' + m.lossThreshold;
+          lossThresholdEl.textContent = '预警阈值 ¥' + m.lossThreshold.toFixed(0);
           lossThresholdEl.className = 'metric-sub-text';
         }
       }
@@ -695,79 +882,143 @@
         stockWarnEl.className = stockWarnCount > 0 ? 'metric-sub-text warn' : 'metric-sub-text';
       }
 
-      var newCustPct = m.yesterdayNewCustomers > 0 ? ((m.todayNewCustomers - m.yesterdayNewCustomers) / m.yesterdayNewCustomers * 100) : 0;
       var newCustEl = document.getElementById('mcNewCustomers');
       var newCustTrendEl = document.getElementById('mcNewCustomersTrend');
-      if (newCustEl) newCustEl.textContent = m.todayNewCustomers;
+      var newCustCardHeader = newCustEl ? newCustEl.closest('.metric-card').querySelector('.metric-title') : null;
+      if (newCustCardHeader) newCustCardHeader.textContent = periodLabel + '新增客户';
+      if (newCustEl) newCustEl.textContent = hasData ? m.totalNewCust : '0';
       if (newCustTrendEl) {
-        var ncUp = newCustPct >= 0;
-        newCustTrendEl.textContent = (ncUp ? '↑ ' : '↓ ') + Math.abs(newCustPct).toFixed(1) + '% 较昨日';
-        newCustTrendEl.className = 'metric-trend ' + (ncUp ? 'up' : 'down');
+        if (!hasData) {
+          newCustTrendEl.textContent = '暂无数据';
+          newCustTrendEl.className = 'metric-trend';
+          newCustTrendEl.style.color = '#94a3b8';
+        } else {
+          newCustTrendEl.style.color = '';
+          var ncPct = m.prevNewCust > 0 ? ((m.totalNewCust - m.prevNewCust) / m.prevNewCust * 100) : 0;
+          var ncUp = ncPct >= 0;
+          newCustTrendEl.textContent = (ncUp ? '↑ ' : '↓ ') + Math.abs(ncPct).toFixed(1) + '% 较上周期';
+          newCustTrendEl.className = 'metric-trend ' + (ncUp ? 'up' : 'down');
+        }
       }
 
       var pendingEl = document.getElementById('mcPendingAftersale');
       if (pendingEl) pendingEl.textContent = pendingAftersale;
     },
-    renderTrend() {
-      const chart = document.getElementById('trendChart');
+    renderTrend(period) {
+      var chart = document.getElementById('trendChart');
       if (!chart) return;
-      const data = [3200, 4800, 5200, 6100, 5500, 7200, 8500];
-      const labels = ['周一','周二','周三','周四','周五','周六','周日'];
-      const max = Math.max(...data);
-      chart.innerHTML = data.map((v, i) => {
-        const h = (v / max) * 100;
-        return `<div class="bar" style="height:${h}%"><span class="bar-value">¥${v}</span><span class="bar-label">${labels[i]}</span></div>`;
+      var days = MockData.getPeriodStats(period);
+      var data = days.map(function(d) { return d.revenue; });
+      var hasData = data.some(function(v) { return v > 0; });
+
+      if (!hasData) {
+        chart.innerHTML = '<div class="chart-empty-state"><div class="empty-icon">📊</div><div class="empty-text">当前周期暂无销售数据</div></div>';
+        return;
+      }
+
+      var labels = days.map(function(d) {
+        var dt = new Date(d.date);
+        return (dt.getMonth() + 1) + '/' + dt.getDate();
+      });
+      var max = Math.max.apply(null, data);
+      if (max === 0) max = 1;
+
+      var step = 1;
+      if (period > 15) step = Math.ceil(period / 10);
+
+      chart.innerHTML = data.map(function(v, i) {
+        var h = (v / max) * 100;
+        var showLabel = (i % step === 0) || (i === data.length - 1);
+        return '<div class="bar" style="height:' + h + '%">' +
+               '<span class="bar-value">¥' + v.toLocaleString() + '</span>' +
+               (showLabel ? '<span class="bar-label">' + labels[i] + '</span>' : '<span class="bar-label" style="opacity:0;">' + labels[i] + '</span>') +
+               '</div>';
       }).join('');
     },
-    renderTopProducts() {
-      const el = document.getElementById('topProducts');
+    renderTopProducts(period) {
+      var el = document.getElementById('topProducts');
       if (!el) return;
-      const sorted = [...MockData.products].sort((a, b) => b.sales - a.sales).slice(0, 5);
-      const rankClass = ['first', 'second', 'third', '', ''];
-      el.innerHTML = sorted.map((p, i) => `
-        <div class="rank-item">
-          <span class="rank-num ${rankClass[i]}">${i + 1}</span>
-          <img src="${p.image}" class="rank-img">
-          <div class="rank-info">
-            <div class="rank-name">${p.name}</div>
-            <div class="rank-sales">销量：${p.sales}${p.unit}</div>
-          </div>
-          <div class="rank-amount">¥${(p.sales * p.salePrice).toFixed(0)}</div>
-        </div>
-      `).join('');
+      var factor = period / 7;
+      var sorted = MockData.products
+        .filter(function(p) { return p.status === 'on'; })
+        .map(function(p) {
+          var sales = Math.round((p.sales || 0) * factor * (0.8 + Math.random() * 0.4));
+          return Object.assign({}, p, { periodSales: sales });
+        })
+        .sort(function(a, b) { return b.periodSales - a.periodSales; })
+        .slice(0, 5);
+
+      var hasData = sorted.some(function(p) { return p.periodSales > 0; });
+      if (!hasData) {
+        el.innerHTML = '<div class="chart-empty-state" style="padding:32px 24px;"><div class="empty-icon" style="font-size:48px;">🏆</div><div class="empty-text">当前周期暂无热销数据</div></div>';
+        return;
+      }
+
+      var rankClass = ['first', 'second', 'third', '', ''];
+      el.innerHTML = sorted.map(function(p, i) {
+        var amount = (p.periodSales * (p.salePrice || p.price || 0)).toFixed(0);
+        return '<div class="rank-item">' +
+               '<span class="rank-num ' + rankClass[i] + '">' + (i + 1) + '</span>' +
+               '<img src="' + p.image + '" class="rank-img">' +
+               '<div class="rank-info">' +
+               '<div class="rank-name">' + p.name + '</div>' +
+               '<div class="rank-sales">销量：' + p.periodSales + p.unit + '</div>' +
+               '</div>' +
+               '<div class="rank-amount">¥' + amount + '</div>' +
+               '</div>';
+      }).join('');
     },
     renderPendingOrders() {
-      const el = document.getElementById('pendingOrders');
+      var el = document.getElementById('pendingOrders');
       if (!el) return;
-      const statusMap = { pending: { t: '待备货', c: 'pending' }, picking: { t: '分拣中', c: 'picking' }, ready: { t: '待自提', c: 'ready' } };
-      const list = MockData.preorders.filter(o => ['pending','picking','ready'].includes(o.status)).slice(0, 3);
-      el.innerHTML = list.length ? list.map(o => {
-        const s = statusMap[o.status];
-        return `<tr>
-          <td>${o.id}</td>
-          <td>${o.items.map(i => i.name).join('、')}</td>
-          <td>${o.pickup}</td>
-          <td class="price">${Utils.formatMoney(o.amount)}</td>
-          <td><span class="status-badge ${s.c}">${s.t}</span></td>
-          <td>${o.createdAt}</td>
-          <td><button class="btn btn-outline btn-sm" onclick="App.showOrderDetail('${o.id}')">查看详情</button></td>
-        </tr>`;
+      var statusMap = { pending: { t: '待备货', c: 'pending' }, picking: { t: '分拣中', c: 'picking' }, ready: { t: '待自提', c: 'ready' } };
+      var list = MockData.preorders.filter(function(o) { return ['pending','picking','ready'].indexOf(o.status) >= 0; }).slice(0, 3);
+      el.innerHTML = list.length ? list.map(function(o) {
+        var s = statusMap[o.status];
+        return '<tr>' +
+          '<td>' + o.id + '</td>' +
+          '<td>' + o.items.map(function(i) { return i.name; }).join('、') + '</td>' +
+          '<td>' + o.pickup + '</td>' +
+          '<td class="price">' + Utils.formatMoney(o.amount) + '</td>' +
+          '<td><span class="status-badge ' + s.c + '">' + s.t + '</span></td>' +
+          '<td>' + o.createdAt + '</td>' +
+          '<td><button class="btn btn-outline btn-sm" onclick="App.showOrderDetail(\'' + o.id + '\')">查看详情</button></td>' +
+        '</tr>';
       }).join('') : '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:32px;">暂无待处理订单</td></tr>';
     },
-    renderStockWarn() {
-      const el = document.getElementById('stockWarnList');
+    renderStockWarn(period) {
+      var el = document.getElementById('stockWarnList');
       if (!el) return;
-      const warn = MockData.products.filter(p => p.status !== 'off' && (p.stock === 0 || p.stock <= p.warnStock));
-      el.innerHTML = warn.length ? warn.slice(0, 5).map(p => {
-        const danger = p.stock === 0 || p.stock <= p.warnStock / 2;
-        return `<div class="stock-warn-item ${danger ? 'danger' : ''}">
-          <img src="${p.image}" class="warn-img">
-          <div class="warn-info">
-            <div class="warn-name">${p.name}</div>
-            <div class="warn-detail">当前库存: ${p.stock}${p.unit} / 预警: ${p.warnStock}${p.unit}</div>
-          </div>
-        </div>`;
-      }).join('') : '<div style="padding:20px;text-align:center;color:#94a3b8;">暂无库存预警</div>';
+      var factor = period / 7;
+      var warn = MockData.products
+        .filter(function(p) { return p.status !== 'off'; })
+        .map(function(p) {
+          var sales7 = (p.sales || 0);
+          var salesPeriod = Math.round(sales7 * factor);
+          var dynamicStock = Math.max(0, (p.stock || 0) - salesPeriod + sales7);
+          return Object.assign({}, p, { dynamicStock: dynamicStock });
+        })
+        .filter(function(p) {
+          return p.dynamicStock === 0 || p.dynamicStock <= (p.warnStock || 0);
+        })
+        .sort(function(a, b) { return a.dynamicStock - b.dynamicStock; });
+
+      var hasWarn = warn.length > 0;
+      if (!hasWarn) {
+        el.innerHTML = '<div class="chart-empty-state" style="padding:32px 24px;"><div class="empty-icon" style="font-size:48px;">✅</div><div class="empty-text">当前周期库存状态良好</div></div>';
+        return;
+      }
+
+      el.innerHTML = warn.slice(0, 5).map(function(p) {
+        var danger = p.dynamicStock === 0 || p.dynamicStock <= (p.warnStock || 0) / 2;
+        return '<div class="stock-warn-item ' + (danger ? 'danger' : '') + '">' +
+               '<img src="' + p.image + '" class="warn-img">' +
+               '<div class="warn-info">' +
+               '<div class="warn-name">' + p.name + '</div>' +
+               '<div class="warn-detail">预估库存: ' + p.dynamicStock + p.unit + ' / 预警: ' + p.warnStock + p.unit + '</div>' +
+               '</div>' +
+               '</div>';
+      }).join('');
     }
   };
 
