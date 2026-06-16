@@ -298,6 +298,7 @@
     },
     bindCardEvents() {
       var self = this;
+      var _isNavigating = false;
       var tooltip = document.getElementById('cardTooltip');
       if (!tooltip) {
         tooltip = document.createElement('div');
@@ -306,15 +307,37 @@
         tooltip.innerHTML = '<div class="card-tooltip-title" id="ctTitle"></div><div class="card-tooltip-desc" id="ctDesc"></div>';
         document.body.appendChild(tooltip);
       }
+      var navLoader = document.getElementById('cardNavLoader');
+      if (!navLoader) {
+        navLoader = document.createElement('div');
+        navLoader.id = 'cardNavLoader';
+        navLoader.className = 'card-nav-loader';
+        navLoader.innerHTML = '<div class="loader-spinner"></div><div class="loader-text">加载中...</div>';
+        document.body.appendChild(navLoader);
+      }
       var cards = document.querySelectorAll('.card-clickable');
       cards.forEach(function(card) {
         card.addEventListener('click', function() {
+          if (_isNavigating) return;
           var nav = card.getAttribute('data-nav');
-          if (nav) {
-            App.showPage(nav);
-          }
+          if (!nav) return;
+          var item = document.querySelector('.menu-item[data-page="' + nav + '"]');
+          if (!item) return;
+          _isNavigating = true;
+          card.classList.add('card-navigating');
+          navLoader.classList.add('show');
+          tooltip.classList.remove('show');
+          setTimeout(function() {
+            item.click();
+            setTimeout(function() {
+              card.classList.remove('card-navigating');
+              navLoader.classList.remove('show');
+              _isNavigating = false;
+            }, 350);
+          }, 120);
         });
         card.addEventListener('mouseenter', function(e) {
+          if (_isNavigating) return;
           var tooltipText = card.getAttribute('data-tooltip');
           var statLabel = card.querySelector('.stat-label');
           var metricTitle = card.querySelector('.metric-title');

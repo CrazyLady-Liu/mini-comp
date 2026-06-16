@@ -485,6 +485,54 @@ body {
   transform: translateY(-1px);
 }
 
+.card-clickable.card-navigating {
+  opacity: 0.6;
+  pointer-events: none;
+  filter: saturate(0.7);
+}
+
+.card-nav-loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(30, 41, 59, 0.92);
+  color: #fff;
+  padding: 20px 32px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.card-nav-loader.show {
+  opacity: 1;
+}
+
+.loader-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: card-spin 0.7s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes card-spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: 13px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
 .stat-card.small {
   padding: 20px;
 }
