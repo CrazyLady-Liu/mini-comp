@@ -153,6 +153,10 @@
       yesterdayRevenue: 11180,
       todayOrders: 156,
       yesterdayOrders: 144,
+      todayPreorderCount: 48,
+      yesterdayPreorderCount: 40,
+      todayPendingVerify: 23,
+      yesterdayPendingVerify: 27,
       todayGrossProfit: 5032,
       yesterdayGrossProfit: 4650,
       todayLossAmount: 201.38,
@@ -290,9 +294,112 @@
       this.renderTopProducts();
       this.renderPendingOrders();
       this.renderStockWarn();
+      this.bindCardEvents();
+    },
+    bindCardEvents() {
+      var self = this;
+      var tooltip = document.getElementById('cardTooltip');
+      if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'cardTooltip';
+        tooltip.className = 'card-tooltip';
+        tooltip.innerHTML = '<div class="card-tooltip-title" id="ctTitle"></div><div class="card-tooltip-desc" id="ctDesc"></div>';
+        document.body.appendChild(tooltip);
+      }
+      var cards = document.querySelectorAll('.card-clickable');
+      cards.forEach(function(card) {
+        card.addEventListener('click', function() {
+          var nav = card.getAttribute('data-nav');
+          if (nav) {
+            App.showPage(nav);
+          }
+        });
+        card.addEventListener('mouseenter', function(e) {
+          var tooltipText = card.getAttribute('data-tooltip');
+          var statLabel = card.querySelector('.stat-label');
+          var metricTitle = card.querySelector('.metric-title');
+          var title = statLabel ? statLabel.textContent : (metricTitle ? metricTitle.textContent : '');
+          if (tooltipText) {
+            document.getElementById('ctTitle').textContent = title;
+            document.getElementById('ctDesc').textContent = tooltipText;
+            tooltip.classList.add('show');
+            self.positionTooltip(e, card, tooltip);
+          }
+        });
+        card.addEventListener('mousemove', function(e) {
+          if (tooltip.classList.contains('show')) {
+            self.positionTooltip(e, card, tooltip);
+          }
+        });
+        card.addEventListener('mouseleave', function() {
+          tooltip.classList.remove('show');
+        });
+      });
+    },
+    positionTooltip(e, card, tooltip) {
+      var rect = card.getBoundingClientRect();
+      var tooltipRect = tooltip.getBoundingClientRect();
+      var top = rect.bottom + 12;
+      var left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+      if (left < 10) left = 10;
+      if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+      }
+      if (top + tooltipRect.height > window.innerHeight - 10) {
+        top = rect.top - tooltipRect.height - 12;
+        tooltip.classList.add('tooltip-bottom');
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+      } else {
+        tooltip.classList.remove('tooltip-bottom');
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+      }
     },
     renderMetricCards() {
       var m = MockData.dashboardMetrics;
+      var self = this;
+
+      var revEl = document.getElementById('statTodayRevenue');
+      var revTrendEl = revEl ? revEl.parentElement.querySelector('.stat-trend') : null;
+      if (revEl) revEl.textContent = Utils.formatMoney(m.todayRevenue);
+      if (revTrendEl) {
+        var revPct = m.yesterdayRevenue > 0 ? ((m.todayRevenue - m.yesterdayRevenue) / m.yesterdayRevenue * 100) : 0;
+        var revUp = revPct >= 0;
+        revTrendEl.textContent = (revUp ? '↑ ' : '↓ ') + Math.abs(revPct).toFixed(1) + '% 较昨日';
+        revTrendEl.className = 'stat-trend ' + (revUp ? 'up' : 'down');
+      }
+
+      var ordersEl = document.getElementById('statTodayOrders');
+      var ordersTrendEl = ordersEl ? ordersEl.parentElement.querySelector('.stat-trend') : null;
+      if (ordersEl) ordersEl.textContent = m.todayOrders;
+      if (ordersTrendEl) {
+        var ordPct = m.yesterdayOrders > 0 ? ((m.todayOrders - m.yesterdayOrders) / m.yesterdayOrders * 100) : 0;
+        var ordUp = ordPct >= 0;
+        ordersTrendEl.textContent = (ordUp ? '↑ ' : '↓ ') + Math.abs(ordPct).toFixed(1) + '% 较昨日';
+        ordersTrendEl.className = 'stat-trend ' + (ordUp ? 'up' : 'down');
+      }
+
+      var preEl = document.getElementById('statPreorderCount');
+      var preTrendEl = preEl ? preEl.parentElement.querySelector('.stat-trend') : null;
+      if (preEl) preEl.textContent = m.todayPreorderCount;
+      if (preTrendEl) {
+        var prePct = m.yesterdayPreorderCount > 0 ? ((m.todayPreorderCount - m.yesterdayPreorderCount) / m.yesterdayPreorderCount * 100) : 0;
+        var preUp = prePct >= 0;
+        preTrendEl.textContent = (preUp ? '↑ ' : '↓ ') + Math.abs(prePct).toFixed(1) + '% 较昨日';
+        preTrendEl.className = 'stat-trend ' + (preUp ? 'up' : 'down');
+      }
+
+      var verifyEl = document.getElementById('statPendingVerify');
+      var verifyTrendEl = verifyEl ? verifyEl.parentElement.querySelector('.stat-trend') : null;
+      if (verifyEl) verifyEl.textContent = m.todayPendingVerify;
+      if (verifyTrendEl) {
+        var verPct = m.yesterdayPendingVerify > 0 ? ((m.todayPendingVerify - m.yesterdayPendingVerify) / m.yesterdayPendingVerify * 100) : 0;
+        var verUp = verPct >= 0;
+        verifyTrendEl.textContent = (verUp ? '↑ ' : '↓ ') + Math.abs(verPct).toFixed(1) + '% 较昨日';
+        verifyTrendEl.className = 'stat-trend ' + (verUp ? 'up' : 'down');
+      }
+
       var onSaleProducts = MockData.products.filter(function(p) { return p.status === 'on'; });
       var onSaleCount = onSaleProducts.length;
       var stockWarnCount = onSaleProducts.filter(function(p) { return p.stock <= p.warnStock; }).length;

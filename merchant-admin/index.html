@@ -132,7 +132,7 @@
       <div class="content">
         <div id="page-dashboard" class="page active">
           <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card card-clickable" data-nav="statistics" data-tooltip="今日所有订单实际收款总金额，包含已核销订单。">
               <div class="stat-icon green">💰</div>
               <div class="stat-info">
                 <div class="stat-value" id="statTodayRevenue">¥12,580</div>
@@ -140,7 +140,7 @@
                 <div class="stat-trend up">↑ 12.5% 较昨日</div>
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card card-clickable" data-nav="preorder" data-tooltip="今日已支付的有效预售订单总数。">
               <div class="stat-icon blue">📋</div>
               <div class="stat-info">
                 <div class="stat-value" id="statTodayOrders">156</div>
@@ -148,7 +148,7 @@
                 <div class="stat-trend up">↑ 8.3% 较昨日</div>
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card card-clickable" data-nav="preorder" data-tooltip="今日待备货、分拣中、待自提的预售订单总量。">
               <div class="stat-icon orange">🥬</div>
               <div class="stat-info">
                 <div class="stat-value" id="statPreorderCount">48</div>
@@ -156,7 +156,7 @@
                 <div class="stat-trend up">↑ 18.6% 较昨日</div>
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card card-clickable" data-nav="verify" data-tooltip="当前状态为待自提、等待用户到店核销的订单数量。">
               <div class="stat-icon purple">📦</div>
               <div class="stat-info">
                 <div class="stat-value" id="statPendingVerify">23</div>
@@ -167,7 +167,7 @@
           </div>
 
           <div class="stats-grid metric-cards">
-            <div class="metric-card" id="metricGrossProfit">
+            <div class="metric-card card-clickable" data-nav="statistics" data-tooltip="今日营收总额减去所售商品的进货总成本，即今日实际赚取的毛利润。">
               <div class="metric-card-header">
                 <div class="metric-icon gold">🪙</div>
                 <div class="metric-title">今日毛利</div>
@@ -177,7 +177,7 @@
                 <span class="metric-trend" id="mcGrossProfitTrend">↑ 8.2% 较昨日</span>
               </div>
             </div>
-            <div class="metric-card" id="metricAvgOrder">
+            <div class="metric-card card-clickable" data-nav="statistics" data-tooltip="今日平均每笔订单的消费金额，计算公式：今日营业额 ÷ 今日有效订单数。">
               <div class="metric-card-header">
                 <div class="metric-icon cyan">💰</div>
                 <div class="metric-title">今日客单价</div>
@@ -187,7 +187,7 @@
                 <span class="metric-trend" id="mcAvgOrderTrend">↑ 3.5% 较昨日</span>
               </div>
             </div>
-            <div class="metric-card" id="metricLossAmount">
+            <div class="metric-card card-clickable" id="metricLossAmount" data-nav="statistics" data-tooltip="今日因生鲜报废、过期、损坏等产生的总损失成本，数据取自损耗记录。">
               <div class="metric-card-header">
                 <div class="metric-icon red">📉</div>
                 <div class="metric-title">今日损耗金额</div>
@@ -197,7 +197,7 @@
                 <span class="metric-sub-text" id="mcLossThreshold">超出预警阈值 ¥200</span>
               </div>
             </div>
-            <div class="metric-card" id="metricOnSaleCount">
+            <div class="metric-card card-clickable" data-nav="products" data-tooltip="当前状态为上架（on）且库存正常、可正常售卖的商品总数。">
               <div class="metric-card-header">
                 <div class="metric-icon green">🛒</div>
                 <div class="metric-title">在售商品总数</div>
@@ -207,7 +207,7 @@
                 <span class="metric-sub-text warn" id="mcStockWarnCount">库存预警商品 3 件</span>
               </div>
             </div>
-            <div class="metric-card" id="metricNewCustomers">
+            <div class="metric-card card-clickable" data-nav="statistics" data-tooltip="今日首次在本店下单的新注册用户数量，反映用户增长情况。">
               <div class="metric-card-header">
                 <div class="metric-icon purple">🆕</div>
                 <div class="metric-title">今日新增客户</div>
@@ -217,7 +217,7 @@
                 <span class="metric-trend" id="mcNewCustomersTrend">↑ 15.3% 较昨日</span>
               </div>
             </div>
-            <div class="metric-card" id="metricPendingAftersale">
+            <div class="metric-card card-clickable" data-nav="aftersale" data-tooltip="售后订单中状态为待处理的工单总数，请尽快处理以提升用户满意度。">
               <div class="metric-card-header">
                 <div class="metric-icon orange">⚠️</div>
                 <div class="metric-title">未处理售后单</div>
