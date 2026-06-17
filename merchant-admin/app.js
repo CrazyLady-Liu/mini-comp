@@ -2163,8 +2163,39 @@
   };
 
   const Statistics = {
+    currentMetricGroup: 'revenue',
+    metricGroups: {
+      revenue: {
+        name: '营收类指标',
+        metrics: [
+          { label: '总销售额', value: '¥40,580', trend: 22.5, trendDir: 'up', icon: '💰', iconColor: 'green' },
+          { label: '总订单', value: '1,286', trend: 15.3, trendDir: 'up', icon: '📋', iconColor: 'blue' },
+          { label: '活跃用户', value: '892', trend: 8.7, trendDir: 'up', icon: '🛒', iconColor: 'orange' },
+          { label: '损耗金额', value: '¥651.63', trend: 5.2, trendDir: 'down', icon: '⚠️', iconColor: 'purple' }
+        ]
+      },
+      profit: {
+        name: '利润类指标',
+        metrics: [
+          { label: '总毛利', value: '¥12,350', trend: 18.2, trendDir: 'up', icon: '💎', iconColor: 'green' },
+          { label: '平均客单价', value: '¥31.55', trend: 6.8, trendDir: 'up', icon: '🛍️', iconColor: 'blue' },
+          { label: '损耗占营收比例', value: '1.61%', trend: 0.3, trendDir: 'down', icon: '📉', iconColor: 'orange' },
+          { label: '库存成本总额', value: '¥28,450', trend: 12.1, trendDir: 'up', icon: '📦', iconColor: 'purple' }
+        ]
+      },
+      conversion: {
+        name: '转化类指标',
+        metrics: [
+          { label: '新增客户数', value: '186', trend: 24.5, trendDir: 'up', icon: '👤', iconColor: 'green' },
+          { label: '复购客户数', value: '624', trend: 31.2, trendDir: 'up', icon: '🔄', iconColor: 'blue' },
+          { label: '复购率', value: '69.9%', trend: 14.8, trendDir: 'up', icon: '📊', iconColor: 'orange' },
+          { label: '核销完成率', value: '92.5%', trend: 3.6, trendDir: 'up', icon: '✅', iconColor: 'purple' }
+        ]
+      }
+    },
     init() {
       this.initTabs();
+      this.initMetricSwitcher();
       this.renderOverview();
       this.renderRank();
       this.renderLoss();
@@ -2183,11 +2214,42 @@
         });
       });
     },
+    initMetricSwitcher() {
+      const select = document.getElementById('metricGroupSelect');
+      if (select) {
+        select.addEventListener('change', (e) => {
+          this.currentMetricGroup = e.target.value;
+          this.renderMetricCards();
+        });
+      }
+    },
+    renderMetricCards() {
+      const group = this.metricGroups[this.currentMetricGroup];
+      if (!group) return;
+      const grid = document.getElementById('overviewStatsGrid');
+      if (!grid) return;
+      const cards = grid.querySelectorAll('.stat-card');
+      group.metrics.forEach((metric, index) => {
+        if (index >= cards.length) return;
+        const card = cards[index];
+        const iconEl = card.querySelector('.stat-icon');
+        const valueEl = card.querySelector('.stat-value');
+        const labelEl = card.querySelector('.stat-label');
+        const trendEl = card.querySelector('.stat-trend');
+        if (iconEl) {
+          iconEl.className = 'stat-icon ' + metric.iconColor;
+          iconEl.textContent = metric.icon;
+        }
+        if (valueEl) valueEl.textContent = metric.value;
+        if (labelEl) labelEl.textContent = metric.label;
+        if (trendEl) {
+          trendEl.className = 'stat-trend ' + metric.trendDir;
+          trendEl.textContent = (metric.trendDir === 'up' ? '↑ ' : '↓ ') + metric.trend + '% 环比';
+        }
+      });
+    },
     renderOverview() {
-      document.getElementById('ovSales').textContent = '¥40,580';
-      document.getElementById('ovOrders').textContent = '1,286';
-      document.getElementById('ovUsers').textContent = '892';
-      document.getElementById('ovLoss').textContent = '¥651.63';
+      this.renderMetricCards();
       const svg = document.getElementById('monthlyChart');
       if (svg) {
         const data = [28000, 32500, 36800, 34200, 38900, 42100, 40580];

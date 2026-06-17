@@ -801,37 +801,47 @@
           </div>
 
           <div class="stats-content" id="stats-overview">
-            <div class="stats-grid">
+            <div class="metrics-header">
+              <h3 class="metrics-title">核心指标</h3>
+              <div class="metrics-switcher">
+                <select class="select" id="metricGroupSelect">
+                  <option value="revenue">营收类指标</option>
+                  <option value="profit">利润类指标</option>
+                  <option value="conversion">转化类指标</option>
+                </select>
+              </div>
+            </div>
+            <div class="stats-grid" id="overviewStatsGrid">
               <div class="stat-card">
                 <div class="stat-icon green">💰</div>
                 <div class="stat-info">
-                  <div class="stat-value" id="ovSales">¥386,520</div>
-                  <div class="stat-label">本月总销售额</div>
-                  <div class="stat-trend up">↑ 22.5% 环比</div>
+                  <div class="stat-value" id="ovMetric1">¥40,580</div>
+                  <div class="stat-label" id="ovMetric1Label">总销售额</div>
+                  <div class="stat-trend up" id="ovMetric1Trend">↑ 22.5% 环比</div>
                 </div>
               </div>
               <div class="stat-card">
                 <div class="stat-icon blue">📋</div>
                 <div class="stat-info">
-                  <div class="stat-value" id="ovOrders">4,856</div>
-                  <div class="stat-label">本月总订单</div>
-                  <div class="stat-trend up">↑ 15.3% 环比</div>
+                  <div class="stat-value" id="ovMetric2">1,286</div>
+                  <div class="stat-label" id="ovMetric2Label">总订单</div>
+                  <div class="stat-trend up" id="ovMetric2Trend">↑ 15.3% 环比</div>
                 </div>
               </div>
               <div class="stat-card">
                 <div class="stat-icon orange">🛒</div>
                 <div class="stat-info">
-                  <div class="stat-value" id="ovUsers">2,456</div>
-                  <div class="stat-label">活跃用户数</div>
-                  <div class="stat-trend up">↑ 8.7% 环比</div>
+                  <div class="stat-value" id="ovMetric3">892</div>
+                  <div class="stat-label" id="ovMetric3Label">活跃用户</div>
+                  <div class="stat-trend up" id="ovMetric3Trend">↑ 8.7% 环比</div>
                 </div>
               </div>
               <div class="stat-card">
-                <div class="stat-icon purple">😀</div>
+                <div class="stat-icon purple">⚠️</div>
                 <div class="stat-info">
-                  <div class="stat-value" id="ovLoss">¥4,280</div>
-                  <div class="stat-label">本月损耗金额</div>
-                  <div class="stat-trend down">↓ 5.2% 环比</div>
+                  <div class="stat-value" id="ovMetric4">¥651.63</div>
+                  <div class="stat-label" id="ovMetric4Label">损耗金额</div>
+                  <div class="stat-trend down" id="ovMetric4Trend">↓ 5.2% 环比</div>
                 </div>
               </div>
             </div>
