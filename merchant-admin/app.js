@@ -2164,16 +2164,17 @@
 
   const Statistics = {
     currentMetricGroup: 'revenue',
-    periodDays: 30,
-    _calcPct: function(cur, prev, invertGood) {
-      if (!prev || prev === 0) return { pct: 0, dir: 'up' };
+    metricGroupData: null,
+    _calcTrend: function(cur, prev, invertGood) {
+      if (prev === 0 && cur === 0) return { pct: '0.0', dir: 'up' };
+      if (prev === 0) return { pct: '100.0', dir: 'up' };
       var pct = ((cur - prev) / prev) * 100;
       var isGood = invertGood ? pct <= 0 : pct >= 0;
       return { pct: Math.abs(pct).toFixed(1), dir: isGood ? 'up' : 'down' };
     },
-    _computeMetrics: function() {
-      var days = MockData.getPeriodStats(this.periodDays);
-      var prevDays = MockData.getPrevPeriodStats(this.periodDays);
+    _fetchMetricGroup: function(groupKey) {
+      var days = MockData.dailyStats;
+      var prevDays = MockData.lastWeekDailyStats;
       var sum = function(arr, key) { return arr.reduce(function(s, d) { return s + (d[key] || 0); }, 0); };
 
       var totalRevenue = sum(days, 'revenue');
@@ -2196,7 +2197,9 @@
       var stockCost = MockData.products.reduce(function(s, p) {
         return s + (p.costPrice || 0) * (p.stock || 0);
       }, 0);
-      var prevStockCost = stockCost * 0.92;
+      var prevStockCost = MockData.products.reduce(function(s, p) {
+        return s + (p.costPrice || 0) * Math.round(p.stock * 0.88);
+      }, 0);
 
       var activeUsers = Math.round(totalOrders * 0.72);
       var prevActiveUsers = Math.round(prevOrders * 0.68);
@@ -2205,40 +2208,52 @@
       var repeatRate = activeUsers > 0 ? (repeatCustomers / activeUsers) * 100 : 0;
       var prevRepeatRate = prevActiveUsers > 0 ? (prevRepeatCustomers / prevActiveUsers) * 100 : 0;
 
+      var completedCount = MockData.preorders.filter(function(o) { return o.status === 'completed'; }).length;
       var totalPreorders = MockData.preorders.length;
-      var completedVerify = MockData.verifyRecords.length;
-      var verifyRate = totalPreorders > 0 ? (completedVerify / totalPreorders) * 100 : 85;
-      var prevVerifyRate = 82;
+      var verifyRate = totalPreorders > 0 ? (completedCount / totalPreorders) * 100 : 0;
+      var prevCompletedEst = Math.round(completedCount * 0.85);
+      var prevVerifyRate = totalPreorders > 0 ? (prevCompletedEst / totalPreorders) * 100 : 0;
 
-      return {
+      var data = {
         revenue: {
           name: '营收类指标',
           metrics: [
-            { label: '总销售额', value: Utils.formatMoney(totalRevenue), trend: this._calcPct(totalRevenue, prevRevenue), icon: '💰', iconColor: 'green' },
-            { label: '总订单', value: totalOrders.toLocaleString(), trend: this._calcPct(totalOrders, prevOrders), icon: '📋', iconColor: 'blue' },
-            { label: '活跃用户', value: activeUsers.toLocaleString(), trend: this._calcPct(activeUsers, prevActiveUsers), icon: '🛒', iconColor: 'orange' },
-            { label: '损耗金额', value: Utils.formatMoney(totalLoss), trend: this._calcPct(totalLoss, prevLoss, true), icon: '⚠️', iconColor: 'purple' }
+            { label: '总销售额', value: Utils.formatMoney(totalRevenue), trend: this._calcTrend(totalRevenue, prevRevenue), icon: '💰', iconColor: 'green' },
+            { label: '总订单', value: totalOrders.toLocaleString(), trend: this._calcTrend(totalOrders, prevOrders), icon: '📋', iconColor: 'blue' },
+            { label: '活跃用户', value: activeUsers.toLocaleString(), trend: this._calcTrend(activeUsers, prevActiveUsers), icon: '🛒', iconColor: 'orange' },
+            { label: '损耗金额', value: Utils.formatMoney(totalLoss), trend: this._calcTrend(totalLoss, prevLoss, true), icon: '⚠️', iconColor: 'purple' }
           ]
         },
         profit: {
           name: '利润类指标',
           metrics: [
-            { label: '总毛利', value: Utils.formatMoney(grossProfit), trend: this._calcPct(grossProfit, prevGrossProfit), icon: '💎', iconColor: 'green' },
-            { label: '平均客单价', value: Utils.formatMoney(avgOrder), trend: this._calcPct(avgOrder, prevAvgOrder), icon: '🛍️', iconColor: 'blue' },
-            { label: '损耗占营收比例', value: lossRatio.toFixed(2) + '%', trend: this._calcPct(lossRatio, prevLossRatio, true), icon: '📉', iconColor: 'orange' },
-            { label: '库存成本总额', value: Utils.formatMoney(stockCost), trend: this._calcPct(stockCost, prevStockCost), icon: '📦', iconColor: 'purple' }
+            { label: '总毛利', value: Utils.formatMoney(grossProfit), trend: this._calcTrend(grossProfit, prevGrossProfit), icon: '💎', iconColor: 'green' },
+            { label: '平均客单价', value: Utils.formatMoney(avgOrder), trend: this._calcTrend(avgOrder, prevAvgOrder), icon: '🛍️', iconColor: 'blue' },
+            { label: '损耗占营收比例', value: lossRatio.toFixed(2) + '%', trend: this._calcTrend(lossRatio, prevLossRatio, true), icon: '📉', iconColor: 'orange' },
+            { label: '库存成本总额', value: Utils.formatMoney(stockCost), trend: this._calcTrend(stockCost, prevStockCost), icon: '📦', iconColor: 'purple' }
           ]
         },
         conversion: {
           name: '转化类指标',
           metrics: [
-            { label: '新增客户数', value: totalNewCust.toLocaleString(), trend: this._calcPct(totalNewCust, prevNewCust), icon: '👤', iconColor: 'green' },
-            { label: '复购客户数', value: repeatCustomers.toLocaleString(), trend: this._calcPct(repeatCustomers, prevRepeatCustomers), icon: '🔄', iconColor: 'blue' },
-            { label: '复购率', value: repeatRate.toFixed(1) + '%', trend: this._calcPct(repeatRate, prevRepeatRate), icon: '📊', iconColor: 'orange' },
-            { label: '核销完成率', value: verifyRate.toFixed(1) + '%', trend: this._calcPct(verifyRate, prevVerifyRate), icon: '✅', iconColor: 'purple' }
+            { label: '新增客户数', value: totalNewCust.toLocaleString(), trend: this._calcTrend(totalNewCust, prevNewCust), icon: '👤', iconColor: 'green' },
+            { label: '复购客户数', value: repeatCustomers.toLocaleString(), trend: this._calcTrend(repeatCustomers, prevRepeatCustomers), icon: '🔄', iconColor: 'blue' },
+            { label: '复购率', value: repeatRate.toFixed(1) + '%', trend: this._calcTrend(repeatRate, prevRepeatRate), icon: '📊', iconColor: 'orange' },
+            { label: '核销完成率', value: verifyRate.toFixed(1) + '%', trend: this._calcTrend(verifyRate, prevVerifyRate), icon: '✅', iconColor: 'purple' }
           ]
         }
       };
+
+      return data[groupKey] || null;
+    },
+    _ensureGroupData: function() {
+      if (!this.metricGroupData) {
+        this.metricGroupData = {};
+      }
+      if (!this.metricGroupData[this.currentMetricGroup]) {
+        this.metricGroupData[this.currentMetricGroup] = this._fetchMetricGroup(this.currentMetricGroup);
+      }
+      return this.metricGroupData[this.currentMetricGroup];
     },
     init() {
       this.initTabs();
@@ -2266,19 +2281,18 @@
       if (select) {
         select.addEventListener('change', (e) => {
           this.currentMetricGroup = e.target.value;
+          this.metricGroupData[this.currentMetricGroup] = this._fetchMetricGroup(this.currentMetricGroup);
           this.renderMetricCards();
         });
       }
     },
     renderMetricCards() {
-      const metricGroups = this._computeMetrics();
-      const group = metricGroups[this.currentMetricGroup];
+      var group = this._ensureGroupData();
       if (!group) return;
-      const grid = document.getElementById('overviewStatsGrid');
+      var grid = document.getElementById('overviewStatsGrid');
       if (!grid) return;
-      const cards = grid.querySelectorAll('.stat-card');
+      var cards = grid.querySelectorAll('.stat-card');
       cards.forEach(function(card) { card.classList.add('card-switching'); });
-      var self = this;
       setTimeout(function() {
         group.metrics.forEach(function(metric, index) {
           if (index >= cards.length) return;
