@@ -2164,34 +2164,81 @@
 
   const Statistics = {
     currentMetricGroup: 'revenue',
-    metricGroups: {
-      revenue: {
-        name: '营收类指标',
-        metrics: [
-          { label: '总销售额', value: '¥40,580', trend: 22.5, trendDir: 'up', icon: '💰', iconColor: 'green' },
-          { label: '总订单', value: '1,286', trend: 15.3, trendDir: 'up', icon: '📋', iconColor: 'blue' },
-          { label: '活跃用户', value: '892', trend: 8.7, trendDir: 'up', icon: '🛒', iconColor: 'orange' },
-          { label: '损耗金额', value: '¥651.63', trend: 5.2, trendDir: 'down', icon: '⚠️', iconColor: 'purple' }
-        ]
-      },
-      profit: {
-        name: '利润类指标',
-        metrics: [
-          { label: '总毛利', value: '¥12,350', trend: 18.2, trendDir: 'up', icon: '💎', iconColor: 'green' },
-          { label: '平均客单价', value: '¥31.55', trend: 6.8, trendDir: 'up', icon: '🛍️', iconColor: 'blue' },
-          { label: '损耗占营收比例', value: '1.61%', trend: 0.3, trendDir: 'down', icon: '📉', iconColor: 'orange' },
-          { label: '库存成本总额', value: '¥28,450', trend: 12.1, trendDir: 'up', icon: '📦', iconColor: 'purple' }
-        ]
-      },
-      conversion: {
-        name: '转化类指标',
-        metrics: [
-          { label: '新增客户数', value: '186', trend: 24.5, trendDir: 'up', icon: '👤', iconColor: 'green' },
-          { label: '复购客户数', value: '624', trend: 31.2, trendDir: 'up', icon: '🔄', iconColor: 'blue' },
-          { label: '复购率', value: '69.9%', trend: 14.8, trendDir: 'up', icon: '📊', iconColor: 'orange' },
-          { label: '核销完成率', value: '92.5%', trend: 3.6, trendDir: 'up', icon: '✅', iconColor: 'purple' }
-        ]
-      }
+    periodDays: 30,
+    _calcPct: function(cur, prev, invertGood) {
+      if (!prev || prev === 0) return { pct: 0, dir: 'up' };
+      var pct = ((cur - prev) / prev) * 100;
+      var isGood = invertGood ? pct <= 0 : pct >= 0;
+      return { pct: Math.abs(pct).toFixed(1), dir: isGood ? 'up' : 'down' };
+    },
+    _computeMetrics: function() {
+      var days = MockData.getPeriodStats(this.periodDays);
+      var prevDays = MockData.getPrevPeriodStats(this.periodDays);
+      var sum = function(arr, key) { return arr.reduce(function(s, d) { return s + (d[key] || 0); }, 0); };
+
+      var totalRevenue = sum(days, 'revenue');
+      var prevRevenue = sum(prevDays, 'revenue');
+      var totalOrders = sum(days, 'orders');
+      var prevOrders = sum(prevDays, 'orders');
+      var totalLoss = sum(days, 'loss');
+      var prevLoss = sum(prevDays, 'loss');
+      var totalNewCust = sum(days, 'newCust');
+      var prevNewCust = sum(prevDays, 'newCust');
+
+      var grossProfitRate = 0.4;
+      var grossProfit = totalRevenue * grossProfitRate;
+      var prevGrossProfit = prevRevenue * grossProfitRate;
+      var avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+      var prevAvgOrder = prevOrders > 0 ? prevRevenue / prevOrders : 0;
+      var lossRatio = totalRevenue > 0 ? (totalLoss / totalRevenue) * 100 : 0;
+      var prevLossRatio = prevRevenue > 0 ? (prevLoss / prevRevenue) * 100 : 0;
+
+      var stockCost = MockData.products.reduce(function(s, p) {
+        return s + (p.costPrice || 0) * (p.stock || 0);
+      }, 0);
+      var prevStockCost = stockCost * 0.92;
+
+      var activeUsers = Math.round(totalOrders * 0.72);
+      var prevActiveUsers = Math.round(prevOrders * 0.68);
+      var repeatCustomers = Math.round(activeUsers * 0.7);
+      var prevRepeatCustomers = Math.round(prevActiveUsers * 0.62);
+      var repeatRate = activeUsers > 0 ? (repeatCustomers / activeUsers) * 100 : 0;
+      var prevRepeatRate = prevActiveUsers > 0 ? (prevRepeatCustomers / prevActiveUsers) * 100 : 0;
+
+      var totalPreorders = MockData.preorders.length;
+      var completedVerify = MockData.verifyRecords.length;
+      var verifyRate = totalPreorders > 0 ? (completedVerify / totalPreorders) * 100 : 85;
+      var prevVerifyRate = 82;
+
+      return {
+        revenue: {
+          name: '营收类指标',
+          metrics: [
+            { label: '总销售额', value: Utils.formatMoney(totalRevenue), trend: this._calcPct(totalRevenue, prevRevenue), icon: '💰', iconColor: 'green' },
+            { label: '总订单', value: totalOrders.toLocaleString(), trend: this._calcPct(totalOrders, prevOrders), icon: '📋', iconColor: 'blue' },
+            { label: '活跃用户', value: activeUsers.toLocaleString(), trend: this._calcPct(activeUsers, prevActiveUsers), icon: '🛒', iconColor: 'orange' },
+            { label: '损耗金额', value: Utils.formatMoney(totalLoss), trend: this._calcPct(totalLoss, prevLoss, true), icon: '⚠️', iconColor: 'purple' }
+          ]
+        },
+        profit: {
+          name: '利润类指标',
+          metrics: [
+            { label: '总毛利', value: Utils.formatMoney(grossProfit), trend: this._calcPct(grossProfit, prevGrossProfit), icon: '💎', iconColor: 'green' },
+            { label: '平均客单价', value: Utils.formatMoney(avgOrder), trend: this._calcPct(avgOrder, prevAvgOrder), icon: '🛍️', iconColor: 'blue' },
+            { label: '损耗占营收比例', value: lossRatio.toFixed(2) + '%', trend: this._calcPct(lossRatio, prevLossRatio, true), icon: '📉', iconColor: 'orange' },
+            { label: '库存成本总额', value: Utils.formatMoney(stockCost), trend: this._calcPct(stockCost, prevStockCost), icon: '📦', iconColor: 'purple' }
+          ]
+        },
+        conversion: {
+          name: '转化类指标',
+          metrics: [
+            { label: '新增客户数', value: totalNewCust.toLocaleString(), trend: this._calcPct(totalNewCust, prevNewCust), icon: '👤', iconColor: 'green' },
+            { label: '复购客户数', value: repeatCustomers.toLocaleString(), trend: this._calcPct(repeatCustomers, prevRepeatCustomers), icon: '🔄', iconColor: 'blue' },
+            { label: '复购率', value: repeatRate.toFixed(1) + '%', trend: this._calcPct(repeatRate, prevRepeatRate), icon: '📊', iconColor: 'orange' },
+            { label: '核销完成率', value: verifyRate.toFixed(1) + '%', trend: this._calcPct(verifyRate, prevVerifyRate), icon: '✅', iconColor: 'purple' }
+          ]
+        }
+      };
     },
     init() {
       this.initTabs();
@@ -2224,29 +2271,35 @@
       }
     },
     renderMetricCards() {
-      const group = this.metricGroups[this.currentMetricGroup];
+      const metricGroups = this._computeMetrics();
+      const group = metricGroups[this.currentMetricGroup];
       if (!group) return;
       const grid = document.getElementById('overviewStatsGrid');
       if (!grid) return;
       const cards = grid.querySelectorAll('.stat-card');
-      group.metrics.forEach((metric, index) => {
-        if (index >= cards.length) return;
-        const card = cards[index];
-        const iconEl = card.querySelector('.stat-icon');
-        const valueEl = card.querySelector('.stat-value');
-        const labelEl = card.querySelector('.stat-label');
-        const trendEl = card.querySelector('.stat-trend');
-        if (iconEl) {
-          iconEl.className = 'stat-icon ' + metric.iconColor;
-          iconEl.textContent = metric.icon;
-        }
-        if (valueEl) valueEl.textContent = metric.value;
-        if (labelEl) labelEl.textContent = metric.label;
-        if (trendEl) {
-          trendEl.className = 'stat-trend ' + metric.trendDir;
-          trendEl.textContent = (metric.trendDir === 'up' ? '↑ ' : '↓ ') + metric.trend + '% 环比';
-        }
-      });
+      cards.forEach(function(card) { card.classList.add('card-switching'); });
+      var self = this;
+      setTimeout(function() {
+        group.metrics.forEach(function(metric, index) {
+          if (index >= cards.length) return;
+          var card = cards[index];
+          var iconEl = card.querySelector('.stat-icon');
+          var valueEl = card.querySelector('.stat-value');
+          var labelEl = card.querySelector('.stat-label');
+          var trendEl = card.querySelector('.stat-trend');
+          if (iconEl) {
+            iconEl.className = 'stat-icon ' + metric.iconColor;
+            iconEl.textContent = metric.icon;
+          }
+          if (valueEl) valueEl.textContent = metric.value;
+          if (labelEl) labelEl.textContent = metric.label;
+          if (trendEl) {
+            trendEl.className = 'stat-trend ' + metric.trend.dir;
+            trendEl.textContent = (metric.trend.dir === 'up' ? '↑ ' : '↓ ') + metric.trend.pct + '% 环比';
+          }
+        });
+        cards.forEach(function(card) { card.classList.remove('card-switching'); });
+      }, 150);
     },
     renderOverview() {
       this.renderMetricCards();
